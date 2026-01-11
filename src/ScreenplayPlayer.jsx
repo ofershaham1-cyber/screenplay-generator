@@ -190,7 +190,7 @@ export default function ScreenplayPlayer() {
         </div>
 
         <div className="form-group">
-          <label>Default Screenplay Language (for all text except dialogue)</label>
+          <label>Default Screenplay Language (for all text except the dialogs)</label>
           <select
             value={defaultScreenplayLanguage}
             onChange={(e) => setDefaultScreenplayLanguage(e.target.value)}
