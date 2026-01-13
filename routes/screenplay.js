@@ -19,7 +19,7 @@ const initializeOpenRouter = async () => {
 
 /**
  * @swagger
- * /screenplay/generate:
+ * /api/screenplay/generate:
  *   post:
  *     summary: Generate screenplay
  *     requestBody:
@@ -37,12 +37,14 @@ const initializeOpenRouter = async () => {
  *                   type: string
  *               default_screenplay_language:
  *                 type: string
+ *               model:
+ *                 type: string
  *     responses:
  *       200:
  *         description: Generated screenplay
  */
 export const generateScreenplay = async (req, res) => {
-  const { story_pitch, languages_used, default_screenplay_language } = req.body;
+  const { story_pitch, languages_used, default_screenplay_language, model } = req.body;
 
   try {
     const openrouter = await initializeOpenRouter();
@@ -58,7 +60,7 @@ export const generateScreenplay = async (req, res) => {
     responseFormat.jsonSchema.schema.properties.story_pitch.default = story_pitch;
 
     const completion = await openrouter.chat.send({
-      model: 'allenai/olmo-3.1-32b-think:free',
+      model: model || 'allenai/olmo-3.1-32b-think:free',
       messages: [
         {
           role: 'user',
@@ -76,13 +78,24 @@ export const generateScreenplay = async (req, res) => {
     res.json(screenplayData);
   } catch (error) {
     console.error('Error generating screenplay:', error);
-    res.status(500).json({ error: error.message });
+    
+    // Detailed error response when debug is enabled
+    const errorResponse = req.isDebug 
+      ? { 
+          error: error.message,
+          stack: error.stack,
+          details: error.response?.data || error.cause || null,
+          timestamp: new Date().toISOString()
+        }
+      : { error: error.message };
+    
+    res.status(500).json(errorResponse);
   }
 };
 
 /**
  * @swagger
- * /screenplay/format:
+ * /api/screenplay/format:
  *   get:
  *     summary: Get screenplay format schema
  *     responses:

@@ -25,11 +25,13 @@ const LANGUAGE_COLORS = {
 };
 
 export default function ScreenplayGenerator() {
-  const [storypitch, setStorypitch] = useState('');
+  const [storypitch, setStorypitch] = useState(
+           'Create a conversation between an adult and a child playing a guessing game'
+);
   const [playing, setPlaying] = useState(false);
   const [narrator, setNarrator] = useState(false);
   const [characterLang, setCharacterLang] = useState(true);
-  const [languagesUsed, setLanguagesUsed] = useState(['English', 'Spanish']);
+  const [languagesUsed, setLanguagesUsed] = useState(['Arabic', 'Hebrew']);
   const [defaultScreenplayLanguage, setDefaultScreenplayLanguage] = useState('Hebrew');
   const [currentScene, setCurrentScene] = useState(-1);
   const [currentLine, setCurrentLine] = useState(-1);
@@ -38,13 +40,13 @@ export default function ScreenplayGenerator() {
   const [languageSpeeds, setLanguageSpeeds] = useState({});
   const [currentWord, setCurrentWord] = useState('');
   const [darkMode, setDarkMode] = useState(false);
-  const { screenplay, loading, error, generate, format } = useScreenplay();
+  const { screenplay, loading, error, generate, format, models, selectedModel, setSelectedModel } = useScreenplay();
 
   const handleGenerate = () => {
     setCurrentScene(-1);
     setCurrentLine(-1);
     setExpandedSections({});
-    generate(storypitch, languagesUsed, defaultScreenplayLanguage);
+    generate(storypitch, languagesUsed, defaultScreenplayLanguage, selectedModel);
   };
 
   const toggleSection = (key) => {
@@ -263,6 +265,21 @@ export default function ScreenplayGenerator() {
             {LANGUAGES.map(lang => (
               <option key={lang} value={lang}>{lang}</option>
             ))}
+          </select>
+        </div>
+
+        <div className="form-group">
+          <label>Model</label>
+          <select
+            value={selectedModel || ''}
+            onChange={(e) => setSelectedModel(e.target.value)}
+            disabled={loading || !models || models.length === 0}
+          >
+            {models && models.length ? (
+              models.map(m => <option key={m} value={m}>{m}</option>)
+            ) : (
+              <option value="">Default</option>
+            )}
           </select>
         </div>
 
