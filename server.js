@@ -101,13 +101,19 @@ const swaggerDocs = swaggerJsdoc(swaggerOptions);
 // Serve swagger-ui static files
 app.use('/api-docs', swaggerUi.serve);
 
-// Serve swagger UI with dynamic host injection
+// Serve swagger UI with dynamic host injection, prefer X-Forwarded-* headers and fallback to relative URL
 app.get('/api-docs/', (req, res, next) => {
-  const protocol = req.protocol || 'http';
-  const host = req.get('host') || `localhost:${PORT}`;
+  // Prefer reverse proxy forwarded headers (used by GitHub Codespaces / Gitpod / similar)
+  const forwardedProto = req.headers['x-forwarded-proto'];
+  const forwardedHost = req.headers['x-forwarded-host'] || req.headers['x-forwarded-server'];
+  const protocol = (forwardedProto || req.protocol || 'http').split(',')[0].trim();
+  const host = forwardedHost || req.get('host');
+  // If we have a forwarded host or a non-localhost host, use absolute URL; otherwise use relative root
+  const useAbsolute = Boolean(forwardedHost) || (host && !host.startsWith('localhost'));
+  const serverUrl = useAbsolute ? `${protocol}://${host}` : '/';
   const specWithServers = {
     ...swaggerDocs,
-    servers: [{ url: `${protocol}://${host}` }],
+    servers: [{ url: serverUrl }],
   };
   swaggerUi.setup(specWithServers)(req, res, next);
 });
