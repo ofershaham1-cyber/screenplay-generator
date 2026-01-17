@@ -77,7 +77,7 @@ export const generateScreenplay = async (req, res) => {
     const langs = dialog_languages || ['English', 'Spanish'];
     const defaultLang = default_screenplay_language || 'Hebrew';
     const promptContent = story_pitch
-      ? `Create a screenplay based on this pitch: ${story_pitch}. use dialog_languages for the dialogs and default_screenplay_language for all other text.`
+      ? `Create a screenplay based on this pitch: ${story_pitch}. use dialog_languages for the dialogs and default_screenplay_language for all other text. each character should speak in their respective dialog language.`
       : `Create a creative original screenplay. Use these languages for character dialog: ${langs.join(', ')}. The default screenplay language (for all text except character dialog) should be: ${defaultLang}.`;
  
     // Override using request payload
