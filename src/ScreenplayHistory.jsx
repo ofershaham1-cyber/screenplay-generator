@@ -178,11 +178,11 @@ export default function ScreenplayHistory({
                   {/* Action buttons */}
                   <div className="history-item-actions" style={{ justifyContent: shouldBeRTL ? 'flex-end' : 'flex-start' }}>
                     <button
-                      className="view-btn"
+                      className="load-btn"
                       onClick={() => onSelectScreenplay(item)}
-                      title="View this screenplay"
+                      title="Load this screenplay for viewing"
                     >
-                      👁️ View
+                      📂 Load
                     </button>
                     <button
                       className="export-btn"

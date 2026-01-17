@@ -192,7 +192,7 @@
   gap: 0.5rem;
 }
 
-.view-btn,
+.load-btn,
 .export-btn,
 .delete-btn {
   flex: 1;
@@ -205,12 +205,12 @@
   transition: background-color 0.2s;
 }
 
-.view-btn {
+.load-btn {
   background-color: #4CAF50;
   color: white;
 }
 
-.view-btn:hover {
+.load-btn:hover {
   background-color: #45a049;
 }
 

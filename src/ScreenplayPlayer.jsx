@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import ScreenplayView from './ScreenplayView';
 import './ScreenplayPlayer.css';
 
 export default function ScreenplayPlayer({ screenplay: passedScreenplay }) {
+  const navigate = useNavigate();
   const [screenplay, setScreenplay] = useState(null);
   const [darkMode, setDarkMode] = useState(false);
   const [showFormat, setShowFormat] = useState(false);
@@ -31,6 +33,20 @@ export default function ScreenplayPlayer({ screenplay: passedScreenplay }) {
         <div className="section">
           <h2>Load Screenplay</h2>
           <p>Select a screenplay from History to view it here, or generate a new one.</p>
+          <div className="load-buttons">
+            <button 
+              onClick={() => navigate('/history')}
+              className="load-from-history-btn"
+            >
+              📚 Load from History
+            </button>
+            <button 
+              onClick={() => navigate('/')}
+              className="generate-new-btn"
+            >
+              ✍️ Generate New Screenplay
+            </button>
+          </div>
         </div>
       </div>
     );

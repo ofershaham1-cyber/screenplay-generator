@@ -14,6 +14,11 @@
               "description": "Max words for the story pitch",
               "default": 200
             },
+            "min_lines_per_dialog": {
+              "type": "number",
+              "description": "Min lines per dialog",
+              "default": 50
+            },
             "exposition": {
               "type": "number",
               "description": "Max words for the exposition"
@@ -159,7 +164,11 @@
                       "type": "string",
                       "description": "current spoken dialog text"
                     },
-
+      "translation": {
+                      "type": "string",
+                      "description": "the current dialog translation based on default_screenplay_language"
+                      
+                    },
                     "visual": {
                       "type": "string",
                       "description": "Visual elements accompanying the dialog"
@@ -181,6 +190,7 @@
                     "character",
                     "language",
                     "text",
+                    "translation",
                     "visual",
                     "emotion",
                     "action",

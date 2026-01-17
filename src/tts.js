@@ -67,37 +67,99 @@ export const stop = () => {
   synth.cancel();
 };
 
+export const pause = () => {
+  if (synth.speaking && !synth.paused) {
+    synth.pause();
+  }
+};
+
+export const resume = () => {
+  if (synth.paused) {
+    synth.resume();
+  }
+};
+
+export const isPaused = () => synth.paused;
+
+export const isSpeaking = () => synth.speaking;
+
 export const playScreenplay = async (screenplay, options = {}) => {
-  const { includeNarrator = false, characterMode = true, onLineStart, languageSpeeds = {}, onWordStart } = options;
+  const { characterMode = true, onLineStart, languageSpeeds = {}, onWordStart, ttsOptions = {}, defaultLanguage = 'Hebrew', controller = {}, defaultLanguageSpeed = 1, startSceneIdx = 0, startLineIdx = 0 } = options;
   currentLanguageSpeeds = { ...languageSpeeds };
+  currentLanguageSpeeds[defaultLanguage] = defaultLanguageSpeed;
   const scenes = screenplay.scenes || [];
 
-  for (let sceneIdx = 0; sceneIdx < scenes.length; sceneIdx++) {
+  for (let sceneIdx = startSceneIdx; sceneIdx < scenes.length; sceneIdx++) {
+    if (controller.isCancelled) break;
+    
     const scene = scenes[sceneIdx];
 
-    if (includeNarrator && scene.scene) {
-      await speakWithHighlight(`Scene: ${scene.scene}`, 'English', currentLanguageSpeeds['English'] || 1, onWordStart);
+    // Only speak scene description if we're starting from the beginning of the scene
+    if (ttsOptions.includeNarrator && scene.scene && (sceneIdx > startSceneIdx || startLineIdx === 0)) {
+      if (controller.isCancelled) break;
+      await speakWithHighlight(scene.scene, 'English', currentLanguageSpeeds['English'] || 1, (word) => onWordStart?.(word, 'scene', sceneIdx));
     }
 
     const dialog = scene.dialog || [];
-    for (let lineIdx = 0; lineIdx < dialog.length; lineIdx++) {
+    const lineStartIdx = (sceneIdx === startSceneIdx) ? startLineIdx : 0;
+    
+    for (let lineIdx = lineStartIdx; lineIdx < dialog.length; lineIdx++) {
+      if (controller.isCancelled) break;
+      
       const line = dialog[lineIdx];
 
-      if (includeNarrator && line.character) {
-        await speakWithHighlight(`${line.character}`, 'English', currentLanguageSpeeds['English'] || 1, onWordStart);
+      // Speak character if selected
+      if (ttsOptions.includeCharacter && line.character) {
+        if (controller.isCancelled) break;
+        const charSpeed = currentLanguageSpeeds[defaultLanguage] || 1;
+        await speakWithHighlight(line.character, defaultLanguage, charSpeed, (word) => onWordStart?.(word, 'character', sceneIdx, lineIdx));
       }
 
-      const lang = characterMode && line.language ? line.language : 'English';
-      const text = line.text || line.translation || '';
-      const speed = currentLanguageSpeeds[lang] || 1;
+      // Speak parenthetical if selected
+      if (ttsOptions.includeParenthetical && line.parenthetical) {
+        if (controller.isCancelled) break;
+        const parenthSpeed = currentLanguageSpeeds[defaultLanguage] || 1;
+        await speakWithHighlight(line.parenthetical, defaultLanguage, parenthSpeed, (word) => onWordStart?.(word, 'parenthetical', sceneIdx, lineIdx));
+      }
 
-      await speakWithHighlight(text, lang, speed, onWordStart, () => {
-        if (onLineStart) onLineStart(sceneIdx, lineIdx);
-      });
+      // Handle translation timing
+      const shouldPlayTranslationBefore = ttsOptions.translationTiming === 'before' || ttsOptions.translationTiming === 'both';
+      const shouldPlayTranslationAfter = ttsOptions.translationTiming === 'after' || ttsOptions.translationTiming === 'both';
+
+      // Speak translation before text if selected
+      if (shouldPlayTranslationBefore && ttsOptions.includeTranslation && line.translation) {
+        if (controller.isCancelled) break;
+        const translationSpeed = currentLanguageSpeeds[defaultLanguage] || 1;
+        await speakWithHighlight(line.translation, defaultLanguage, translationSpeed, (word) => onWordStart?.(word, 'translation', sceneIdx, lineIdx));
+      }
+
+      // Speak text if selected
+      if (ttsOptions.includeText && line.text) {
+        if (controller.isCancelled) break;
+        const textLang = characterMode && line.language ? line.language : 'English';
+        const textSpeed = currentLanguageSpeeds[textLang] || 1;
+        await speakWithHighlight(line.text, textLang, textSpeed, (word) => onWordStart?.(word, 'text', sceneIdx, lineIdx), () => {
+          if (onLineStart && !controller.isCancelled) onLineStart(sceneIdx, lineIdx);
+        });
+      }
+
+      // Speak translation after text if selected
+      if (shouldPlayTranslationAfter && ttsOptions.includeTranslation && line.translation) {
+        if (controller.isCancelled) break;
+        const translationSpeed = currentLanguageSpeeds[defaultLanguage] || 1;
+        await speakWithHighlight(line.translation, defaultLanguage, translationSpeed, (word) => onWordStart?.(word, 'translation', sceneIdx, lineIdx));
+      }
+
+      // Speak action if selected
+      if (ttsOptions.includeAction && line.action) {
+        if (controller.isCancelled) break;
+        const actionSpeed = currentLanguageSpeeds[defaultLanguage] || 1;
+        await speakWithHighlight(line.action, defaultLanguage, actionSpeed, (word) => onWordStart?.(word, 'action', sceneIdx, lineIdx));
+      }
     }
   }
 
-  if (onLineStart) onLineStart(-1, -1);
+  if (onLineStart && !controller.isCancelled) onLineStart(-1, -1);
 };
 
 export const speakWithHighlight = (text, lang = 'English', rate = 1, onWordStart, onStart) => {
