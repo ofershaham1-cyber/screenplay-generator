@@ -10,11 +10,17 @@ import './App.css';
 
 function App() {
   const navigate = useNavigate();
-  const { history, addToHistory, removeFromHistory, clearHistory, getHistoryItem, exportScreenplay, importScreenplay, getStorageStats } = useScreenplayHistory();
+  const { history, addToHistory, removeFromHistory, clearHistory, getHistoryItem, exportScreenplay, importScreenplay, storageInfo } = useScreenplayHistory();
   const [selectedHistoryScreenplay, setSelectedHistoryScreenplay] = useState(null);
-  const storageInfo = getStorageStats();
+  
+  // Persist screenplay generation across navigation
+  const [generatingScreenplay, setGeneratingScreenplay] = useState(null);
+  const [generatingParams, setGeneratingParams] = useState(null);
 
   const handleScreenplayGenerated = (screenplay, params) => {
+    // Save to history and persist generation state
+    setGeneratingScreenplay(screenplay);
+    setGeneratingParams(params);
     addToHistory(screenplay, params);
   };
 
@@ -32,9 +38,9 @@ function App() {
           <Routes>
             <Route
               path="/"
-              element={<ScreenplayGenerator onScreenplayGenerated={handleScreenplayGenerated} />}
+              element={<ScreenplayGenerator onScreenplayGenerated={handleScreenplayGenerated} generatingScreenplay={generatingScreenplay} />}
             />
-            <Route path="/player" element={<ScreenplayPlayer screenplay={selectedHistoryScreenplay?.screenplay} />} />
+            <Route path="/player" element={<ScreenplayPlayer screenplay={selectedHistoryScreenplay?.screenplay || generatingScreenplay} />} />
             <Route
               path="/history"
               element={

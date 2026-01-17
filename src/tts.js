@@ -1,5 +1,7 @@
 const synth = window.speechSynthesis;
 
+let currentLanguageSpeeds = {};
+
 const langToISO = {
   'English': 'en-US',
   'Hebrew': 'he-IL',
@@ -20,6 +22,16 @@ const langToISO = {
 };
 
 export const convertLangToISO = (lang) => langToISO[lang] || 'en-US';
+
+export const setDynamicLanguageSpeeds = (speeds) => {
+  currentLanguageSpeeds = { ...speeds };
+  // Adjust currently playing utterance rate if possible
+  if (synth.paused) {
+    synth.resume();
+  }
+};
+
+export const getDynamicLanguageSpeeds = () => currentLanguageSpeeds;
 
 const getVoiceForLanguage = (langCode) => {
   const voices = synth.getVoices();
@@ -57,13 +69,14 @@ export const stop = () => {
 
 export const playScreenplay = async (screenplay, options = {}) => {
   const { includeNarrator = false, characterMode = true, onLineStart, languageSpeeds = {}, onWordStart } = options;
+  currentLanguageSpeeds = { ...languageSpeeds };
   const scenes = screenplay.scenes || [];
 
   for (let sceneIdx = 0; sceneIdx < scenes.length; sceneIdx++) {
     const scene = scenes[sceneIdx];
 
     if (includeNarrator && scene.scene) {
-      await speakWithHighlight(`Scene: ${scene.scene}`, 'English', languageSpeeds['English'] || 1, onWordStart);
+      await speakWithHighlight(`Scene: ${scene.scene}`, 'English', currentLanguageSpeeds['English'] || 1, onWordStart);
     }
 
     const dialog = scene.dialog || [];
@@ -71,12 +84,12 @@ export const playScreenplay = async (screenplay, options = {}) => {
       const line = dialog[lineIdx];
 
       if (includeNarrator && line.character) {
-        await speakWithHighlight(`${line.character}`, 'English', languageSpeeds['English'] || 1, onWordStart);
+        await speakWithHighlight(`${line.character}`, 'English', currentLanguageSpeeds['English'] || 1, onWordStart);
       }
 
       const lang = characterMode && line.language ? line.language : 'English';
       const text = line.text || line.translation || '';
-      const speed = languageSpeeds[lang] || 1;
+      const speed = currentLanguageSpeeds[lang] || 1;
 
       await speakWithHighlight(text, lang, speed, onWordStart, () => {
         if (onLineStart) onLineStart(sceneIdx, lineIdx);
@@ -107,13 +120,20 @@ export const speakWithHighlight = (text, lang = 'English', rate = 1, onWordStart
     let currentWordIndex = 0;
     let startTime = 0;
     let wordDurations = [];
+    let timeoutIds = [];
 
     // Estimate word durations based on word length and speaking rate
-    const baseDuration = 1000 / rate; // milliseconds per character approximately
-    words.forEach(word => {
-      const duration = Math.max(word.length * baseDuration * 0.1, baseDuration * 0.3);
-      wordDurations.push(duration);
-    });
+    const calculateDurations = () => {
+      wordDurations = [];
+      const speed = currentLanguageSpeeds[lang] || rate;
+      const baseDuration = 1000 / speed; // milliseconds per character approximately
+      words.forEach(word => {
+        const duration = Math.max(word.length * baseDuration * 0.1, baseDuration * 0.3);
+        wordDurations.push(duration);
+      });
+    };
+
+    calculateDurations();
 
     const totalDuration = wordDurations.reduce((sum, dur) => sum + dur, 0);
     let cumulativeTime = 0;
@@ -122,37 +142,29 @@ export const speakWithHighlight = (text, lang = 'English', rate = 1, onWordStart
       startTime = Date.now();
       if (onStart) onStart();
       
-      const highlightNextWord = () => {
-        if (currentWordIndex < words.length) {
-          if (onWordStart) onWordStart(words[currentWordIndex]);
-          currentWordIndex++;
-          
-          if (currentWordIndex < words.length) {
-            const nextDelay = wordDurations[currentWordIndex];
-            setTimeout(highlightNextWord, nextDelay);
-          }
-        }
-      };
-      
       // Start highlighting the first word
       if (words.length > 0) {
-        setTimeout(() => {
+        const firstTimeout = setTimeout(() => {
           if (onWordStart) onWordStart(words[0]);
           currentWordIndex = 1;
           
           // Schedule remaining words
           for (let i = 1; i < words.length; i++) {
             cumulativeTime += wordDurations[i - 1];
-            setTimeout(() => {
+            const wordTimeout = setTimeout(() => {
               if (onWordStart) onWordStart(words[i]);
             }, cumulativeTime);
+            timeoutIds.push(wordTimeout);
           }
         }, wordDurations[0] * 0.5); // Start highlighting midway through first word
+        timeoutIds.push(firstTimeout);
       }
     };
 
     const originalOnEnd = utterance.onend;
     utterance.onend = () => {
+      // Clear any remaining timeouts
+      timeoutIds.forEach(id => clearTimeout(id));
       // Clear any remaining highlights
       if (onWordStart) onWordStart(null);
       originalOnEnd?.();

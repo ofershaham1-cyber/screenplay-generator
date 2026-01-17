@@ -250,3 +250,57 @@
   }
 }
 
+/* RTL Support */
+.history-item.rtl {
+  direction: rtl;
+  text-align: right;
+}
+
+.history-item.rtl .history-title {
+  text-align: right;
+  direction: rtl;
+}
+
+.history-item.rtl .history-date {
+  text-align: right;
+  direction: rtl;
+}
+
+.history-item.rtl .history-meta {
+  text-align: right;
+  direction: rtl;
+}
+
+.history-item.rtl .history-stats {
+  text-align: right;
+  direction: rtl;
+}
+
+.history-item.rtl .detail-field {
+  text-align: right;
+  direction: rtl;
+}
+
+.history-item.rtl .detail-field strong {
+  display: block;
+  text-align: right;
+}
+
+.history-item.rtl .detail-field p {
+  text-align: right;
+  direction: rtl;
+}
+
+.history-item.rtl .history-item-actions {
+  flex-direction: row-reverse;
+}
+
+.history-item.ltr {
+  direction: ltr;
+  text-align: left;
+}
+
+.history-item.ltr .detail-field strong {
+  display: block;
+  text-align: left;
+}

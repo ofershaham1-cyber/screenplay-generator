@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 
 const HISTORY_KEY = 'screenplay_history';
 const MAX_HISTORY = 20;
@@ -6,15 +6,21 @@ const MAX_HISTORY = 20;
 export const useScreenplayHistory = () => {
   const [history, setHistory] = useState([]);
   const [storageInfo, setStorageInfo] = useState({ used: 0, available: 0 });
+  const hasLoaded = useRef(false);
 
   // Load history from localStorage on mount
   useEffect(() => {
+    if (hasLoaded.current) return; // Prevent loading twice
+    
     try {
       const savedHistory = localStorage.getItem(HISTORY_KEY);
       if (savedHistory) {
         const parsed = JSON.parse(savedHistory);
-        setHistory(Array.isArray(parsed) ? parsed : []);
-        console.log(`✓ Loaded ${parsed.length} screenplays from localStorage`);
+        const historyArray = Array.isArray(parsed) ? parsed : [];
+        setHistory(historyArray);
+        console.log(`✓ Loaded ${historyArray.length} screenplays from localStorage`);
+      } else {
+        console.log('ℹ️ No screenplay history in localStorage yet');
       }
     } catch (err) {
       console.error('Failed to parse screenplay history from localStorage:', err);
@@ -25,10 +31,24 @@ export const useScreenplayHistory = () => {
     
     // Calculate storage usage
     calculateStorageUsage();
+    hasLoaded.current = true;
   }, []);
 
-  // Save history to localStorage whenever it changes
+  const calculateStorageUsage = useCallback(() => {
+    try {
+      const data = localStorage.getItem(HISTORY_KEY) || '';
+      const used = (data.length / 1024).toFixed(2);
+      const available = ((5 * 1024 - data.length) / 1024).toFixed(2);
+      setStorageInfo({ used: parseFloat(used), available: parseFloat(available) });
+    } catch (err) {
+      console.error('Failed to calculate storage usage:', err);
+    }
+  }, []);
+
+  // Save history to localStorage whenever it changes (only after initial load)
   useEffect(() => {
+    if (!hasLoaded.current) return; // Don't save until we've loaded
+    
     try {
       const serialized = JSON.stringify(history);
       localStorage.setItem(HISTORY_KEY, serialized);
@@ -40,18 +60,7 @@ export const useScreenplayHistory = () => {
         console.warn('⚠️ localStorage quota exceeded. Consider clearing old screenplays.');
       }
     }
-  }, [history]);
-
-  const calculateStorageUsage = () => {
-    try {
-      const data = localStorage.getItem(HISTORY_KEY) || '';
-      const used = (data.length / 1024).toFixed(2);
-      const available = ((5 * 1024 - data.length) / 1024).toFixed(2); // ~5MB typical limit
-      setStorageInfo({ used: parseFloat(used), available: parseFloat(available) });
-    } catch (err) {
-      console.error('Failed to calculate storage usage:', err);
-    }
-  };
+  }, [history, calculateStorageUsage]);
 
   const addToHistory = (screenplay, params = {}) => {
     try {
