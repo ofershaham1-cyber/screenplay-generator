@@ -16,12 +16,22 @@ function App() {
   // Persist screenplay generation across navigation
   const [generatingScreenplay, setGeneratingScreenplay] = useState(null);
   const [generatingParams, setGeneratingParams] = useState(null);
+  const [isGenerating, setIsGenerating] = useState(false);
 
   const handleScreenplayGenerated = (screenplay, params) => {
     // Save to history and persist generation state
     setGeneratingScreenplay(screenplay);
     setGeneratingParams(params);
+    setIsGenerating(false);
     addToHistory(screenplay, params);
+  };
+
+  const handleGenerationStart = () => {
+    setIsGenerating(true);
+  };
+
+  const handleGenerationEnd = () => {
+    setIsGenerating(false);
   };
 
   const handleViewHistoryScreenplay = (historyItem) => {
@@ -31,14 +41,14 @@ function App() {
 
   return (
     <div className="app">
-      <AppHeader />
+      <AppHeader isGenerating={isGenerating} />
       <div className="app-body">
         <Sidebar />
         <main className="main-content">
           <Routes>
             <Route
               path="/"
-              element={<ScreenplayGenerator onScreenplayGenerated={handleScreenplayGenerated} generatingScreenplay={generatingScreenplay} />}
+              element={<ScreenplayGenerator onScreenplayGenerated={handleScreenplayGenerated} generatingScreenplay={generatingScreenplay} onGenerationStart={handleGenerationStart} onGenerationEnd={handleGenerationEnd} />}
             />
             <Route path="/player" element={<ScreenplayPlayer screenplay={selectedHistoryScreenplay?.screenplay || generatingScreenplay} />} />
             <Route
