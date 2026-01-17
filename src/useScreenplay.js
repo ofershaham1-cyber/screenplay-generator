@@ -69,17 +69,12 @@ export const useScreenplay = () => {
         console.log('Extracted items:', items);
         
         if (Array.isArray(items) && items.length > 0) {
-          // Extract slug with :free suffix if available
+          // Extract model_variant_slug from endpoint
           const slugs = items
             .map(item => {
-              // Try to get model_variant_slug first (includes :free suffix)
-              if (item.model_variant_slug) {
-                return item.model_variant_slug;
-              }
-              // Fall back to slug with :free suffix
-              if (item.slug) {
-                const slug = item.slug;
-                return `${slug}:free`;
+              // Get model_variant_slug from endpoint (includes :free suffix where appropriate)
+              if (item.endpoint?.model_variant_slug) {
+                return item.endpoint.model_variant_slug;
               }
               return null;
             })
@@ -89,13 +84,14 @@ export const useScreenplay = () => {
           const unique = Array.from(new Set(slugs));
           console.log('Unique slugs:', unique);
           setModels(unique);
-          if (unique.length && !selectedModel) setSelectedModel(unique[0]);
+          // Set first model as default
+          if (unique.length) setSelectedModel(unique[0]);
         } else {
           console.warn('No items found in models response');
         }
       })
       .catch(err => console.warn('Failed to fetch models list:', err));
-  }, [selectedModel]);
+  }, []);
 
   const generate = async (story_pitch, languages_used, default_screenplay_language, model, customApiKey) => {
     setLoading(true);
@@ -107,7 +103,6 @@ export const useScreenplay = () => {
         story_pitch: story_pitch || '',
         languages_used,
         default_screenplay_language,
-        debug: isDebug,
         model: model || selectedModel,
         ...(customApiKey && { customApiKey }),
       };

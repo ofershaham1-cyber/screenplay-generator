@@ -41,10 +41,8 @@ export default function ScreenplayGenerator() {
   const [currentWord, setCurrentWord] = useState('');
   const [darkMode, setDarkMode] = useState(false);
   
-  // Override fields
-  const [useOverrides, setUseOverrides] = useState(false);
+  // API key override (model must come from dropdown)
   const [overrideApiKey, setOverrideApiKey] = useState('');
-  const [overrideModel, setOverrideModel] = useState('');
   
   const { screenplay, loading, error, generate, format, models, selectedModel, setSelectedModel } = useScreenplay();
 
@@ -60,10 +58,10 @@ export default function ScreenplayGenerator() {
     setCurrentLine(-1);
     setExpandedSections({});
     
-    const model = useOverrides && overrideModel ? overrideModel : selectedModel;
-    const apiKey = useOverrides && overrideApiKey ? overrideApiKey : null;
+    // Always use dropdown model, only allow API key override
+    const apiKey = overrideApiKey || null;
     
-    generate(storypitch, languagesUsed, defaultScreenplayLanguage, model, apiKey);
+    generate(storypitch, languagesUsed, defaultScreenplayLanguage, selectedModel, apiKey);
   };
 
   const toggleSection = (key) => {
@@ -252,50 +250,11 @@ export default function ScreenplayGenerator() {
         </div>
 
         <div className="form-group">
-          <h3>Override Settings</h3>
-          <label className="checkbox-label">
-            <input
-              type="checkbox"
-              checked={useOverrides}
-              onChange={(e) => setUseOverrides(e.target.checked)}
-              disabled={loading}
-            />
-            Use Custom API Key and/or Model
-          </label>
-        </div>
-
-        {useOverrides && (
-          <>
-            <div className="form-group">
-              <label>Custom API Key (optional)</label>
-              <input
-                type="password"
-                placeholder="sk-or-v1-..."
-                value={overrideApiKey}
-                onChange={(e) => setOverrideApiKey(e.target.value)}
-                disabled={loading}
-              />
-            </div>
-
-            <div className="form-group">
-              <label>Custom Model (optional)</label>
-              <input
-                type="text"
-                placeholder="e.g., mistralai/devstral-2512:free"
-                value={overrideModel}
-                onChange={(e) => setOverrideModel(e.target.value)}
-                disabled={loading}
-              />
-            </div>
-          </>
-        )}
-
-        <div className="form-group">
           <label>Model</label>
           <select
             value={selectedModel || ''}
             onChange={(e) => setSelectedModel(e.target.value)}
-            disabled={loading || !models || models.length === 0 || useOverrides}
+            disabled={loading || !models || models.length === 0}
           >
             {models && models.length ? (
               models.map(m => <option key={m} value={m}>{m}</option>)
@@ -303,6 +262,17 @@ export default function ScreenplayGenerator() {
               <option value="">Default</option>
             )}
           </select>
+        </div>
+
+        <div className="form-group">
+          <label>Custom API Key (optional)</label>
+          <input
+            type="password"
+            placeholder="sk-or-v1-... (leave empty to use default)"
+            value={overrideApiKey}
+            onChange={(e) => setOverrideApiKey(e.target.value)}
+            disabled={loading}
+          />
         </div>
 
         {format && (

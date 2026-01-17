@@ -11,13 +11,10 @@ const initializeOpenRouter = async (customApiKey = null) => {
   if (!apiKeyToUse) {
     const config = JSON.parse(await fs.readFile('./config.json', 'utf8'));
     defaultApiKey = config.apiKey.split('.')[0];
-    return new OpenRouter({
-      apiKey: defaultApiKey,
-    });
   }
   
   return new OpenRouter({
-    apiKey: customApiKey,
+    apiKey: customApiKey || defaultApiKey,
   });
 };
 
@@ -60,6 +57,13 @@ export const generateScreenplay = async (req, res) => {
   const { story_pitch, languages_used, default_screenplay_language, model, customApiKey } = req.body;
 
   try {
+    global.logger?.log('📝 Screenplay Generation Request:');
+    global.logger?.log('  Story Pitch:', story_pitch);
+    global.logger?.log('  Languages Used:', languages_used?.join(', '));
+    global.logger?.log('  Default Language:', default_screenplay_language);
+    global.logger?.log('  Model:', model);
+    global.logger?.log('  Custom API Key:', customApiKey ? 'provided' : 'not provided');
+    
     const openrouter = await initializeOpenRouter(customApiKey);
     const format = await loadResponseFormat();
     
@@ -74,6 +78,7 @@ export const generateScreenplay = async (req, res) => {
     format.jsonSchema.schema.properties.languages_used.default = languages_used;
     format.jsonSchema.schema.properties.story_pitch.default = story_pitch;
 
+    global.logger?.log(`Calling OpenRouter API...`);
     const completion = await openrouter.chat.send({
       model: model || 'allenai/olmo-3.1-32b-think:free',
       messages: [
@@ -89,17 +94,53 @@ export const generateScreenplay = async (req, res) => {
       stream: false,
     });
 
+    global.logger?.log(`OpenRouter API response received successfully`);
     const screenplayData = JSON.parse(completion.choices[0].message.content);
     res.json(screenplayData);
   } catch (error) {
-    console.error('Error generating screenplay:', error);
+    // Log comprehensive error details
+    global.logger?.error('═══════════════════════════════════════════════════');
+    global.logger?.error('ERROR GENERATING SCREENPLAY');
+    global.logger?.error('═══════════════════════════════════════════════════');
+    
+    // Log request details
+    global.logger?.error('\n📥 REQUEST:');
+    global.logger?.error('  Method: POST');
+    global.logger?.error('  Path: /api/screenplay/generate');
+    global.logger?.error('  Body:', JSON.stringify(req.body, null, 2));
+    global.logger?.error('  Headers:', JSON.stringify(req.headers, null, 2));
+    
+    // Log error details
+    global.logger?.error('\n⚠️  ERROR:');
+    global.logger?.error('  Message:', error.message);
+    global.logger?.error('  Status:', error.status || 'N/A');
+    global.logger?.error('  Stack:', error.stack);
+    
+    // Log API response if available
+    if (error.response) {
+      global.logger?.error('\n📤 API RESPONSE:');
+      global.logger?.error('  Status:', error.response.status);
+      global.logger?.error('  StatusText:', error.response.statusText);
+      global.logger?.error('  Headers:', JSON.stringify(error.response.headers, null, 2));
+      global.logger?.error('  Data:', JSON.stringify(error.response.data || error.response.body, null, 2));
+    }
+    
+    // Log additional error details
+    if (error.cause) {
+      global.logger?.error('\n🔗 CAUSE:');
+      global.logger?.error(JSON.stringify(error.cause, null, 2));
+    }
+    
+    global.logger?.error('═══════════════════════════════════════════════════\n');
     
     // Detailed error response when debug is enabled
     const errorResponse = req.isDebug 
       ? { 
           error: error.message,
+          status: error.status,
           stack: error.stack,
-          details: error.response?.data || error.cause || null,
+          details: error.response?.data || error.response?.body || error.cause || null,
+          requestBody: req.body,
           timestamp: new Date().toISOString()
         }
       : { error: error.message };

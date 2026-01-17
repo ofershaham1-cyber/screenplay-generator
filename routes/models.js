@@ -11,29 +11,29 @@ const CACHE_TTL = 3600000; // 1 hour in milliseconds
 
 const fetchAndCacheModels = async () => {
   try {
-    console.log('Fetching models from OpenRouter...');
+    global.logger?.log('Fetching models from OpenRouter...');
     const r = await fetch(MODELS_URL, { timeout: 10000 });
     if (!r.ok) {
-      console.error(`OpenRouter API returned ${r.status}`);
+      global.logger?.error(`OpenRouter API returned ${r.status}`);
       return null;
     }
     const data = await r.json();
-    console.log(`Successfully fetched models. Response type: ${typeof data}, isArray: ${Array.isArray(data)}`);
-    console.log('Sample:', JSON.stringify(data).substring(0, 200));
+    global.logger?.log(`Successfully fetched models. Response type: ${typeof data}, isArray: ${Array.isArray(data)}`);
+    global.logger?.log('Sample:', JSON.stringify(data).substring(0, 200));
     cachedModels = data;
     cacheTimestamp = Date.now();
     
     // Write to JSON file
     try {
       await fs.writeFile(MODELS_FILE, JSON.stringify(data, null, 2), 'utf8');
-      console.log(`Models written to ${MODELS_FILE}`);
+      global.logger?.log(`Models written to ${MODELS_FILE}`);
     } catch (writeErr) {
-      console.error('Failed to write models to file:', writeErr);
+      global.logger?.error('Failed to write models to file:', writeErr);
     }
     
     return data;
   } catch (error) {
-    console.error('Error fetching models from OpenRouter:', error.message);
+    global.logger?.error('Error fetching models from OpenRouter:', error.message);
     return null;
   }
 };
@@ -54,7 +54,7 @@ export const getModels = async (req, res) => {
   try {
     // Return cached data if fresh, otherwise fetch
     if (cachedModels && cacheTimestamp && (Date.now() - cacheTimestamp) < CACHE_TTL) {
-      console.log('Serving cached models');
+      global.logger?.log('Serving cached models');
       return res.json(cachedModels);
     }
 
@@ -65,14 +65,14 @@ export const getModels = async (req, res) => {
 
     res.json(data);
   } catch (error) {
-    console.error('Error in getModels:', error);
+    global.logger?.error('Error in getModels:', error.message);
     res.status(500).json({ error: error.message });
   }
 };
 
 // Optionally fetch models on startup
 export const initializeModels = async () => {
-  console.log('Initializing models cache on server startup...');
+  global.logger?.log('Initializing models cache on server startup...');
   await fetchAndCacheModels();
 };
 
