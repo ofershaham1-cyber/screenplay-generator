@@ -5,7 +5,7 @@ import './ScreenplayPlayer.css';
 
 const LANGUAGES = ['English', 'Hebrew', 'Spanish', 'French', 'Russian', 'Chinese', 'Japanese', 'Arabic', 'German', 'Italian', 'Portuguese', 'Korean', 'Dutch', 'Polish', 'Turkish', 'Hindi'];
 
-export default function ScreenplayGenerator({ onScreenplayGenerated, generatingScreenplay, onGenerationStart, onGenerationEnd }) {
+export default function ScreenplayGenerator({ onScreenplayGenerated, generatingScreenplay }) {
   const [storypitch, setStorypitch] = useState(
            'Create a conversation between an adult and a child playing a guessing game'
 );

@@ -26,14 +26,6 @@
   border-color: #555;
 }
 
-.container.dark .dialog-play-btn {
-  background: #4b5563;
-}
-
-.container.dark .dialog-play-btn:hover:not(:disabled) {
-  background: #374151;
-}
-
 .container.dark .scene-description {
   background: #2d2d2d;
   color: #9ca3af;
@@ -92,27 +84,6 @@
   background: #333;
   border-color: #555;
   color: #e5e7eb;
-}
-
-.container.dark input[type="range"] {
-  background: #333;
-}
-
-.container.dark input[type="range"]::-webkit-slider-thumb {
-  background: #666;
-}
-
-.container.dark input[type="range"]::-webkit-slider-thumb:hover {
-  background: #777;
-}
-
-.container.dark input[type="range"]::-moz-range-thumb {
-  background: #666;
-  border-color: #555;
-}
-
-.container.dark input[type="range"]::-moz-range-thumb:hover {
-  background: #777;
 }
 
 .container.dark .toggle-btn {
@@ -258,38 +229,6 @@ button.resume {
 }
 
 button.resume:not(:disabled):hover {
-  background: #2563eb;
-}
-
-.container.dark button.play {
-  background: #10b981;
-}
-
-.container.dark button.play:not(:disabled):hover {
-  background: #059669;
-}
-
-.container.dark button.stop {
-  background: #ef4444;
-}
-
-.container.dark button.stop:not(:disabled):hover {
-  background: #dc2626;
-}
-
-.container.dark button.pause {
-  background: #f59e0b;
-}
-
-.container.dark button.pause:not(:disabled):hover {
-  background: #d97706;
-}
-
-.container.dark button.resume {
-  background: #3b82f6;
-}
-
-.container.dark button.resume:not(:disabled):hover {
   background: #2563eb;
 }
 
@@ -481,10 +420,6 @@ input[type="checkbox"]:disabled {
   margin: 0;
 }
 
-.container.dark .speed-control label {
-  color: #f3f4f6;
-}
-
 .speed-control input[type="range"] {
   cursor: pointer;
   height: 6px;
@@ -587,48 +522,12 @@ select {
 }
 
 .dialog-line {
-  padding: 12px 40px 12px 12px;
+  padding: 12px;
   margin-bottom: 8px;
   border-radius: 6px;
   background: white;
   border: 1px solid #e5e7eb;
   transition: all 0.3s;
-  position: relative;
-}
-
-.dialog-play-btn {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  background: #3b82f6;
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 24px;
-  height: 24px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 10px;
-  transition: all 0.2s;
-  opacity: 0.7;
-}
-
-.dialog-play-btn:hover:not(:disabled) {
-  background: #2563eb;
-  opacity: 1;
-  transform: scale(1.1);
-}
-
-.dialog-play-btn:disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
-}
-
-.dialog-line.rtl .dialog-play-btn {
-  right: auto;
-  left: 8px;
 }
 
 .dialog-line.active {
@@ -640,7 +539,6 @@ select {
 .dialog-line.rtl {
   direction: rtl;
   text-align: right;
-  padding: 12px 12px 12px 40px;
 }
 
 .dialog-line.rtl .character {
@@ -948,16 +846,6 @@ select {
   background: #4b5563;
 }
 
-.container.dark .expand-btn,
-.container.dark .collapse-btn {
-  background: #6b7280;
-}
-
-.container.dark .expand-btn:hover,
-.container.dark .collapse-btn:hover {
-  background: #4b5563;
-}
-
 .loading-indicator {
   padding: 12px 16px;
   background: #dbeafe;
@@ -1144,13 +1032,5 @@ select {
 }
 
 .load-different-btn:hover {
-  background: #4b5563;
-}
-
-.container.dark .load-different-btn {
-  background: #6b7280;
-}
-
-.container.dark .load-different-btn:hover {
   background: #4b5563;
 }

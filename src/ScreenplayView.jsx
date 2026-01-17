@@ -94,12 +94,12 @@ export default function ScreenplayView({ screenplay, format, darkMode = false, s
     return () => clearInterval(interval);
   }, [playing]);
 
-  const handlePlayFromDialog = async (startSceneIdx, startLineIdx) => {
+  const handlePlay = async () => {
     if (!screenplay || playing !== 'stopped') return;
     
     setPlaying('playing');
-    setCurrentScene(startSceneIdx);
-    setCurrentLine(startLineIdx);
+    setCurrentScene(-1);
+    setCurrentLine(-1);
     
     // Create a controller to manage playback
     const controller = {
@@ -116,8 +116,6 @@ export default function ScreenplayView({ screenplay, format, darkMode = false, s
         defaultLanguageSpeed: defaultLanguageSpeed,
         ttsOptions: { ...ttsOptions },
         defaultLanguage: screenplay.default_screenplay_language || 'Hebrew',
-        startSceneIdx: startSceneIdx,
-        startLineIdx: startLineIdx,
         onLineStart: (sceneIdx, lineIdx) => {
           if (!controller.isCancelled) {
             setCurrentScene(sceneIdx);
@@ -494,14 +492,6 @@ export default function ScreenplayView({ screenplay, format, darkMode = false, s
                       textAlign: isLineRTL ? 'right' : 'left'
                     }}
                   >
-                    <button 
-                      className="dialog-play-btn"
-                      onClick={() => handlePlayFromDialog(sceneIdx, lineIdx)}
-                      title={`Play from this line (${line.character})`}
-                      disabled={playing !== 'stopped'}
-                    >
-                      ▶️
-                    </button>
                     <div className="character" style={{ direction: isLineRTL ? 'rtl' : 'ltr', textAlign: isLineRTL ? 'right' : 'left' }}>
                       {highlightText(line.character, 'character', sceneIdx, lineIdx)}
                     </div>
