@@ -21,7 +21,7 @@
   border-color: #404040;
 }
 
-.container.dark .dialogue-line {
+.container.dark .dialog-line {
   background: #333;
   border-color: #555;
 }
@@ -376,7 +376,7 @@ select {
   border-bottom: 1px solid #e5e7eb;
 }
 
-.dialogue-line {
+.dialog-line {
   padding: 12px;
   margin-bottom: 8px;
   border-radius: 6px;
@@ -385,7 +385,7 @@ select {
   transition: all 0.3s;
 }
 
-.dialogue-line.active {
+.dialog-line.active {
   background: #fef3c7;
   border-color: #fbbf24;
   box-shadow: 0 2px 8px rgba(251, 191, 36, 0.3);

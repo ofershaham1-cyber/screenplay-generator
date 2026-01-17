@@ -16,6 +16,9 @@ const Sidebar = () => {
         <li className={location.pathname === '/player' ? 'active' : ''}>
           <Link to="/player">Player</Link>
         </li>
+        <li className={location.pathname === '/history' ? 'active' : ''}>
+          <Link to="/history">History</Link>
+        </li>
       </ul>
     </nav>
   );

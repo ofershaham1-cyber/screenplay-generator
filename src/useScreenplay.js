@@ -93,7 +93,7 @@ export const useScreenplay = () => {
       .catch(err => console.warn('Failed to fetch models list:', err));
   }, []);
 
-  const generate = async (story_pitch, languages_used, default_screenplay_language, model, customApiKey) => {
+  const generate = async (story_pitch, dialog_languages, default_screenplay_language, model, customApiKey) => {
     setLoading(true);
     setError('');
     try {
@@ -101,7 +101,7 @@ export const useScreenplay = () => {
       const url = isDebug ? '/api/screenplay/generate?debug=true' : '/api/screenplay/generate';
       const payload = {
         story_pitch: story_pitch || '',
-        languages_used,
+        dialog_languages,
         default_screenplay_language,
         model: model || selectedModel,
         ...(customApiKey && { customApiKey }),

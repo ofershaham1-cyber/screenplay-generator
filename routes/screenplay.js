@@ -46,7 +46,7 @@ const loadResponseFormat = async () => {
  *             properties:
  *               story_pitch:
  *                 type: string
- *               languages_used:
+ *               dialog_languages:
  *                 type: array
  *                 items:
  *                   type: string
@@ -61,12 +61,12 @@ const loadResponseFormat = async () => {
  *         description: Generated screenplay
  */
 export const generateScreenplay = async (req, res) => {
-  const { story_pitch, languages_used, default_screenplay_language, model, customApiKey } = req.body;
+  const { story_pitch, dialog_languages, default_screenplay_language, model, customApiKey } = req.body;
 
   try {
     global.logger?.log('📝 Screenplay Generation Request:');
     global.logger?.log('  Story Pitch:', story_pitch);
-    global.logger?.log('  Languages Used:', languages_used?.join(', '));
+    global.logger?.log('  Languages Used:', dialog_languages?.join(', '));
     global.logger?.log('  Default Language:', default_screenplay_language);
     global.logger?.log('  Model:', model);
     global.logger?.log('  Custom API Key:', customApiKey ? 'provided' : 'not provided');
@@ -74,17 +74,19 @@ export const generateScreenplay = async (req, res) => {
     const openrouter = await initializeOpenRouter(customApiKey);
     const format = await loadResponseFormat();
     
-    const langs = languages_used || ['English', 'Spanish'];
+    const langs = dialog_languages || ['English', 'Spanish'];
     const defaultLang = default_screenplay_language || 'Hebrew';
     const promptContent = story_pitch
-      ? `Create a screenplay based on this pitch: ${story_pitch}`
-      : `Create a creative original screenplay. Use these languages for character dialogue: ${langs.join(', ')}. The default screenplay language (for all text except character dialogue) should be: ${defaultLang}.`;
-
+      ? `Create a screenplay based on this pitch: ${story_pitch}. use dialog_languages for the dialogs and default_screenplay_language for all other text.`
+      : `Create a creative original screenplay. Use these languages for character dialog: ${langs.join(', ')}. The default screenplay language (for all text except character dialog) should be: ${defaultLang}.`;
+ 
     // Override using request payload
     format.jsonSchema.schema.properties.default_screenplay_language.default = default_screenplay_language;
-    format.jsonSchema.schema.properties.languages_used.default = languages_used;
+    format.jsonSchema.schema.properties.dialog_languages.default = dialog_languages;
     format.jsonSchema.schema.properties.story_pitch.default = story_pitch;
 
+    global.logger?.log('📋 Response Format Schema:', JSON.stringify(format, null, 2));
+    
     const openrouterPayload = {
       model: model || 'allenai/olmo-3.1-32b-think:free',
       messages: [

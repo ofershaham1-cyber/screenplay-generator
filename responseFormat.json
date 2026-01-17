@@ -30,9 +30,9 @@
               "type": "number",
               "description": "Max words for transitions"
             },
-            "dialogue_text": {
+            "dialog_text": {
               "type": "number",
-              "description": "Max words for dialogue text"
+              "description": "Max words for dialog text"
             }
           },
           "required": [
@@ -41,13 +41,13 @@
             "character_description",
             "scene_description",
             "transition",
-            "dialogue_text"
+            "dialog_text"
           ],
           "additionalProperties": false
         },
  "default_screenplay_language": {
           "type": "string",
-          "description": "Default screenplay language for anything excluding the characters's speech",
+          "description": "Default screenplay language for anything excluding the dialogs",
           "default": "hebrew"
         }, 
         "story_pitch": {
@@ -58,7 +58,7 @@
           "type": "string",
           "description": "Summary providing context for the story"
         },
-        "languages_used": {
+        "dialog_languages": {
           "type": "array",
           "items": {
             "type": "string"
@@ -142,7 +142,7 @@
                 "type": "string",
                 "description": "Visual tone of the scene"
               },
-              "dialogue": {
+              "dialog": {
                 "type": "array",
                 "items": {
                   "type": "object",
@@ -153,16 +153,16 @@
                     },
                     "language": {
                       "type": "string",
-                      "description": "Language of the dialogue"
+                      "description": "current dialog language"
                     },
                     "text": {
                       "type": "string",
-                      "description": "Spoken dialogue text"
+                      "description": "current spoken dialog text"
                     },
 
                     "visual": {
                       "type": "string",
-                      "description": "Visual elements accompanying the dialogue"
+                      "description": "Visual elements accompanying the dialog"
                     },
                     "emotion": {
                       "type": "string",
@@ -170,11 +170,11 @@
                     },
                     "action": {
                       "type": "string",
-                      "description": "Action related to the dialogue"
+                      "description": "Action related to the dialog"
                     },
                     "parenthetical": {
                       "type": "string",
-                      "description": "How the dialogue should be delivered"
+                      "description": "How the dialog should be delivered"
                     }
                   },
                   "required": [
@@ -201,7 +201,7 @@
               "lighting_directions",
               "director_notes",
               "visual_style",
-              "dialogue"
+              "dialog"
             ],
             "additionalProperties": false
           }
@@ -212,7 +212,7 @@
         "default_screenplay_language",
         "story_pitch",
         "exposition",
-        "languages_used",
+        "dialog_languages",
         "cast",
         "scenes"
       ],

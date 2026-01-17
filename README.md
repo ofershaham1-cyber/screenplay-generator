@@ -5,7 +5,7 @@ A full-stack application that generates multilingual screenplays using AI with s
 ## Features
 
 - AI-powered screenplay generation using OpenRouter API with structured JSON output
-- Multilingual dialogue support (16 languages)
+- Multilingual dialog support (16 languages)
 - Configurable screenplay language for scene descriptions and directions
 - Interactive expandable/collapsible JSON viewer for screenplay structure
 - Text-to-speech playback with narrator mode
@@ -58,7 +58,7 @@ Content-Type: application/json
 
 {
   "story_pitch": "A story about...",
-  "languages_used": ["English", "Spanish", "Hebrew"],
+  "dialog_languages": ["English", "Spanish", "Hebrew"],
   "default_screenplay_language": "Hebrew"
 }
 ```
@@ -91,11 +91,11 @@ Visit http://localhost:3000/api-docs for full API documentation.
 
 - **Response Format Viewer**: Expandable view of the JSON schema used for screenplay generation
 - **Story pitch Input**: Optional text input for custom story concepts
-- **Language Selection**: Multi-select checkboxes for character dialogue languages
+- **Language Selection**: Multi-select checkboxes for character dialog languages
 - **Default Screenplay Language**: Dropdown for selecting the language used in scene descriptions and directions
 - **Generated Output**: Two views:
   - Complete Structure: Interactive JSON tree viewer with expand/collapse functionality
-  - Readable Format: Traditional screenplay formatting with scene headings, descriptions, and dialogue
+  - Readable Format: Traditional screenplay formatting with scene headings, descriptions, and dialog
 
 ## Technologies
 

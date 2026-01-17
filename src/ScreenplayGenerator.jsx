@@ -24,7 +24,7 @@ const LANGUAGE_COLORS = {
   'Hindi': '#059669'    // green
 };
 
-export default function ScreenplayGenerator() {
+export default function ScreenplayGenerator({ onScreenplayGenerated }) {
   const [storypitch, setStorypitch] = useState(
            'Create a conversation between an adult and a child playing a guessing game'
 );
@@ -52,6 +52,18 @@ export default function ScreenplayGenerator() {
     const darkParam = params.get('dark') === 'true';
     setDarkMode(darkParam);
   }, []);
+
+  // Save screenplay to history when generated
+  useEffect(() => {
+    if (screenplay && onScreenplayGenerated) {
+      onScreenplayGenerated(screenplay, {
+        story_pitch: storypitch,
+        dialog_languages: languagesUsed,
+        default_screenplay_language: defaultScreenplayLanguage,
+        model: selectedModel,
+      });
+    }
+  }, [screenplay]);
 
   const handleGenerate = () => {
     setCurrentScene(-1);
@@ -198,7 +210,7 @@ export default function ScreenplayGenerator() {
         </div>
 
         <div className="form-group">
-          <label>Languages Used (for character dialogue)</label>
+          <label>Languages Used (for character dialog)</label>
           <div className="lang-grid">
             {LANGUAGES.map(lang => (
               <label key={lang} className="lang-option">
@@ -217,7 +229,7 @@ export default function ScreenplayGenerator() {
         <div className="form-group">
           <label>Speech Speed by Language</label>
           <div className="speed-grid">
-            {(screenplay?.languages_used || languagesUsed).map(lang => (
+            {(screenplay?.dialog_languages || languagesUsed).map(lang => (
               <div key={lang} className="speed-control">
                 <label>{lang}</label>
                 <input
@@ -275,29 +287,6 @@ export default function ScreenplayGenerator() {
           />
         </div>
 
-        {format && (
-          <div className="form-group">
-            <h3 onClick={() => setShowFormat(!showFormat)} style={{ cursor: 'pointer', margin: '0 0 12px 0' }}>
-              {showFormat ? '[-]' : '[+]'} Response Format Schema
-            </h3>
-            {showFormat && (
-              <div className="expand-buttons">
-                <button onClick={expandAll} className="expand-btn">
-                  Expand All
-                </button>
-                <button onClick={collapseAll} className="collapse-btn">
-                  Collapse All
-                </button>
-              </div>
-            )}
-            {showFormat && (
-              <div className="format-display">
-                {renderValue(format, 'format')}
-              </div>
-            )}
-          </div>
-        )}
-
         <button onClick={handleGenerate} disabled={loading}>
           {loading ? 'Generating...' : 'Generate Screenplay'}
         </button>
@@ -312,7 +301,7 @@ export default function ScreenplayGenerator() {
           <div className="language-legend">
             <h3>Language Legend</h3>
             <div className="legend-items">
-              {screenplay.languages_used?.map(lang => (
+              {screenplay.dialog_languages?.map(lang => (
                 <div key={lang} className="legend-item">
                   <div 
                     className="color-box" 
@@ -329,7 +318,7 @@ export default function ScreenplayGenerator() {
             <div className="screenplay-info">
               <p><strong>Story Pitch:</strong> {screenplay.story_pitch}</p>
               <p><strong>Exposition:</strong> {screenplay.exposition}</p>
-              <p><strong>Languages Used:</strong> {screenplay.languages_used?.join(', ')}</p>
+              <p><strong>Languages Used:</strong> {screenplay.dialog_languages?.join(', ')}</p>
               <p><strong>Cast:</strong> {screenplay.cast?.map(c => c.name).join(', ')}</p>
               <p><strong>Scenes:</strong> {screenplay.scenes?.length}</p>
             </div>
@@ -381,7 +370,7 @@ export default function ScreenplayGenerator() {
                 <h3>{scene.scene_heading || `Scene ${sceneIdx + 1}`}</h3>
                 <p className="scene-description">{scene.scene}</p>
                 {scene.transition && <p className="transition">{scene.transition}</p>}
-                {scene.dialogue?.map((line, lineIdx) => {
+                {scene.dialog?.map((line, lineIdx) => {
                   const isActive = sceneIdx === currentScene && lineIdx === currentLine;
                   const textWithHighlight = isActive && currentWord ? line.text.split(/(\s+)/).map((word, idx) => {
                     const isCurrentWord = word.trim() === currentWord?.trim();
@@ -397,7 +386,7 @@ export default function ScreenplayGenerator() {
                   return (
                     <div
                       key={lineIdx}
-                      className={`dialogue-line ${isActive ? 'active' : ''}`}
+                      className={`dialog-line ${isActive ? 'active' : ''}`}
                       style={{ borderLeft: `4px solid ${langColor}` }}
                     >
                       <div className="character">{line.character}</div>

@@ -66,9 +66,9 @@ export const playScreenplay = async (screenplay, options = {}) => {
       await speakWithHighlight(`Scene: ${scene.scene}`, 'English', languageSpeeds['English'] || 1, onWordStart);
     }
 
-    const dialogue = scene.dialogue || [];
-    for (let lineIdx = 0; lineIdx < dialogue.length; lineIdx++) {
-      const line = dialogue[lineIdx];
+    const dialog = scene.dialog || [];
+    for (let lineIdx = 0; lineIdx < dialog.length; lineIdx++) {
+      const line = dialog[lineIdx];
 
       if (includeNarrator && line.character) {
         await speakWithHighlight(`${line.character}`, 'English', languageSpeeds['English'] || 1, onWordStart);
