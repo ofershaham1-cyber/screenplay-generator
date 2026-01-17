@@ -23,7 +23,12 @@ export const convertLangToISO = (lang) => langToISO[lang] || 'en-US';
 
 const getVoiceForLanguage = (langCode) => {
   const voices = synth.getVoices();
-  const voice = voices.find(v => v.lang.startsWith(langCode.split('-')[0]));
+  // Try exact match first, then language code match
+  let voice = voices.find(v => v.lang === langCode);
+  if (!voice) {
+    const langPrefix = langCode.split('-')[0];
+    voice = voices.find(v => v.lang.startsWith(langPrefix));
+  }
   return voice || voices[0];
 };
 

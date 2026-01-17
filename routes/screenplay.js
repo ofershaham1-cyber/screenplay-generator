@@ -6,15 +6,22 @@ let responseFormat;
 let defaultApiKey;
 
 const initializeOpenRouter = async (customApiKey = null) => {
-  const apiKeyToUse = customApiKey || defaultApiKey;
+  // Priority: customApiKey > environment variable > config file
+  let apiKeyToUse = customApiKey;
+  
+  if (!apiKeyToUse) {
+    apiKeyToUse = process.env.OPENROUTER_API_KEY;
+  }
   
   if (!apiKeyToUse) {
     const config = JSON.parse(await fs.readFile('./config.json', 'utf8'));
-    defaultApiKey = config.apiKey.split('.')[0];
+    apiKeyToUse = config.apiKey.split('.')[0];
   }
   
+  defaultApiKey = apiKeyToUse;
+  
   return new OpenRouter({
-    apiKey: customApiKey || defaultApiKey,
+    apiKey: apiKeyToUse,
   });
 };
 
@@ -78,8 +85,7 @@ export const generateScreenplay = async (req, res) => {
     format.jsonSchema.schema.properties.languages_used.default = languages_used;
     format.jsonSchema.schema.properties.story_pitch.default = story_pitch;
 
-    global.logger?.log(`Calling OpenRouter API...`);
-    const completion = await openrouter.chat.send({
+    const openrouterPayload = {
       model: model || 'allenai/olmo-3.1-32b-think:free',
       messages: [
         {
@@ -92,7 +98,16 @@ export const generateScreenplay = async (req, res) => {
         { id: 'response-healing' }
       ],
       stream: false,
-    });
+    };
+    
+    global.logger?.log(`Calling OpenRouter API...`);
+    global.logger?.log('📤 OpenRouter Request:');
+    global.logger?.log('  Model:', openrouterPayload.model);
+    global.logger?.log('  Messages:', JSON.stringify(openrouterPayload.messages, null, 2));
+    global.logger?.log('  Response Format Schema:', JSON.stringify(openrouterPayload.responseFormat, null, 2));
+    global.logger?.log('  Plugins:', JSON.stringify(openrouterPayload.plugins, null, 2));
+    
+    const completion = await openrouter.chat.send(openrouterPayload);
 
     global.logger?.log(`OpenRouter API response received successfully`);
     const screenplayData = JSON.parse(completion.choices[0].message.content);

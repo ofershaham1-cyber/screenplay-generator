@@ -22,15 +22,6 @@ const fetchAndCacheModels = async () => {
     global.logger?.log('Sample:', JSON.stringify(data).substring(0, 200));
     cachedModels = data;
     cacheTimestamp = Date.now();
-    
-    // Write to JSON file
-    try {
-      await fs.writeFile(MODELS_FILE, JSON.stringify(data, null, 2), 'utf8');
-      global.logger?.log(`Models written to ${MODELS_FILE}`);
-    } catch (writeErr) {
-      global.logger?.error('Failed to write models to file:', writeErr);
-    }
-    
     return data;
   } catch (error) {
     global.logger?.error('Error fetching models from OpenRouter:', error.message);
