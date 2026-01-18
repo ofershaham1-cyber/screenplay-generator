@@ -94,12 +94,12 @@ export default function ScreenplayView({ screenplay, format, darkMode = false, s
     return () => clearInterval(interval);
   }, [playing]);
 
-  const handlePlay = async () => {
+  const handlePlayFromDialog = async (startSceneIdx, startLineIdx) => {
     if (!screenplay || playing !== 'stopped') return;
     
     setPlaying('playing');
-    setCurrentScene(-1);
-    setCurrentLine(-1);
+    setCurrentScene(startSceneIdx);
+    setCurrentLine(startLineIdx);
     
     // Create a controller to manage playback
     const controller = {
@@ -116,6 +116,8 @@ export default function ScreenplayView({ screenplay, format, darkMode = false, s
         defaultLanguageSpeed: defaultLanguageSpeed,
         ttsOptions: { ...ttsOptions },
         defaultLanguage: screenplay.default_screenplay_language || 'Hebrew',
+        startSceneIdx: startSceneIdx,
+        startLineIdx: startLineIdx,
         onLineStart: (sceneIdx, lineIdx) => {
           if (!controller.isCancelled) {
             setCurrentScene(sceneIdx);
@@ -432,7 +434,7 @@ export default function ScreenplayView({ screenplay, format, darkMode = false, s
       <div className="buttons">
         {playing === 'stopped' && (
           <button
-            onClick={handlePlay}
+            onClick={handlePlayFromDialog}
             disabled={!screenplay}
             className="play"
           >
@@ -492,6 +494,14 @@ export default function ScreenplayView({ screenplay, format, darkMode = false, s
                       textAlign: isLineRTL ? 'right' : 'left'
                     }}
                   >
+                    <button 
+                      className="dialog-play-btn"
+                      onClick={() => handlePlayFromDialog(sceneIdx, lineIdx)}
+                      title={`Play from this line (${line.character})`}
+                      disabled={playing !== 'stopped'}
+                    >
+                      ▶️
+                    </button>
                     <div className="character" style={{ direction: isLineRTL ? 'rtl' : 'ltr', textAlign: isLineRTL ? 'right' : 'left' }}>
                       {highlightText(line.character, 'character', sceneIdx, lineIdx)}
                     </div>
@@ -503,7 +513,7 @@ export default function ScreenplayView({ screenplay, format, darkMode = false, s
                     <div className="line-text" style={{ direction: isLineRTL ? 'rtl' : 'ltr', textAlign: isLineRTL ? 'right' : 'left' }}>
                       <span className="original">{highlightText(line.text, 'text', sceneIdx, lineIdx)}</span>
                     </div>
-                    {line.translation && (
+                    {line.translation && line.text !== line.translation && (
                       <div className="translation" style={{ direction: isLanguageRTL(screenplay.default_screenplay_language) ? 'rtl' : 'ltr', textAlign: isLanguageRTL(screenplay.default_screenplay_language) ? 'right' : 'left' }}>
                         <em>({highlightText(line.translation, 'translation', sceneIdx, lineIdx)})</em>
                       </div>

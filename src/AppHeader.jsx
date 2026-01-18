@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import './AppHeader.css';
 
-const AppHeader = () => {
+const AppHeader = ({ isGenerating = false }) => {
   const [debug, setDebug] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
 
@@ -53,6 +53,12 @@ const AppHeader = () => {
     <header className="app-header">
       <h1>Screenplay Generator</h1>
       <div className="header-controls">
+        {isGenerating && (
+          <div className="header-loading-indicator">
+            <span className="loading-spinner">⏳</span>
+            Generating...
+          </div>
+        )}
         <button
           className={`control-btn debug-btn ${debug ? 'active' : ''}`}
           onClick={handleDebugToggle}

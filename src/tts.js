@@ -84,23 +84,26 @@ export const isPaused = () => synth.paused;
 export const isSpeaking = () => synth.speaking;
 
 export const playScreenplay = async (screenplay, options = {}) => {
-  const { characterMode = true, onLineStart, languageSpeeds = {}, onWordStart, ttsOptions = {}, defaultLanguage = 'Hebrew', controller = {}, defaultLanguageSpeed = 1 } = options;
+  const { characterMode = true, onLineStart, languageSpeeds = {}, onWordStart, ttsOptions = {}, defaultLanguage = 'Hebrew', controller = {}, defaultLanguageSpeed = 1, startSceneIdx = 0, startLineIdx = 0 } = options;
   currentLanguageSpeeds = { ...languageSpeeds };
   currentLanguageSpeeds[defaultLanguage] = defaultLanguageSpeed;
   const scenes = screenplay.scenes || [];
 
-  for (let sceneIdx = 0; sceneIdx < scenes.length; sceneIdx++) {
+  for (let sceneIdx = startSceneIdx; sceneIdx < scenes.length; sceneIdx++) {
     if (controller.isCancelled) break;
     
     const scene = scenes[sceneIdx];
 
-    if (ttsOptions.includeNarrator && scene.scene) {
+    // Only speak scene description if we're starting from the beginning of the scene
+    if (ttsOptions.includeNarrator && scene.scene && (sceneIdx > startSceneIdx || startLineIdx === 0)) {
       if (controller.isCancelled) break;
       await speakWithHighlight(scene.scene, 'English', currentLanguageSpeeds['English'] || 1, (word) => onWordStart?.(word, 'scene', sceneIdx));
     }
 
     const dialog = scene.dialog || [];
-    for (let lineIdx = 0; lineIdx < dialog.length; lineIdx++) {
+    const lineStartIdx = (sceneIdx === startSceneIdx) ? startLineIdx : 0;
+    
+    for (let lineIdx = lineStartIdx; lineIdx < dialog.length; lineIdx++) {
       if (controller.isCancelled) break;
       
       const line = dialog[lineIdx];
