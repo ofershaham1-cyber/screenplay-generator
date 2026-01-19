@@ -26,6 +26,7 @@ function App() {
   const [generatingParams, setGeneratingParams] = useState(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [showSuccessIcon, setShowSuccessIcon] = useState(false);
+  const [multiModelResults, setMultiModelResults] = useState(null);
 
   // Initialize theme from URL on mount
   useEffect(() => {
@@ -64,7 +65,10 @@ function App() {
     setGeneratingScreenplay(screenplay);
     setGeneratingParams(params);
     setIsGenerating(false);
+    
+    // Save to history (only the main screenplay)
     addToHistory(screenplay, params);
+    
     // Navigate to result page after generation
     navigate('/screenplay-result');
   };

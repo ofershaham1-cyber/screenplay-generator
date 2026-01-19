@@ -7,6 +7,8 @@ export const useScreenplay = () => {
   const [format, setFormat] = useState(null);
   const [models, setModels] = useState([]);
   const [selectedModel, setSelectedModel] = useState(null);
+  const [selectedModels, setSelectedModels] = useState([]);
+  const [multiModelResults, setMultiModelResults] = useState({});
 
   // detect debug flag from URL (search or hash), evaluated at request time
   function getIsDebug() {
@@ -140,5 +142,56 @@ export const useScreenplay = () => {
     }
   };
 
-  return { screenplay, loading, error, generate, format, models, selectedModel, setSelectedModel };
+  const generateForMultipleModels = async (story_pitch, dialog_languages, default_screenplay_language, modelsToGenerate, customApiKey) => {
+    setLoading(true);
+    setError('');
+    setMultiModelResults({});
+    
+    try {
+      const results = {};
+      const promises = modelsToGenerate.map(async (model) => {
+        try {
+          const response = await fetch('/api/screenplay/generate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              story_pitch,
+              dialog_languages,
+              default_screenplay_language,
+              model,
+              customApiKey,
+            }),
+          });
+
+          if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`HTTP ${response.status}: ${errorText}`);
+          }
+
+          const data = await response.json();
+          results[model] = { success: true, data };
+        } catch (err) {
+          results[model] = { success: false, error: err.message };
+        }
+      });
+
+      await Promise.all(promises);
+      setMultiModelResults(results);
+      
+      // Set the first successful result as the main screenplay
+      const firstSuccess = Object.entries(results).find(([_, result]) => result.success);
+      if (firstSuccess) {
+        setScreenplay(firstSuccess[1].data);
+      }
+      
+      return results;
+    } catch (err) {
+      setError(err.message);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { screenplay, loading, error, generate, format, models, selectedModel, setSelectedModel, selectedModels, setSelectedModels, multiModelResults, generateForMultipleModels };
 };

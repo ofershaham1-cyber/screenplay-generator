@@ -11,13 +11,21 @@ export default function ScreenplayGenerator({ onScreenplayGenerated, generatingS
   const [languagesUsed, setLanguagesUsed] = useState(['Arabic', 'Hebrew']);
   const [defaultScreenplayLanguage, setDefaultScreenplayLanguage] = useState('Hebrew');
   const [showApiKey, setShowApiKey] = useState(false);
+  const [useMultipleModels, setUseMultipleModels] = useState(true);
   
   // API key override (model must come from dropdown)
   const [overrideApiKey, setOverrideApiKey] = useState('');
 
-  const { screenplay, loading, error, generate, models, selectedModel, setSelectedModel } = useScreenplay();
+  const { screenplay, loading, error, generate, generateForMultipleModels, models, selectedModel, setSelectedModel, selectedModels, setSelectedModels, multiModelResults } = useScreenplay();
 
-  // Save screenplay to history when generated
+  // Initialize selectedModels with all models when models are loaded
+  useEffect(() => {
+    if (models && models.length > 0 && selectedModels.length === 0) {
+      setSelectedModels(models);
+    }
+  }, [models]);
+
+  // Save screenplay to history and update App when generation completes
   useEffect(() => {
     if (screenplay && onScreenplayGenerated) {
       onScreenplayGenerated(screenplay, {
@@ -25,24 +33,39 @@ export default function ScreenplayGenerator({ onScreenplayGenerated, generatingS
         dialog_languages: languagesUsed,
         default_screenplay_language: defaultScreenplayLanguage,
         model: selectedModel,
+        models: useMultipleModels ? selectedModels : [selectedModel],
       });
+      onGenerationEnd();
     }
   }, [screenplay]);
 
   const handleGenerate = () => {
-    // Always use dropdown model, only allow API key override
     const apiKey = overrideApiKey || null;
     
     onGenerationStart();
-    generate(storypitch, languagesUsed, defaultScreenplayLanguage, selectedModel, apiKey);
+    
+    if (useMultipleModels && selectedModels.length > 0) {
+      // Set selectedModel to the first model for history tracking
+      setSelectedModel(selectedModels[0]);
+      generateForMultipleModels(storypitch, languagesUsed, defaultScreenplayLanguage, selectedModels, apiKey);
+    } else {
+      generate(storypitch, languagesUsed, defaultScreenplayLanguage, selectedModel, apiKey);
+    }
   };
 
-  // Update App when generation completes
-  useEffect(() => {
-    if (!loading && screenplay) {
-      onGenerationEnd();
-    }
-  }, [loading, screenplay]);
+  const toggleModelSelection = (model) => {
+    setSelectedModels(prev =>
+      prev.includes(model) ? prev.filter(m => m !== model) : [...prev, model]
+    );
+  };
+
+  const selectAllModels = () => {
+    setSelectedModels([...models]);
+  };
+
+  const clearAllModels = () => {
+    setSelectedModels([]);
+  };
 
   const toggleLanguage = (lang) => {
     setLanguagesUsed(prev =>
@@ -97,18 +120,62 @@ export default function ScreenplayGenerator({ onScreenplayGenerated, generatingS
         </div>
 
         <div className="form-group">
-          <label>Model</label>
-          <select
-            value={selectedModel || ''}
-            onChange={(e) => setSelectedModel(e.target.value)}
-            disabled={loading || !models || models.length === 0}
-          >
-            {models && models.length ? (
-              models.map(m => <option key={m} value={m}>{m}</option>)
-            ) : (
-              <option value="">Default</option>
-            )}
-          </select>
+          <label style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <input
+              type="checkbox"
+              checked={useMultipleModels}
+              onChange={(e) => setUseMultipleModels(e.target.checked)}
+              disabled={loading}
+            />
+            Generate for Multiple Models
+          </label>
+          
+          {useMultipleModels ? (
+            <>
+              <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
+                <button type="button" onClick={selectAllModels} disabled={loading || !models || models.length === 0}>
+                  Select All
+                </button>
+                <button type="button" onClick={clearAllModels} disabled={loading}>
+                  Clear All
+                </button>
+              </div>
+              <div className="lang-grid" style={{ maxHeight: '200px', overflowY: 'auto' }}>
+                {models && models.length ? (
+                  models.map(model => (
+                    <label key={model} className="lang-option">
+                      <input
+                        type="checkbox"
+                        checked={selectedModels.includes(model)}
+                        onChange={() => toggleModelSelection(model)}
+                        disabled={loading}
+                      />
+                      {model}
+                    </label>
+                  ))
+                ) : (
+                  <p style={{ color: '#666' }}>Loading models...</p>
+                )}
+              </div>
+              {selectedModels.length > 0 && (
+                <p style={{ fontSize: '12px', color: '#666', marginTop: '5px' }}>
+                  {selectedModels.length} model(s) selected
+                </p>
+              )}
+            </>
+          ) : (
+            <select
+              value={selectedModel || ''}
+              onChange={(e) => setSelectedModel(e.target.value)}
+              disabled={loading || !models || models.length === 0}
+            >
+              {models && models.length ? (
+                models.map(m => <option key={m} value={m}>{m}</option>)
+              ) : (
+                <option value="">Default</option>
+              )}
+            </select>
+          )}
         </div>
 
         <div className="form-group">
