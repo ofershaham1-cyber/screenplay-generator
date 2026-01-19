@@ -127,7 +127,7 @@ export const playScreenplay = async (screenplay, options = {}) => {
       const shouldPlayTranslationAfter = ttsOptions.translationTiming === 'after' || ttsOptions.translationTiming === 'both';
 
       // Speak translation before text if selected
-      if (shouldPlayTranslationBefore && ttsOptions.includeTranslation && line.translation) {
+      if (shouldPlayTranslationBefore && ttsOptions.includeTranslation && line.translation && line.translation !== line.text) {
         if (controller.isCancelled) break;
         const translationSpeed = currentLanguageSpeeds[defaultLanguage] || 1;
         await speakWithHighlight(line.translation, defaultLanguage, translationSpeed, (word) => onWordStart?.(word, 'translation', sceneIdx, lineIdx));
@@ -144,7 +144,7 @@ export const playScreenplay = async (screenplay, options = {}) => {
       }
 
       // Speak translation after text if selected
-      if (shouldPlayTranslationAfter && ttsOptions.includeTranslation && line.translation) {
+      if (shouldPlayTranslationAfter && ttsOptions.includeTranslation && line.translation && line.translation !== line.text) {
         if (controller.isCancelled) break;
         const translationSpeed = currentLanguageSpeeds[defaultLanguage] || 1;
         await speakWithHighlight(line.translation, defaultLanguage, translationSpeed, (word) => onWordStart?.(word, 'translation', sceneIdx, lineIdx));
