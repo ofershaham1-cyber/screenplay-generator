@@ -10,8 +10,8 @@ const Sidebar = () => {
         <h2>Screenplay App</h2>
       </div>
       <ul className="sidebar-menu">
-        <li className={location.pathname === '/' ? 'active' : ''}>
-          <Link to="/">Generator</Link>
+        <li className={location.pathname === '/' || location.pathname === '/generator' ? 'active' : ''}>
+          <Link to="/generator">Generator</Link>
         </li>
         <li className={location.pathname === '/player' ? 'active' : ''}>
           <Link to="/player">Player</Link>

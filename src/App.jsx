@@ -50,6 +50,10 @@ function App() {
               path="/"
               element={<ScreenplayGenerator onScreenplayGenerated={handleScreenplayGenerated} generatingScreenplay={generatingScreenplay} onGenerationStart={handleGenerationStart} onGenerationEnd={handleGenerationEnd} />}
             />
+            <Route
+              path="/generator"
+              element={<ScreenplayGenerator onScreenplayGenerated={handleScreenplayGenerated} generatingScreenplay={generatingScreenplay} onGenerationStart={handleGenerationStart} onGenerationEnd={handleGenerationEnd} />}
+            />
             <Route path="/player" element={<ScreenplayPlayer screenplay={selectedHistoryScreenplay?.screenplay || generatingScreenplay} />} />
             <Route
               path="/history"

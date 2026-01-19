@@ -35,6 +35,7 @@ export default function ScreenplayView({ screenplay, format, darkMode = false, s
   const [currentWord, setCurrentWord] = useState('');
   const [currentContentType, setCurrentContentType] = useState('');
   const [showTtsOptions, setShowTtsOptions] = useState(false);
+  const [showScreenplay, setShowScreenplay] = useState(false);
   const [ttsOptions, setTtsOptions] = useState({
     includeNarrator: false,
     includeCharacter: true,
@@ -188,26 +189,47 @@ export default function ScreenplayView({ screenplay, format, darkMode = false, s
     });
   };
 
-  const expandAll = () => {
+  const expandAll = (prefix = '') => {
     const allSections = {};
-    const collectKeys = (obj, prefix = '') => {
+    const collectKeys = (obj, keyPrefix = '') => {
       if (obj && typeof obj === 'object') {
         Object.entries(obj).forEach(([k, v]) => {
-          const key = prefix ? `${prefix}.${k}` : k;
-          if (typeof v === 'object') {
-            allSections[key] = true;
+          const key = keyPrefix ? `${keyPrefix}.${k}` : k;
+          allSections[key] = true;
+          if (typeof v === 'object' && v !== null) {
             collectKeys(v, key);
           }
         });
       }
     };
-    if (format) collectKeys(format, 'format');
-    if (screenplay) collectKeys(screenplay, 'screenplay');
+    if (prefix === 'format' && format) {
+      allSections['format'] = true;
+      collectKeys(format, 'format');
+    } else if (prefix === 'screenplay' && screenplay) {
+      allSections['screenplay'] = true;
+      collectKeys(screenplay, 'screenplay');
+    } else {
+      if (format) {
+        allSections['format'] = true;
+        collectKeys(format, 'format');
+      }
+      if (screenplay) {
+        allSections['screenplay'] = true;
+        collectKeys(screenplay, 'screenplay');
+      }
+    }
     setExpandedSections(allSections);
   };
 
   const collapseAll = () => {
     setExpandedSections({});
+  };
+
+  const toggleSection = (key) => {
+    setExpandedSections(prev => ({
+      ...prev,
+      [key]: !prev[key]
+    }));
   };
 
   const renderValue = (value, key = '') => {
@@ -459,8 +481,24 @@ export default function ScreenplayView({ screenplay, format, darkMode = false, s
       </div>
 
       <div className="full-screenplay">
-        <h2>Complete Screenplay Structure</h2>
-        {renderValue(screenplay, 'screenplay')}
+        <h2 onClick={() => setShowScreenplay(!showScreenplay)} style={{ cursor: 'pointer', margin: '0 0 12px 0' }}>
+          {showScreenplay ? '[-]' : '[+]'} Complete Screenplay Structure
+        </h2>
+        {showScreenplay && (
+          <div className="expand-buttons">
+            <button onClick={() => expandAll('screenplay')} className="expand-btn">
+              Expand All
+            </button>
+            <button onClick={collapseAll} className="collapse-btn">
+              Collapse All
+            </button>
+          </div>
+        )}
+        {showScreenplay && (
+          <div className="format-display">
+            {renderValue(screenplay, 'screenplay')}
+          </div>
+        )}
       </div>
 
       <div className={`readable-screenplay ${isLanguageRTL(screenplay.dialog_languages?.[0]) ? 'rtl' : 'ltr'}`}>
@@ -538,7 +576,7 @@ export default function ScreenplayView({ screenplay, format, darkMode = false, s
           </h3>
           {showFormat && (
             <div className="expand-buttons">
-              <button onClick={expandAll} className="expand-btn">
+              <button onClick={() => expandAll('format')} className="expand-btn">
                 Expand All
               </button>
               <button onClick={collapseAll} className="collapse-btn">
