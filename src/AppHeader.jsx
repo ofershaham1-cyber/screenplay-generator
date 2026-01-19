@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import './AppHeader.css';
 
-const AppHeader = ({ isGenerating = false, theme, updateTheme }) => {
+const AppHeader = ({ isGenerating = false, showSuccessIcon = false, generationError = null, theme, setTheme, design, setDesign }) => {
   const [debug, setDebug] = useState(false);
 
   // Initialize debug from URL on mount
@@ -20,6 +20,7 @@ const AppHeader = ({ isGenerating = false, theme, updateTheme }) => {
       params.delete('debug');
     }
     params.set('theme', theme);
+    params.set('design', design);
     
     const newHash = params.toString() ? `#${params.toString()}` : '#';
     window.location.hash = newHash;
@@ -31,14 +32,35 @@ const AppHeader = ({ isGenerating = false, theme, updateTheme }) => {
     updateHashParams(newDebug);
   };
 
+  const handleThemeChange = (newTheme) => {
+    setTheme(newTheme);
+    document.documentElement.setAttribute('data-theme', newTheme);
+    updateHashParams(debug);
+  };
+
+  const handleDesignChange = (newDesign) => {
+    setDesign(newDesign);
+    updateHashParams(debug);
+  };
+
   return (
     <header className="app-header">
       <h1>Screenplay Generator</h1>
       <div className="header-controls">
         {isGenerating && (
           <div className="header-loading-indicator">
-            <span className="loading-spinner">⏳</span>
-            Generating...
+            <div className="spinner"></div>
+            <span>Generating screenplay...</span>
+          </div>
+        )}
+        {!isGenerating && showSuccessIcon && !generationError && (
+          <div className="header-success-indicator">
+            <span>✓ Screenplay generated!</span>
+          </div>
+        )}
+        {!isGenerating && generationError && (
+          <div className="header-error-indicator">
+            <span>✗ Generation failed</span>
           </div>
         )}
         <button

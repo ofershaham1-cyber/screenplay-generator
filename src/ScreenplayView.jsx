@@ -30,8 +30,6 @@ export default function ScreenplayView({ screenplay, format, darkMode = false, s
   const [currentScene, setCurrentScene] = useState(-1);
   const [currentLine, setCurrentLine] = useState(-1);
   const [expandedSections, setExpandedSections] = useState({});
-  const [languageSpeeds, setLanguageSpeeds] = useState({});
-  const [defaultLanguageSpeed, setDefaultLanguageSpeed] = useState(1);
   const [currentWord, setCurrentWord] = useState('');
   const [currentContentType, setCurrentContentType] = useState('');
   const [showTtsOptions, setShowTtsOptions] = useState(false);
@@ -45,6 +43,36 @@ export default function ScreenplayView({ screenplay, format, darkMode = false, s
     includeParenthetical: false,
     translationTiming: 'both' // 'before', 'after', 'both'
   });
+
+  // Get current language speeds from localStorage preferences
+  const getLanguageSpeeds = () => {
+    const savedPrefs = localStorage.getItem('screenplay-tts-preferences');
+    if (savedPrefs) {
+      try {
+        const prefs = JSON.parse(savedPrefs);
+        return {
+          defaultSpeed: prefs.defaultSpeed || 1,
+          languageSpeeds: prefs.languageSpeeds || {}
+        };
+      } catch (e) {
+        console.error('Failed to load preferences:', e);
+        return { defaultSpeed: 1, languageSpeeds: {} };
+      }
+    }
+    return { defaultSpeed: 1, languageSpeeds: {} };
+  };
+
+  // Get current speed for a specific language
+  const getCurrentLanguageSpeed = (lang) => {
+    const { languageSpeeds } = getLanguageSpeeds();
+    return languageSpeeds[lang] || 1;
+  };
+
+  // Get current default speed
+  const getCurrentDefaultSpeed = () => {
+    const { defaultSpeed } = getLanguageSpeeds();
+    return defaultSpeed;
+  };
 
   const highlightText = (text, contentType, sceneIdx, lineIdx) => {
     if (!text || !currentWord || currentContentType !== contentType) {
@@ -102,6 +130,9 @@ export default function ScreenplayView({ screenplay, format, darkMode = false, s
     setCurrentScene(startSceneIdx);
     setCurrentLine(startLineIdx);
     
+    // Get current speeds from localStorage preferences
+    const { defaultSpeed, languageSpeeds } = getLanguageSpeeds();
+    
     // Create a controller to manage playback
     const controller = {
       isCancelled: false,
@@ -114,7 +145,7 @@ export default function ScreenplayView({ screenplay, format, darkMode = false, s
       await playScreenplay(screenplay, {
         characterMode: true,
         languageSpeeds: { ...languageSpeeds },
-        defaultLanguageSpeed: defaultLanguageSpeed,
+        defaultLanguageSpeed: defaultSpeed,
         ttsOptions: { ...ttsOptions },
         defaultLanguage: screenplay.default_screenplay_language || 'Hebrew',
         startSceneIdx: startSceneIdx,
@@ -179,14 +210,48 @@ export default function ScreenplayView({ screenplay, format, darkMode = false, s
   };
 
   const updateLanguageSpeed = (lang, speed) => {
-    setLanguageSpeeds(prev => {
-      const updated = { ...prev, [lang]: speed };
-      // Update dynamic speeds in real-time if playing
-      if (playing) {
-        setDynamicLanguageSpeeds(updated);
+    // Get current preferences
+    const savedPrefs = localStorage.getItem('screenplay-tts-preferences');
+    let prefs = { defaultSpeed: 1, languageSpeeds: {} };
+    
+    if (savedPrefs) {
+      try {
+        prefs = JSON.parse(savedPrefs);
+      } catch (e) {
+        console.error('Failed to parse preferences:', e);
       }
-      return updated;
-    });
+    }
+    
+    // Update the language speed
+    prefs.languageSpeeds = { ...prefs.languageSpeeds, [lang]: speed };
+    
+    // Save to localStorage
+    localStorage.setItem('screenplay-tts-preferences', JSON.stringify(prefs));
+    
+    // Update dynamic speeds in real-time if playing
+    if (playing) {
+      setDynamicLanguageSpeeds(prefs.languageSpeeds);
+    }
+  };
+
+  const updateDefaultSpeed = (speed) => {
+    // Get current preferences
+    const savedPrefs = localStorage.getItem('screenplay-tts-preferences');
+    let prefs = { defaultSpeed: 1, languageSpeeds: {} };
+    
+    if (savedPrefs) {
+      try {
+        prefs = JSON.parse(savedPrefs);
+      } catch (e) {
+        console.error('Failed to parse preferences:', e);
+      }
+    }
+    
+    // Update the default speed
+    prefs.defaultSpeed = speed;
+    
+    // Save to localStorage
+    localStorage.setItem('screenplay-tts-preferences', JSON.stringify(prefs));
   };
 
   const expandAll = (prefix = '') => {
@@ -420,12 +485,12 @@ export default function ScreenplayView({ screenplay, format, darkMode = false, s
                 min="0.5"
                 max="2"
                 step="0.1"
-                value={defaultLanguageSpeed}
-                onChange={(e) => setDefaultLanguageSpeed(parseFloat(e.target.value))}
-                title={`Speed: ${defaultLanguageSpeed.toFixed(1)}x`}
+                value={getCurrentDefaultSpeed()}
+                onChange={(e) => updateDefaultSpeed(parseFloat(e.target.value))}
+                title={`Default Speed: ${getCurrentDefaultSpeed().toFixed(1)}x`}
                 className={playing ? 'active-control' : ''}
               />
-              <span className="speed-value">{defaultLanguageSpeed.toFixed(1)}x</span>
+              <span className="speed-value">{getCurrentDefaultSpeed().toFixed(1)}x</span>
             </div>
           </div>
         )}
@@ -442,12 +507,12 @@ export default function ScreenplayView({ screenplay, format, darkMode = false, s
                 min="0.5"
                 max="2"
                 step="0.1"
-                value={languageSpeeds[lang] || 1}
+                value={getCurrentLanguageSpeed(lang)}
                 onChange={(e) => updateLanguageSpeed(lang, parseFloat(e.target.value))}
-                title={`Speed: ${(languageSpeeds[lang] || 1).toFixed(1)}x`}
+                title={`Speed: ${getCurrentLanguageSpeed(lang).toFixed(1)}x`}
                 className={playing ? 'active-control' : ''}
               />
-              <span className="speed-value">{(languageSpeeds[lang] || 1).toFixed(1)}x</span>
+              <span className="speed-value">{getCurrentLanguageSpeed(lang).toFixed(1)}x</span>
             </div>
           ))}
         </div>
@@ -456,7 +521,7 @@ export default function ScreenplayView({ screenplay, format, darkMode = false, s
       <div className="buttons">
         {playing === 'stopped' && (
           <button
-            onClick={handlePlayFromDialog}
+            onClick={() => handlePlayFromDialog(0, 0)}
             disabled={!screenplay}
             className="play"
           >
@@ -568,29 +633,6 @@ export default function ScreenplayView({ screenplay, format, darkMode = false, s
           );
         })}
       </div>
-
-      {format && (
-        <div className="form-group">
-          <h3 onClick={() => onShowFormatChange?.(!showFormat)} style={{ cursor: 'pointer', margin: '0 0 12px 0' }}>
-            {showFormat ? '[-]' : '[+]'} Response Format Schema
-          </h3>
-          {showFormat && (
-            <div className="expand-buttons">
-              <button onClick={() => expandAll('format')} className="expand-btn">
-                Expand All
-              </button>
-              <button onClick={collapseAll} className="collapse-btn">
-                Collapse All
-              </button>
-            </div>
-          )}
-          {showFormat && (
-            <div className="format-display">
-              {renderValue(format, 'format')}
-            </div>
-          )}
-        </div>
-      )}
     </div>
   );
 }

@@ -1,3 +1,9 @@
+refreshing: http://localhost:5173/screenplay-result always shows error
+
+"Default Speed (for all languages)"
+
+
+==================
 tts-play should stop in case of trying to play fresh/old screenplay.
 
 fix darkmode.

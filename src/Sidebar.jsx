@@ -20,8 +20,20 @@ const Sidebar = ({ theme, updateTheme }) => {
         <li className={location.pathname === '/player' ? 'active' : ''}>
           <Link to="/player">Player</Link>
         </li>
+        <li className={location.pathname === '/screenplay-result' ? 'active' : ''}>
+          <Link to="/screenplay-result">📄 Result</Link>
+        </li>
         <li className={location.pathname === '/history' ? 'active' : ''}>
           <Link to="/history">History</Link>
+        </li>
+        <li className={location.pathname === '/preferences' ? 'active' : ''}>
+          <Link to="/preferences">⚙️ Preferences</Link>
+        </li>
+        <li className={location.pathname === '/format-schema' ? 'active' : ''}>
+          <Link to="/format-schema">📋 Format Schema</Link>
+        </li>
+        <li className={location.pathname === '/view-models' ? 'active' : ''}>
+          <Link to="/view-models">🔧 View Models</Link>
         </li>
       </ul>
       <div className="sidebar-footer">

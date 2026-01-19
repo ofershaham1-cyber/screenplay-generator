@@ -11,4 +11,10 @@
   --loading-border: rgba(80, 80, 80, 0.5);
   --loading-color: #e5e5e5;
   --loading-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  --loading-spinner-border: rgba(229, 229, 229, 0.3);
+  --loading-spinner-top: #e5e5e5;
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
+  --hover-bg: #404040;
+  --border-light: #404040;
 }

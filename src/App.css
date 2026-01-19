@@ -7,12 +7,14 @@
 .app-body {
   display: flex;
   flex: 1;
+  margin-top: 60px;
 }
 
 .main-content {
   flex: 1;
   margin-left: 250px;
   background: var(--bg-color);
-  min-height: 100vh;
+  min-height: calc(100vh - 60px);
   transition: background-color 0.3s;
+  overflow-y: auto;
 }

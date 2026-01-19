@@ -226,6 +226,7 @@ app.get('/', (req, res) => {
 // Screenplay routes
 app.post('/api/screenplay/generate', generateScreenplay);
 app.get('/api/screenplay/format', getScreenplayFormat);
+app.get('/api/format-schema', getScreenplayFormat);
 
 // Models route
 app.get('/api/models', getModels);

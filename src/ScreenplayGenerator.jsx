@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useScreenplay } from './useScreenplay';
-import ScreenplayView from './ScreenplayView';
 import './ScreenplayGenerator.css';
 
 const LANGUAGES = ['English', 'Hebrew', 'Spanish', 'French', 'Russian', 'Chinese', 'Japanese', 'Arabic', 'German', 'Italian', 'Portuguese', 'Korean', 'Dutch', 'Polish', 'Turkish', 'Hindi'];
@@ -11,13 +10,12 @@ export default function ScreenplayGenerator({ onScreenplayGenerated, generatingS
 );
   const [languagesUsed, setLanguagesUsed] = useState(['Arabic', 'Hebrew']);
   const [defaultScreenplayLanguage, setDefaultScreenplayLanguage] = useState('Hebrew');
-  const [showFormat, setShowFormat] = useState(false);
   const [showApiKey, setShowApiKey] = useState(false);
   
   // API key override (model must come from dropdown)
   const [overrideApiKey, setOverrideApiKey] = useState('');
-  
-  const { screenplay, loading, error, generate, format, models, selectedModel, setSelectedModel } = useScreenplay();
+
+  const { screenplay, loading, error, generate, models, selectedModel, setSelectedModel } = useScreenplay();
 
   // Save screenplay to history when generated
   useEffect(() => {
@@ -35,17 +33,22 @@ export default function ScreenplayGenerator({ onScreenplayGenerated, generatingS
     // Always use dropdown model, only allow API key override
     const apiKey = overrideApiKey || null;
     
+    onGenerationStart();
     generate(storypitch, languagesUsed, defaultScreenplayLanguage, selectedModel, apiKey);
   };
+
+  // Update App when generation completes
+  useEffect(() => {
+    if (!loading && screenplay) {
+      onGenerationEnd();
+    }
+  }, [loading, screenplay]);
 
   const toggleLanguage = (lang) => {
     setLanguagesUsed(prev =>
       prev.includes(lang) ? prev.filter(l => l !== lang) : [...prev, lang]
     );
   };
-
-  // Use persisted screenplay if available, otherwise use new generation
-  const displayScreenplay = screenplay || generatingScreenplay;
 
   return (
     <div className="container">
@@ -130,23 +133,8 @@ export default function ScreenplayGenerator({ onScreenplayGenerated, generatingS
         <button onClick={handleGenerate} disabled={loading}>
           {loading ? 'Generating...' : 'Generate Screenplay'}
         </button>
-        {loading && (
-          <div className="loading-indicator">
-            <div className="spinner"></div>
-            Generating screenplay...
-          </div>
-        )}
         {error && <p className="error">{error}</p>}
       </div>
-
-      {displayScreenplay && (
-        <ScreenplayView
-          screenplay={displayScreenplay}
-          format={format}
-          showFormat={showFormat}
-          onShowFormatChange={setShowFormat}
-        />
-      )}
     </div>
   );
 }
