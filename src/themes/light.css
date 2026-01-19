@@ -1,0 +1,15 @@
+/* Light Theme */
+:root[data-theme="light"],
+:root:not([data-theme]) {
+  --bg-color: #ffffff;
+  --text-color: #1f2937;
+  --border-color: #e5e7eb;
+  --input-bg: #f9fafb;
+  --section-bg: #ffffff;
+  --button-bg: #3b82f6;
+  --button-hover-bg: #2563eb;
+  --loading-bg: rgba(59, 130, 246, 0.9);
+  --loading-border: rgba(147, 197, 253, 0.5);
+  --loading-color: white;
+  --loading-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}

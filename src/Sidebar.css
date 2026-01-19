@@ -1,29 +1,26 @@
 .sidebar {
   width: 250px;
   height: 100vh;
-  background: #1f2937;
-  color: white;
+  background: var(--bg-color);
+  color: var(--text-color);
   position: fixed;
   left: 0;
   top: 0;
   padding: 20px 0;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-}
-
-.sidebar.dark {
-  background: #111827;
+  border-right: 1px solid var(--border-color);
 }
 
 .sidebar-header {
   padding: 0 20px 20px;
-  border-bottom: 1px solid #374151;
+  border-bottom: 1px solid var(--border-color);
   margin-bottom: 20px;
 }
 
 .sidebar-header h2 {
   margin: 0;
   font-size: 18px;
-  color: #f3f4f6;
+  color: var(--text-color);
 }
 
 .sidebar-menu {
@@ -39,18 +36,73 @@
 .sidebar-menu li a {
   display: block;
   padding: 12px 20px;
-  color: #d1d5db;
+  color: var(--text-color);
+  opacity: 0.8;
   text-decoration: none;
   transition: all 0.3s;
 }
 
 .sidebar-menu li a:hover {
-  background: #374151;
-  color: #f3f4f6;
+  background: var(--border-color);
+  color: var(--text-color);
+  opacity: 1;
 }
 
 .sidebar-menu li.active a {
-  background: #3b82f6;
+  background: var(--button-bg);
   color: white;
-  border-right: 3px solid #60a5fa;
+  border-right: 3px solid var(--button-hover-bg);
+}
+
+.sidebar-footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 20px;
+  border-top: 1px solid #374151;
+  background: #1f2937;
+}
+
+.theme-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.theme-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-color);
+  opacity: 0.7;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.theme-select-sidebar {
+  width: 100%;
+  padding: 8px;
+  background: #374151;
+  color: #f3f4f6;
+  border: 1px solid #4b5563;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.3s;
+}
+
+.theme-select-sidebar:hover {
+  background: var(--border-color);
+  border-color: var(--button-hover-bg);
+}
+
+.theme-select-sidebar:focus {
+  outline: none;
+  border-color: var(--button-bg);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.theme-select-sidebar option {
+  background-color: var(--bg-color);
+  color: var(--text-color);
 }

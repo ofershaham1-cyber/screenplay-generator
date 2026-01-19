@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import ScreenplayGenerator from './ScreenplayGenerator';
 import ScreenplayPlayer from './ScreenplayPlayer';
@@ -12,11 +12,31 @@ function App() {
   const navigate = useNavigate();
   const { history, addToHistory, removeFromHistory, clearHistory, getHistoryItem, exportScreenplay, importScreenplay, storageInfo } = useScreenplayHistory();
   const [selectedHistoryScreenplay, setSelectedHistoryScreenplay] = useState(null);
+  const [theme, setTheme] = useState('light');
   
   // Persist screenplay generation across navigation
   const [generatingScreenplay, setGeneratingScreenplay] = useState(null);
   const [generatingParams, setGeneratingParams] = useState(null);
   const [isGenerating, setIsGenerating] = useState(false);
+
+  // Initialize theme from URL on mount
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.hash.replace(/^#\/?/, ''));
+    const themeParam = params.get('theme') || 'light';
+    setTheme(themeParam);
+    document.documentElement.setAttribute('data-theme', themeParam);
+  }, []);
+
+  // Keep theme in sync with URL and DOM
+  const updateTheme = (newTheme) => {
+    setTheme(newTheme);
+    document.documentElement.setAttribute('data-theme', newTheme);
+    
+    const params = new URLSearchParams(window.location.hash.replace(/^#\/?/, ''));
+    params.set('theme', newTheme);
+    const newHash = params.toString() ? `#${params.toString()}` : '#';
+    window.location.hash = newHash;
+  };
 
   const handleScreenplayGenerated = (screenplay, params) => {
     // Save to history and persist generation state
@@ -41,9 +61,9 @@ function App() {
 
   return (
     <div className="app">
-      <AppHeader isGenerating={isGenerating} />
+      <AppHeader isGenerating={isGenerating} theme={theme} updateTheme={updateTheme} />
       <div className="app-body">
-        <Sidebar />
+        <Sidebar theme={theme} updateTheme={updateTheme} />
         <main className="main-content">
           <Routes>
             <Route

@@ -12,19 +12,12 @@ export default function ScreenplayGenerator({ onScreenplayGenerated, generatingS
   const [languagesUsed, setLanguagesUsed] = useState(['Arabic', 'Hebrew']);
   const [defaultScreenplayLanguage, setDefaultScreenplayLanguage] = useState('Hebrew');
   const [showFormat, setShowFormat] = useState(false);
-  const [darkMode, setDarkMode] = useState(false);
+  const [showApiKey, setShowApiKey] = useState(false);
   
   // API key override (model must come from dropdown)
   const [overrideApiKey, setOverrideApiKey] = useState('');
   
   const { screenplay, loading, error, generate, format, models, selectedModel, setSelectedModel } = useScreenplay();
-
-  // Initialize dark mode from URL
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.hash.replace(/^#\/?/, ''));
-    const darkParam = params.get('dark') === 'true';
-    setDarkMode(darkParam);
-  }, []);
 
   // Save screenplay to history when generated
   useEffect(() => {
@@ -55,7 +48,7 @@ export default function ScreenplayGenerator({ onScreenplayGenerated, generatingS
   const displayScreenplay = screenplay || generatingScreenplay;
 
   return (
-    <div className={`container ${darkMode ? 'dark' : ''}`}>
+    <div className="container">
       <div className="section">
         <div className="header">
           <h2>Generate Screenplay</h2>
@@ -116,14 +109,22 @@ export default function ScreenplayGenerator({ onScreenplayGenerated, generatingS
         </div>
 
         <div className="form-group">
-          <label>Custom API Key (optional)</label>
-          <input
-            type="password"
-            placeholder="sk-or-v1-... (leave empty to use default)"
-            value={overrideApiKey}
-            onChange={(e) => setOverrideApiKey(e.target.value)}
-            disabled={loading}
-          />
+          <label 
+            style={{ cursor: 'pointer', color: '#0066cc' }}
+            onClick={() => setShowApiKey(!showApiKey)}
+            title="Click to toggle API key input"
+          >
+            {showApiKey ? '▼' : '▶'} Custom API Key (optional)
+          </label>
+          {showApiKey && (
+            <input
+              type="password"
+              placeholder="sk-or-v1-... (leave empty to use default)"
+              value={overrideApiKey}
+              onChange={(e) => setOverrideApiKey(e.target.value)}
+              disabled={loading}
+            />
+          )}
         </div>
 
         <button onClick={handleGenerate} disabled={loading}>
@@ -142,7 +143,6 @@ export default function ScreenplayGenerator({ onScreenplayGenerated, generatingS
         <ScreenplayView
           screenplay={displayScreenplay}
           format={format}
-          darkMode={darkMode}
           showFormat={showFormat}
           onShowFormatChange={setShowFormat}
         />

@@ -12,11 +12,7 @@
 .main-content {
   flex: 1;
   margin-left: 250px;
-  background: #f9fafb;
+  background: var(--bg-color);
   min-height: 100vh;
   transition: background-color 0.3s;
-}
-
-.app.dark .main-content {
-  background: #1a1a1a;
 }

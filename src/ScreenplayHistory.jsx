@@ -103,7 +103,7 @@ export default function ScreenplayHistory({
           return (
             <div 
               key={item.id} 
-              className={`history-item ${shouldBeRTL ? 'rtl' : 'ltr'}`}
+              className={`history-item ${shouldBeRTL ? 'rtl' : 'ltr'} ${isExpanded ? 'expanded' : ''}`}
               style={{ direction: shouldBeRTL ? 'rtl' : 'ltr' }}
             >
               {/* Clickable header */}
