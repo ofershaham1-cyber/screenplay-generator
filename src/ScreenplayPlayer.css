@@ -1,3 +1,12 @@
+/* ScreenplayPlayer Component Styles
+ * Component-specific CSS for playback controls, TTS options, and language/speed controls
+ * 
+ * Component CSS Files:
+ * - ScreenplayView.css: Screenplay display, JSON viewer, dialog rendering
+ * - ScreenplayGenerator.css: Generator form, buttons, loading indicator
+ * - ScreenplayPlayer.css: Playback controls, TTS options (THIS FILE)
+ */
+
 .container {
   padding: 24px;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -21,44 +30,9 @@
   border-color: #404040;
 }
 
-.container.dark .dialog-line {
-  background: #333;
-  border-color: #555;
-}
 
-.container.dark .dialog-play-btn {
-  background: #4b5563;
-}
 
-.container.dark .dialog-play-btn:hover:not(:disabled) {
-  background: #374151;
-}
 
-.container.dark .scene-description {
-  background: #2d2d2d;
-  color: #9ca3af;
-}
-
-.container.dark .format-display {
-  background: #333;
-}
-
-.container.dark .tts-options {
-  background: #2d2d2d;
-  border-color: #404040;
-}
-
-.container.dark .tts-options h4 {
-  color: #f3f4f6;
-}
-
-.container.dark .toggle-tts-options-btn {
-  background: #4b5563;
-}
-
-.container.dark .toggle-tts-options-btn:hover:not(:disabled) {
-  background: #374151;
-}
 
 .container.dark .screenplay-info {
   background: #2d2d2d;
@@ -1136,101 +1110,4 @@ select {
   background: #059669;
 }
 
-.screenplay-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
-}
-
-.screenplay-header h2 {
-  margin: 0;
-}
-
-.load-different-btn {
-  padding: 8px 16px;
-  background: #6b7280;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-size: 14px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.load-different-btn:hover {
-  background: #4b5563;
-}
-
-/* Fix for Response Format Schema visibility */
-.form-group h3 {
-  cursor: pointer;
-  user-select: none;
-  padding: 8px 0;
-  border-radius: 4px;
-  transition: background-color 0.2s;
-  z-index: 10;
-  position: relative;
-}
-
-.form-group h3:hover {
-  background-color: #f0f0f0;
-}
-
-.container.dark .form-group h3:hover {
-  background-color: #3a3a3a;
-}
-
-.form-group {
-  position: relative;
-  z-index: 1;
-}
-
-.json-content {
-  position: relative;
-  z-index: 1;
-}
-
-.container.dark .load-different-btn {
-  background: #6b7280;
-}
-
-.container.dark .load-different-btn:hover {
-  background: #4b5563;
-}
-.full-screenplay {
-  background: #f9fafb;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  padding: 20px;
-  margin-bottom: 24px;
-}
-
-.container.dark .full-screenplay {
-  background: #2d2d2d;
-  border-color: #404040;
-}
-
-.full-screenplay h2 {
-  font-size: 18px;
-  margin-bottom: 16px;
-  color: #374151;
-  cursor: pointer;
-  user-select: none;
-  transition: color 0.2s;
-}
-
-.full-screenplay h2:hover {
-  color: #1f2937;
-}
-
-.container.dark .full-screenplay h2 {
-  color: #f3f4f6;
-}
-
-.container.dark .full-screenplay h2:hover {
-  color: #ffffff;
-}
+/* Duplicate styles removed - see ScreenplayView.css for ScreenplayView component styles */

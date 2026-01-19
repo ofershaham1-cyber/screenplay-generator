@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useScreenplay } from './useScreenplay';
 import ScreenplayView from './ScreenplayView';
-import './ScreenplayPlayer.css';
+import './ScreenplayGenerator.css';
 
 const LANGUAGES = ['English', 'Hebrew', 'Spanish', 'French', 'Russian', 'Chinese', 'Japanese', 'Arabic', 'German', 'Italian', 'Portuguese', 'Korean', 'Dutch', 'Polish', 'Turkish', 'Hindi'];
 

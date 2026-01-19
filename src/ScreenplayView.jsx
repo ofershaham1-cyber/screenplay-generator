@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { playScreenplay, stop, pause, resume, isPaused, isSpeaking, setDynamicLanguageSpeeds } from './tts';
-import './ScreenplayPlayer.css';
+import './ScreenplayView.css';
 
 const LANGUAGE_COLORS = {
   'English': '#8b5cf6', // purple
