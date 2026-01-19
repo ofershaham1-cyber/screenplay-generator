@@ -37,13 +37,13 @@ export default function ScreenplayView({ screenplay, format, darkMode = false, s
   const [showTtsOptions, setShowTtsOptions] = useState(false);
   const [showScreenplay, setShowScreenplay] = useState(false);
   const [ttsOptions, setTtsOptions] = useState({
-    includeNarrator: false,
+    includeNarrator: true,
     includeCharacter: true,
     includeText: true,
     includeTranslation: true,
     includeAction: true,
     includeParenthetical: false,
-    translationTiming: 'after' // 'before', 'after', 'both'
+    translationTiming: 'both' // 'before', 'after', 'both'
   });
 
   const highlightText = (text, contentType, sceneIdx, lineIdx) => {

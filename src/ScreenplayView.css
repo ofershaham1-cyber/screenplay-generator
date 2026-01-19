@@ -194,9 +194,64 @@
   border-radius: 4px;
   padding: 12px;
   margin-bottom: 12px;
-  display: flex;
-  gap: 12px;
-  align-items: flex-start;
+  display: block;
+}
+
+.dialog-line > button,
+.dialog-line > .character,
+.dialog-line > .parenthetical,
+.dialog-line > .line-text,
+.dialog-line > .translation,
+.dialog-line > .action {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.dialog-line > button {
+  float: right;
+  margin-left: 8px;
+  margin-bottom: 8px;
+}
+
+.dialog-line > .character {
+  font-weight: 600;
+  color: var(--text-color);
+  margin-bottom: 6px;
+}
+
+.dialog-line > .parenthetical {
+  font-style: italic;
+  color: var(--text-color);
+  opacity: 0.7;
+  margin-bottom: 6px;
+}
+
+.dialog-line > .line-text {
+  color: var(--text-color);
+  margin-bottom: 4px;
+}
+
+.dialog-line > .line-text .original {
+  color: var(--text-color);
+}
+
+.dialog-line > .translation {
+  color: var(--text-color);
+  opacity: 0.7;
+  font-style: italic;
+  font-size: 13px;
+  margin-top: 4px;
+  margin-bottom: 6px;
+  padding-left: 12px;
+  border-left: 2px solid var(--border-color);
+}
+
+.dialog-line > .action {
+  color: var(--text-color);
+  opacity: 0.7;
+  font-style: italic;
+  font-size: 13px;
+  margin-top: 4px;
 }
 
 .dialog-play-btn {
@@ -207,8 +262,9 @@
   padding: 4px 8px;
   cursor: pointer;
   font-size: 12px;
-  flex-shrink: 0;
   transition: background 0.2s;
+  display: inline-block;
+  margin-bottom: 8px;
 }
 
 .dialog-play-btn:hover:not(:disabled) {
@@ -232,19 +288,11 @@
   text-align: right;
 }
 
-.dialog-line.rtl .character {
-  text-align: right;
-}
-
-.dialog-line.rtl .parenthetical {
-  text-align: right;
-}
-
-.dialog-line.rtl .line-text {
-  text-align: right;
-}
-
-.dialog-line.rtl .action {
+.dialog-line.rtl > .character,
+.dialog-line.rtl > .parenthetical,
+.dialog-line.rtl > .line-text,
+.dialog-line.rtl > .translation,
+.dialog-line.rtl > .action {
   text-align: right;
 }
 
@@ -253,30 +301,15 @@
   text-align: left;
 }
 
-.character {
-  font-weight: 600;
-  color: var(--text-color);
+.dialog-line.ltr > .character,
+.dialog-line.ltr > .parenthetical,
+.dialog-line.ltr > .line-text,
+.dialog-line.ltr > .translation,
+.dialog-line.ltr > .action {
+  text-align: left;
 }
 
-.container.dark .character {
-  color: #f3f4f6;
-}
 
-.line-text {
-  flex: 1;
-}
-
-.original {
-  color: var(--text-color);
-}
-
-.translation {
-  color: var(--text-color);
-  opacity: 0.7;
-  font-style: italic;
-  font-size: 13px;
-  margin-top: 4px;
-}
 
 .parenthetical {
   color: var(--text-color);
