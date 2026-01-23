@@ -22,15 +22,16 @@ export default function ScreenplayGenerator({
   setSelectedModels
 }) {
   const [showApiKey, setShowApiKey] = useState(false);
+  const [hasUserCleared, setHasUserCleared] = useState(false);
   
   const { screenplay, loading, error, generate, generateForMultipleModels, models, selectedModel, setSelectedModel, multiModelResults } = useScreenplay();
 
-  // Initialize selectedModels with all models when models are loaded
+  // Initialize selectedModels with all models when models are loaded (only once)
   useEffect(() => {
-    if (models && models.length > 0 && selectedModels.length === 0) {
+    if (models && models.length > 0 && selectedModels.length === 0 && !hasUserCleared) {
       setSelectedModels(models);
     }
-  }, [models, selectedModels.length, setSelectedModels]);
+  }, [models, selectedModels.length, setSelectedModels, hasUserCleared]);
 
   // Save screenplay to history and update App when generation completes
   useEffect(() => {
@@ -84,11 +85,13 @@ export default function ScreenplayGenerator({
 
   const selectAllModels = () => {
     setSelectedModels([...models]);
+    setHasUserCleared(false);
   };
 
   const clearAllModels = () => {
     console.log('Clearing all models, current:', selectedModels);
     setSelectedModels([]);
+    setHasUserCleared(true);
   };
 
   const toggleLanguage = (lang) => {
