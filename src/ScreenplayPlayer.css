@@ -970,4 +970,72 @@ select {
   background: #059669;
 }
 
+.playback-status {
+  margin-top: 16px;
+  padding: 12px;
+  background: var(--info-bg, #f0f9ff);
+  border: 1px solid var(--info-border, #bfdbfe);
+  border-radius: 6px;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.container.dark .playback-status {
+  background: #1e3a8a;
+  border-color: #3b82f6;
+}
+
+.status-info {
+  display: flex;
+  gap: 24px;
+}
+
+.status-info p {
+  margin: 0;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.status-info strong {
+  color: var(--text-color);
+  font-weight: 600;
+}
+
+.language-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  background: #dbeafe;
+  color: #1e40af;
+  border-radius: 12px;
+  font-weight: 500;
+  font-size: 12px;
+}
+
+.container.dark .language-badge {
+  background: #3b82f6;
+  color: #f0f9ff;
+}
+
+.language-badge.current {
+  background: #10b981;
+  color: white;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.container.dark .language-badge.current {
+  background: #059669;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
 /* Duplicate styles removed - see ScreenplayView.css for ScreenplayView component styles */

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { LANGUAGES } from './config/languages';
 import LanguageSpeedControls from './LanguageSpeedControls';
 import './ScreenplayPreferences.css';
 
@@ -51,7 +52,6 @@ export default function ScreenplayPreferences({ theme = 'light', design = 'stand
   };
 
   const resetToDefaults = () => {
-    const LANGUAGES = ['English', 'Hebrew', 'Spanish', 'French', 'Russian', 'Chinese', 'Japanese', 'Arabic', 'German', 'Italian', 'Portuguese', 'Korean', 'Dutch', 'Polish', 'Turkish', 'Hindi'];
     const defaultSpeeds = {};
     LANGUAGES.forEach(lang => {
       defaultSpeeds[lang] = 1;

@@ -1,29 +1,36 @@
 import { useState, useEffect } from 'react';
 import { useScreenplay } from './useScreenplay';
+import { LANGUAGES } from './config/languages';
 import './ScreenplayGenerator.css';
 
-const LANGUAGES = ['English', 'Hebrew', 'Spanish', 'French', 'Russian', 'Chinese', 'Japanese', 'Arabic', 'German', 'Italian', 'Portuguese', 'Korean', 'Dutch', 'Polish', 'Turkish', 'Hindi'];
-
-export default function ScreenplayGenerator({ onScreenplayGenerated, generatingScreenplay, onGenerationStart, onGenerationEnd }) {
-  const [storypitch, setStorypitch] = useState(
-           'Create a conversation between an adult and a child playing a guessing game'
-);
-  const [languagesUsed, setLanguagesUsed] = useState(['Arabic', 'Hebrew']);
-  const [defaultScreenplayLanguage, setDefaultScreenplayLanguage] = useState('Hebrew');
+export default function ScreenplayGenerator({ 
+  onScreenplayGenerated, 
+  generatingScreenplay, 
+  onGenerationStart, 
+  onGenerationEnd,
+  storypitch,
+  setStorypitch,
+  languagesUsed,
+  setLanguagesUsed,
+  defaultScreenplayLanguage,
+  setDefaultScreenplayLanguage,
+  useMultipleModels,
+  setUseMultipleModels,
+  overrideApiKey,
+  setOverrideApiKey,
+  selectedModels,
+  setSelectedModels
+}) {
   const [showApiKey, setShowApiKey] = useState(false);
-  const [useMultipleModels, setUseMultipleModels] = useState(true);
   
-  // API key override (model must come from dropdown)
-  const [overrideApiKey, setOverrideApiKey] = useState('');
-
-  const { screenplay, loading, error, generate, generateForMultipleModels, models, selectedModel, setSelectedModel, selectedModels, setSelectedModels, multiModelResults } = useScreenplay();
+  const { screenplay, loading, error, generate, generateForMultipleModels, models, selectedModel, setSelectedModel, multiModelResults } = useScreenplay();
 
   // Initialize selectedModels with all models when models are loaded
   useEffect(() => {
     if (models && models.length > 0 && selectedModels.length === 0) {
       setSelectedModels(models);
     }
-  }, [models]);
+  }, [models, selectedModels.length, setSelectedModels]);
 
   // Save screenplay to history and update App when generation completes
   useEffect(() => {
@@ -47,7 +54,23 @@ export default function ScreenplayGenerator({ onScreenplayGenerated, generatingS
     if (useMultipleModels && selectedModels.length > 0) {
       // Set selectedModel to the first model for history tracking
       setSelectedModel(selectedModels[0]);
-      generateForMultipleModels(storypitch, languagesUsed, defaultScreenplayLanguage, selectedModels, apiKey);
+      
+      // Callback when each model completes - saves individual model results to history
+      const onModelComplete = (model, data) => {
+        if (onScreenplayGenerated) {
+          onScreenplayGenerated(data, {
+            story_pitch: storypitch,
+            dialog_languages: languagesUsed,
+            default_screenplay_language: defaultScreenplayLanguage,
+            model: model,
+            models: selectedModels,
+            multiModel: true,
+            generatedAt: new Date().toISOString()
+          });
+        }
+      };
+      
+      generateForMultipleModels(storypitch, languagesUsed, defaultScreenplayLanguage, selectedModels, apiKey, onModelComplete);
     } else {
       generate(storypitch, languagesUsed, defaultScreenplayLanguage, selectedModel, apiKey);
     }
@@ -64,6 +87,7 @@ export default function ScreenplayGenerator({ onScreenplayGenerated, generatingS
   };
 
   const clearAllModels = () => {
+    console.log('Clearing all models, current:', selectedModels);
     setSelectedModels([]);
   };
 
@@ -200,6 +224,21 @@ export default function ScreenplayGenerator({ onScreenplayGenerated, generatingS
         <button onClick={handleGenerate} disabled={loading}>
           {loading ? 'Generating...' : 'Generate Screenplay'}
         </button>
+        
+        {loading && (
+          <div style={{
+            marginTop: '15px',
+            padding: '12px',
+            backgroundColor: '#e3f2fd',
+            borderLeft: '3px solid #0066cc',
+            borderRadius: '3px',
+            fontSize: '13px',
+            color: '#0066cc'
+          }}>
+            <strong>💡 Tip:</strong> Visit the <a href="#/ongoing" style={{ color: '#0066cc', fontWeight: '500' }}>Ongoing Requests</a> page to monitor generation progress and cancel individual models.
+          </div>
+        )}
+        
         {error && <p className="error">{error}</p>}
       </div>
     </div>

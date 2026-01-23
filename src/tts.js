@@ -2,26 +2,9 @@ const synth = window.speechSynthesis;
 
 let currentLanguageSpeeds = {};
 
-const langToISO = {
-  'English': 'en-US',
-  'Hebrew': 'he-IL',
-  'Spanish': 'es-ES',
-  'French': 'fr-FR',
-  'Russian': 'ru-RU',
-  'Chinese': 'zh-CN',
-  'Japanese': 'ja-JP',
-  'Arabic': 'ar-SA',
-  'German': 'de-DE',
-  'Italian': 'it-IT',
-  'Portuguese': 'pt-PT',
-  'Korean': 'ko-KR',
-  'Dutch': 'nl-NL',
-  'Polish': 'pl-PL',
-  'Turkish': 'tr-TR',
-  'Hindi': 'hi-IN'
-};
+import { LANGUAGE_CODES, DEFAULT_LANGUAGE } from './config/languages';
 
-export const convertLangToISO = (lang) => langToISO[lang] || 'en-US';
+export const convertLangToISO = (lang) => LANGUAGE_CODES[lang] || 'en-US';
 
 export const setDynamicLanguageSpeeds = (speeds) => {
   currentLanguageSpeeds = { ...speeds };
@@ -84,7 +67,7 @@ export const isPaused = () => synth.paused;
 export const isSpeaking = () => synth.speaking;
 
 export const playScreenplay = async (screenplay, options = {}) => {
-  const { characterMode = true, onLineStart, languageSpeeds = {}, onWordStart, ttsOptions = {}, defaultLanguage = 'Hebrew', controller = {}, defaultLanguageSpeed = 1, startSceneIdx = 0, startLineIdx = 0 } = options;
+  const { characterMode = true, onLineStart, languageSpeeds = {}, onWordStart, ttsOptions = {}, defaultLanguage = DEFAULT_LANGUAGE, controller = {}, defaultLanguageSpeed = 1, startSceneIdx = 0, startLineIdx = 0, onLanguageChange } = options;
   currentLanguageSpeeds = { ...languageSpeeds };
   currentLanguageSpeeds[defaultLanguage] = defaultLanguageSpeed;
   const scenes = screenplay.scenes || [];
@@ -97,7 +80,8 @@ export const playScreenplay = async (screenplay, options = {}) => {
     // Only speak scene description if we're starting from the beginning of the scene
     if (ttsOptions.includeNarrator && scene.scene && (sceneIdx > startSceneIdx || startLineIdx === 0)) {
       if (controller.isCancelled) break;
-      await speakWithHighlight(scene.scene, 'English', currentLanguageSpeeds['English'] || 1, (word) => onWordStart?.(word, 'scene', sceneIdx));
+      onLanguageChange?.(defaultLanguage);
+      await speakWithHighlight(scene.scene, defaultLanguage, currentLanguageSpeeds['English'] || 1, (word) => onWordStart?.(word, 'scene', sceneIdx));
     }
 
     const dialog = scene.dialog || [];
@@ -112,6 +96,7 @@ export const playScreenplay = async (screenplay, options = {}) => {
       if (ttsOptions.includeCharacter && line.character) {
         if (controller.isCancelled) break;
         const charSpeed = currentLanguageSpeeds[defaultLanguage] || 1;
+        onLanguageChange?.(defaultLanguage);
         await speakWithHighlight(line.character, defaultLanguage, charSpeed, (word) => onWordStart?.(word, 'character', sceneIdx, lineIdx));
       }
 
@@ -138,6 +123,7 @@ export const playScreenplay = async (screenplay, options = {}) => {
         if (controller.isCancelled) break;
         const textLang = characterMode && line.language ? line.language : 'English';
         const textSpeed = currentLanguageSpeeds[textLang] || 1;
+        onLanguageChange?.(textLang);
         await speakWithHighlight(line.text, textLang, textSpeed, (word) => onWordStart?.(word, 'text', sceneIdx, lineIdx), () => {
           if (onLineStart && !controller.isCancelled) onLineStart(sceneIdx, lineIdx);
         });

@@ -1,8 +1,6 @@
 import { useState } from 'react';
+import { RTL_LANGUAGES, isLanguageRTL } from './config/languages';
 import './ScreenplayHistory.css';
-
-// RTL languages
-const RTL_LANGUAGES = ['Arabic', 'Hebrew', 'Urdu', 'Persian', 'Farsi', 'Pashto', 'Kurdish'];
 
 export default function ScreenplayHistory({ 
   history, 

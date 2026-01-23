@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-
-const LANGUAGES = ['English', 'Hebrew', 'Spanish', 'French', 'Russian', 'Chinese', 'Japanese', 'Arabic', 'German', 'Italian', 'Portuguese', 'Korean', 'Dutch', 'Polish', 'Turkish', 'Hindi'];
+import { LANGUAGES } from './config/languages';
 
 export default function LanguageSpeedControls({ 
   languageSpeeds, 

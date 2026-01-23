@@ -53,8 +53,12 @@
  "default_screenplay_language": {
           "type": "string",
           "description": "Default screenplay language for anything excluding the dialogs",
-          "default": "hebrew"
+          "default": "English"
         }, 
+        "title": {
+          "type": "string",
+          "description": "Title of the screenplay"
+        },
         "story_pitch": {
           "type": "string",
           "description": "Summary of the story's unique aspects"

@@ -1,5 +1,6 @@
 import { OpenRouter } from '@openrouter/sdk';
 import fs from 'fs/promises';
+import { DEFAULT_MODEL, DEFAULT_DIALOG_LANGUAGES, DEFAULT_SCREENPLAY_LANGUAGE } from '../config/screenplay.js';
 
 let openrouter;
 let responseFormat;
@@ -74,8 +75,8 @@ export const generateScreenplay = async (req, res) => {
     const openrouter = await initializeOpenRouter(customApiKey);
     const format = await loadResponseFormat();
     
-    const langs = dialog_languages || ['English', 'Spanish'];
-    const defaultLang = default_screenplay_language || 'Hebrew';
+    const langs = dialog_languages || DEFAULT_DIALOG_LANGUAGES;
+    const defaultLang = default_screenplay_language || DEFAULT_SCREENPLAY_LANGUAGE;
     const promptContent = story_pitch
       ? `Create a screenplay based on this pitch: ${story_pitch}. use dialog_languages for the dialogs and default_screenplay_language for all other text. each character should speak in their respective dialog language.`
       : `Create a creative original screenplay. Use these languages for character dialog: ${langs.join(', ')}. The default screenplay language (for all text except character dialog) should be: ${defaultLang}.`;
@@ -88,7 +89,7 @@ export const generateScreenplay = async (req, res) => {
     global.logger?.log('📋 Response Format Schema:', JSON.stringify(format, null, 2));
     
     const openrouterPayload = {
-      model: model || 'allenai/olmo-3.1-32b-think:free',
+      model: model || DEFAULT_MODEL,
       messages: [
         {
           role: 'user',
@@ -102,7 +103,7 @@ export const generateScreenplay = async (req, res) => {
       stream: false,
     };
     
-    global.logger?.log(`Calling OpenRouter API...`);
+    global.logger?.log(`Calling OpenRouter API for model: ${model}...`);
     global.logger?.log('📤 OpenRouter Request:');
     global.logger?.log('  Model:', openrouterPayload.model);
     global.logger?.log('  Messages:', JSON.stringify(openrouterPayload.messages, null, 2));
@@ -111,13 +112,13 @@ export const generateScreenplay = async (req, res) => {
     
     const completion = await openrouter.chat.send(openrouterPayload);
 
-    global.logger?.log(`OpenRouter API response received successfully`);
+    global.logger?.log(`✓ OpenRouter API response received for model: ${model}`);
     const screenplayData = JSON.parse(completion.choices[0].message.content);
-    res.json(screenplayData);
+    res.json({ ...screenplayData, generatedAt: new Date().toISOString(), model });
   } catch (error) {
     // Log comprehensive error details
     global.logger?.error('═══════════════════════════════════════════════════');
-    global.logger?.error('ERROR GENERATING SCREENPLAY');
+    global.logger?.error(`ERROR GENERATING SCREENPLAY FOR MODEL: ${model}`);
     global.logger?.error('═══════════════════════════════════════════════════');
     
     // Log request details

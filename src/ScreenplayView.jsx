@@ -1,48 +1,20 @@
 import { useState, useEffect } from 'react';
 import { playScreenplay, stop, pause, resume, isPaused, isSpeaking, setDynamicLanguageSpeeds } from './tts';
+import { LANGUAGE_COLORS, RTL_LANGUAGES, isLanguageRTL, DEFAULT_LANGUAGE } from './config/languages';
+import { DEFAULT_TTS_OPTIONS } from './config/defaults';
 import './ScreenplayView.css';
-
-const LANGUAGE_COLORS = {
-  'English': '#8b5cf6', // purple
-  'Hebrew': '#3b82f6',  // blue
-  'Spanish': '#10b981', // emerald
-  'French': '#f59e0b',  // amber
-  'Russian': '#ef4444', // red
-  'Chinese': '#ec4899', // pink
-  'Japanese': '#06b6d4', // cyan
-  'Arabic': '#84cc16',  // lime
-  'German': '#f97316',  // orange
-  'Italian': '#6366f1', // indigo
-  'Portuguese': '#14b8a6', // teal
-  'Korean': '#8b5a2b', // brown
-  'Dutch': '#64748b',   // slate
-  'Polish': '#7c3aed',  // violet
-  'Turkish': '#dc2626', // rose
-  'Hindi': '#059669'    // green
-};
-
-const RTL_LANGUAGES = ['Arabic', 'Hebrew', 'Urdu', 'Persian', 'Farsi', 'Pashto', 'Kurdish'];
-
-const isLanguageRTL = (lang) => RTL_LANGUAGES.includes(lang);
 
 export default function ScreenplayView({ screenplay, format, darkMode = false, showFormat = false, onShowFormatChange }) {
   const [playing, setPlaying] = useState('stopped'); // 'stopped', 'playing', 'paused'
   const [currentScene, setCurrentScene] = useState(-1);
   const [currentLine, setCurrentLine] = useState(-1);
+  const [currentSpeakingLanguage, setCurrentSpeakingLanguage] = useState(null);
   const [expandedSections, setExpandedSections] = useState({});
   const [currentWord, setCurrentWord] = useState('');
   const [currentContentType, setCurrentContentType] = useState('');
   const [showTtsOptions, setShowTtsOptions] = useState(false);
   const [showScreenplay, setShowScreenplay] = useState(false);
-  const [ttsOptions, setTtsOptions] = useState({
-    includeNarrator: true,
-    includeCharacter: true,
-    includeText: true,
-    includeTranslation: true,
-    includeAction: true,
-    includeParenthetical: false,
-    translationTiming: 'both' // 'before', 'after', 'both'
-  });
+  const [ttsOptions, setTtsOptions] = useState(DEFAULT_TTS_OPTIONS);
 
   // Get current language speeds from localStorage preferences
   const getLanguageSpeeds = () => {
@@ -113,6 +85,7 @@ export default function ScreenplayView({ screenplay, format, darkMode = false, s
         setPlaying('stopped');
         setCurrentScene(-1);
         setCurrentLine(-1);
+        setCurrentSpeakingLanguage(null);
         setCurrentWord('');
         setCurrentContentType('');
         setPlaybackController(null);
@@ -147,9 +120,14 @@ export default function ScreenplayView({ screenplay, format, darkMode = false, s
         languageSpeeds: { ...languageSpeeds },
         defaultLanguageSpeed: defaultSpeed,
         ttsOptions: { ...ttsOptions },
-        defaultLanguage: screenplay.default_screenplay_language || 'Hebrew',
+        defaultLanguage: screenplay.default_screenplay_language || DEFAULT_LANGUAGE,
         startSceneIdx: startSceneIdx,
         startLineIdx: startLineIdx,
+        onLanguageChange: (lang) => {
+          if (!controller.isCancelled) {
+            setCurrentSpeakingLanguage(lang);
+          }
+        },
         onLineStart: (sceneIdx, lineIdx) => {
           if (!controller.isCancelled) {
             setCurrentScene(sceneIdx);
@@ -446,7 +424,7 @@ export default function ScreenplayView({ screenplay, format, darkMode = false, s
                 onChange={(e) => setTtsOptions(prev => ({ ...prev, includeTranslation: e.target.checked }))}
                 disabled={playing !== 'stopped'}
               />
-              Translation ({screenplay.default_screenplay_language || 'Hebrew'})
+              Translation ({screenplay.default_screenplay_language || DEFAULT_LANGUAGE})
             </label>
             <label>
               <input
@@ -544,6 +522,15 @@ export default function ScreenplayView({ screenplay, format, darkMode = false, s
           </button>
         )}
       </div>
+
+      {(playing === 'playing' || playing === 'paused') && (
+        <div className="playback-status">
+          <div className="status-info">
+            <p><strong>Default Language:</strong> <span className="language-badge">{screenplay.default_screenplay_language || DEFAULT_LANGUAGE}</span></p>
+            <p><strong>Currently Speaking:</strong> <span className="language-badge current">{currentSpeakingLanguage || screenplay.default_screenplay_language || DEFAULT_LANGUAGE}</span></p>
+          </div>
+        </div>
+      )}
 
       <div className="full-screenplay">
         <h2 onClick={() => setShowScreenplay(!showScreenplay)} style={{ cursor: 'pointer', margin: '0 0 12px 0' }}>

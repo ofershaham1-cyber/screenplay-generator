@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { useScreenplayRequests } from './useScreenplayRequests';
 
 export const useScreenplay = () => {
   const [screenplay, setScreenplay] = useState(null);
@@ -9,6 +10,19 @@ export const useScreenplay = () => {
   const [selectedModel, setSelectedModel] = useState(null);
   const [selectedModels, setSelectedModels] = useState([]);
   const [multiModelResults, setMultiModelResults] = useState({});
+  
+  // Request management per model
+  const {
+    registerRequest,
+    completeRequest,
+    cancelRequest,
+    cancelAllRequests,
+    getActiveModels,
+    hasActiveRequests,
+    clearRequestHistory,
+    requestStates,
+    activeModels
+  } = useScreenplayRequests();
 
   // detect debug flag from URL (search or hash), evaluated at request time
   function getIsDebug() {
@@ -142,7 +156,7 @@ export const useScreenplay = () => {
     }
   };
 
-  const generateForMultipleModels = async (story_pitch, dialog_languages, default_screenplay_language, modelsToGenerate, customApiKey) => {
+  const generateForMultipleModels = async (story_pitch, dialog_languages, default_screenplay_language, modelsToGenerate, customApiKey, onModelComplete) => {
     setLoading(true);
     setError('');
     setMultiModelResults({});
@@ -151,6 +165,9 @@ export const useScreenplay = () => {
       const results = {};
       const promises = modelsToGenerate.map(async (model) => {
         try {
+          // Register request for this model
+          const signal = registerRequest(model);
+          
           const response = await fetch('/api/screenplay/generate', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -161,6 +178,7 @@ export const useScreenplay = () => {
               model,
               customApiKey,
             }),
+            signal, // Pass abort signal for this model
           });
 
           if (!response.ok) {
@@ -169,9 +187,27 @@ export const useScreenplay = () => {
           }
 
           const data = await response.json();
-          results[model] = { success: true, data };
+          results[model] = { success: true, data, completedAt: new Date().toISOString() };
+          
+          // Mark request as complete
+          completeRequest(model, true);
+          
+          // Callback when a model completes (for immediate history update)
+          if (onModelComplete) {
+            onModelComplete(model, data);
+          }
         } catch (err) {
-          results[model] = { success: false, error: err.message };
+          // Check if error was due to abort
+          const isAborted = err.name === 'AbortError';
+          results[model] = { 
+            success: false, 
+            error: err.message,
+            cancelled: isAborted,
+            completedAt: new Date().toISOString()
+          };
+          
+          // Mark request as complete
+          completeRequest(model, false, err.message);
         }
       });
 
@@ -193,5 +229,24 @@ export const useScreenplay = () => {
     }
   };
 
-  return { screenplay, loading, error, generate, format, models, selectedModel, setSelectedModel, selectedModels, setSelectedModels, multiModelResults, generateForMultipleModels };
+  return { 
+    screenplay, 
+    loading, 
+    error, 
+    generate, 
+    format, 
+    models, 
+    selectedModel, 
+    setSelectedModel, 
+    selectedModels, 
+    setSelectedModels, 
+    multiModelResults, 
+    generateForMultipleModels,
+    // Per-model request management
+    cancelRequest,
+    cancelAllRequests,
+    clearRequestHistory,
+    requestStates,
+    activeModels
+  };
 };

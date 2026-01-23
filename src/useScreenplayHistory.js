@@ -7,6 +7,7 @@ export const useScreenplayHistory = () => {
   const [history, setHistory] = useState([]);
   const [storageInfo, setStorageInfo] = useState({ used: 0, available: 0 });
   const hasLoaded = useRef(false);
+  const idCounterRef = useRef(0);
 
   // Load history from localStorage on mount
   useEffect(() => {
@@ -65,7 +66,7 @@ export const useScreenplayHistory = () => {
   const addToHistory = (screenplay, params = {}) => {
     try {
       const historyItem = {
-        id: Date.now(),
+        id: `${Date.now()}-${++idCounterRef.current}`,
         timestamp: new Date().toISOString(),
         screenplay,
         params: {
