@@ -73,17 +73,17 @@
   color: #0c4a6e;
 }
 
-.history-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  max-height: calc(100vh - 300px);
+.history-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 12px;
+  max-height: calc(100vh - 350px);
   min-height: 200px;
   overflow-y: auto;
   padding-right: 4px;
 }
 
-.history-item {
+.history-card {
   border: 1px solid var(--border-color);
   border-radius: 8px;
   overflow: visible;
@@ -93,12 +93,12 @@
   border-left: 4px solid var(--button-bg);
 }
 
-.history-item:hover {
+.history-card:hover {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   transform: translateY(-1px);
 }
 
-.history-item-header {
+.history-card-header {
   padding: 1rem;
   cursor: pointer;
   display: flex;
@@ -107,12 +107,12 @@
   user-select: none;
 }
 
-.history-item-info {
+.history-card-info {
   flex: 1;
   min-width: 0;
 }
 
-.history-title {
+.history-card-title {
   font-weight: 700;
   color: var(--text-color);
   font-size: 1.1rem;
@@ -122,7 +122,7 @@
   margin-bottom: 0.25rem;
 }
 
-.history-subtitle {
+.history-card-subtitle {
   font-size: 0.85rem;
   color: var(--text-color);
   opacity: 0.7;
@@ -132,14 +132,14 @@
   margin-bottom: 0.5rem;
 }
 
-.history-date {
+.history-card-date {
   font-size: 0.75rem;
   color: var(--text-color);
   opacity: 0.5;
   margin-bottom: 0.5rem;
 }
 
-.history-meta {
+.history-card-meta {
   display: flex;
   gap: 0.5rem;
   margin-bottom: 0.5rem;
@@ -147,8 +147,8 @@
   font-size: 0.8rem;
 }
 
-.history-lang,
-.history-model {
+.history-card-lang,
+.history-card-model {
   font-size: 0.75rem;
   background-color: var(--input-bg);
   padding: 0.2rem 0.4rem;
@@ -175,12 +175,12 @@
   transition: background-color 0.2s;
 }
 
-.history-item-header:hover .expand-icon {
+.history-card-header:hover .expand-icon {
   background-color: var(--input-bg);
   opacity: 0.8;
 }
 
-.history-item-details {
+.history-card-details {
   border-top: 1px solid var(--border-color);
   padding: 0.75rem;
   background-color: var(--section-bg);
@@ -188,7 +188,136 @@
   z-index: 100;
 }
 
-.history-details-content {
+.history-card-details-content {
+  margin-bottom: 0.75rem;
+  max-height: none;
+  overflow-y: visible;
+}
+
+.detail-field {
+  margin-bottom: 0.75rem;
+}
+
+.detail-field strong {
+  font-size: 0.9rem;
+  color: var(--text-color);
+  opacity: 0.8;
+}
+
+.detail-field p {
+  font-size: 0.9rem;
+  color: var(--text-color);
+  line-height: 1.5;
+}
+
+.history-card-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.load-btn,
+.export-btn,
+.delete-btn {
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  border: 1px solid var(--border-color);
+  background: var(--input-bg);
+  color: var(--text-color);
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.2s;
+}
+
+.load-btn:hover,
+.export-btn:hover,
+.delete-btn:hover {
+  background: var(--border-color);
+}
+
+.delete-btn {
+  background: #fee2e2;
+  border-color: #fecaca;
+  color: #dc2626;
+}
+
+.delete-btn:hover {
+  background: #fecaca;
+}
+
+/* Sorting controls */
+.sorting-controls {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  background: var(--input-bg);
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+}
+
+.sort-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.sort-group label {
+  font-size: 0.85rem;
+  color: var(--text-color);
+  opacity: 0.8;
+}
+
+.sort-select {
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+  border: 1px solid var(--border-color);
+  background: var(--section-bg);
+  color: var(--text-color);
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+.history-card-model {
+  font-size: 0.75rem;
+  background-color: var(--input-bg);
+  padding: 0.2rem 0.4rem;
+  border-radius: 3px;
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+}
+
+.stat {
+  font-size: 0.75rem;
+  background-color: var(--input-bg);
+  padding: 0.2rem 0.4rem;
+  border-radius: 3px;
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+}
+
+.expand-icon {
+  font-size: 0.9rem;
+  color: var(--text-color);
+  opacity: 0.5;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.history-card-header:hover .expand-icon {
+  background-color: var(--input-bg);
+  opacity: 0.8;
+}
+
+.history-card-details {
+  border-top: 1px solid var(--border-color);
+  padding: 0.75rem;
+  background-color: var(--section-bg);
+  position: relative;
+  z-index: 100;
+}
+
+.history-card-details-content {
   margin-bottom: 0.75rem;
   max-height: none;
   overflow-y: visible;
@@ -214,7 +343,7 @@
   line-height: 1.4;
 }
 
-.history-item-actions {
+.history-card-actions {
   display: flex;
   gap: 0.5rem;
   margin-top: 1rem;
@@ -222,7 +351,7 @@
   border-top: 1px solid var(--border-color);
 }
 
-.history-item.expanded {
+.history-card.expanded {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   z-index: 10;
 }
@@ -268,74 +397,70 @@
 }
 
 @media (max-width: 768px) {
-  .history-list {
+  .history-grid {
+    grid-template-columns: 1fr;
     max-height: 400px;
   }
 
-  .history-item-header {
+  .history-card-header {
     padding: 0.6rem;
   }
 
-  .history-title {
+  .history-card-title {
     font-size: 0.9rem;
   }
 
-  .history-details-content {
+  .history-card-details-content {
     max-height: 250px;
   }
 }
 
 /* RTL Support */
-.history-item.rtl {
+.history-card.rtl {
   direction: rtl;
   text-align: right;
 }
 
-.history-item.rtl .history-title {
+.history-card.rtl .history-card-title {
   text-align: right;
   direction: rtl;
 }
 
-.history-item.rtl .history-date {
+.history-card.rtl .history-card-date {
   text-align: right;
   direction: rtl;
 }
 
-.history-item.rtl .history-meta {
+.history-card.rtl .history-card-meta {
   text-align: right;
   direction: rtl;
 }
 
-.history-item.rtl .history-stats {
+.history-card.rtl .detail-field {
   text-align: right;
   direction: rtl;
 }
 
-.history-item.rtl .detail-field {
-  text-align: right;
-  direction: rtl;
-}
-
-.history-item.rtl .detail-field strong {
+.history-card.rtl .detail-field strong {
   display: block;
   text-align: right;
 }
 
-.history-item.rtl .detail-field p {
+.history-card.rtl .detail-field p {
   text-align: right;
   direction: rtl;
 }
 
-.history-item.rtl .history-item-actions {
+.history-card.rtl .history-card-actions {
   flex-direction: row-reverse;
 }
 
-.history-item.ltr {
+.history-card.ltr {
   direction: ltr;
   text-align: left;
 }
 
-.history-item.ltr .detail-field strong {
+.history-card.ltr .detail-field strong {
   display: block;
   text-align: left;
 }

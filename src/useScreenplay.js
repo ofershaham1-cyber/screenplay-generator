@@ -157,7 +157,7 @@ export const useScreenplay = () => {
     }
   };
 
-  const generateForMultipleModels = async (story_pitch, dialog_languages, default_screenplay_language, min_lines_per_dialog, modelsToGenerate, customApiKey, onModelComplete) => {
+  const generateForMultipleModels = async (story_pitch, dialog_languages, default_screenplay_language, min_lines_per_dialog, modelsToGenerate, customApiKey, onModelComplete, onAllModelsComplete) => {
     setLoading(true);
     setError('');
     setMultiModelResults({});
@@ -194,10 +194,8 @@ export const useScreenplay = () => {
           // Mark request as complete
           completeRequest(model, true);
           
-          // Callback when a model completes (for immediate history update)
-          if (onModelComplete) {
-            onModelComplete(model, data);
-          }
+          // Set screenplay state for this model (triggers useEffect in ScreenplayGenerator)
+          setScreenplay(data);
         } catch (err) {
           // Check if error was due to abort
           const isAborted = err.name === 'AbortError';
@@ -220,6 +218,11 @@ export const useScreenplay = () => {
       const firstSuccess = Object.entries(results).find(([_, result]) => result.success);
       if (firstSuccess) {
         setScreenplay(firstSuccess[1].data);
+      }
+      
+      // Callback when all models complete
+      if (onAllModelsComplete) {
+        onAllModelsComplete(results);
       }
       
       return results;

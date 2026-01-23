@@ -81,7 +81,7 @@ export const playScreenplay = async (screenplay, options = {}) => {
     if (ttsOptions.includeNarrator && scene.scene && (sceneIdx > startSceneIdx || startLineIdx === 0)) {
       if (controller.isCancelled) break;
       onLanguageChange?.(defaultLanguage);
-      await speakWithHighlight(scene.scene, defaultLanguage, currentLanguageSpeeds['English'] || 1, (word) => onWordStart?.(word, 'scene', sceneIdx));
+      await speakWithHighlight(scene.scene, defaultLanguage, currentLanguageSpeeds[defaultLanguage] || 1, (word) => onWordStart?.(word, 'scene', sceneIdx));
     }
 
     const dialog = scene.dialog || [];

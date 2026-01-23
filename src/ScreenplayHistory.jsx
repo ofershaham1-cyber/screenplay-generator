@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { RTL_LANGUAGES, isLanguageRTL } from './config/languages';
 import './ScreenplayHistory.css';
 
@@ -12,6 +12,8 @@ export default function ScreenplayHistory({
   storageInfo
 }) {
   const [expandedId, setExpandedId] = useState(null);
+  const [sortBy, setSortBy] = useState('date'); // 'date' or 'title'
+  const [sortOrder, setSortOrder] = useState('desc'); // 'asc' or 'desc'
 
   const isRTL = (languages) => {
     if (!languages || languages.length === 0) return false;
@@ -39,6 +41,25 @@ export default function ScreenplayHistory({
       }
     }
   };
+
+  // Sort history based on selected criteria
+  const sortedHistory = useMemo(() => {
+    if (!history || history.length === 0) return [];
+    
+    return [...history].sort((a, b) => {
+      let comparison = 0;
+      
+      if (sortBy === 'date') {
+        comparison = new Date(a.timestamp) - new Date(b.timestamp);
+      } else if (sortBy === 'title') {
+        const titleA = a.screenplay?.title || truncateText(a.params?.story_pitch || '');
+        const titleB = b.screenplay?.title || truncateText(b.params?.story_pitch || '');
+        comparison = titleA.localeCompare(titleB);
+      }
+      
+      return sortOrder === 'desc' ? -comparison : comparison;
+    });
+  }, [history, sortBy, sortOrder]);
 
   // Show empty state if no history
   if (!history || history.length === 0) {
@@ -73,6 +94,32 @@ export default function ScreenplayHistory({
         </div>
       </div>
 
+      {/* Sorting controls */}
+      <div className="sorting-controls">
+        <div className="sort-group">
+          <label>Sort by:</label>
+          <select 
+            value={sortBy} 
+            onChange={(e) => setSortBy(e.target.value)}
+            className="sort-select"
+          >
+            <option value="date">Creation Date</option>
+            <option value="title">Title</option>
+          </select>
+        </div>
+        <div className="sort-group">
+          <label>Order:</label>
+          <select 
+            value={sortOrder} 
+            onChange={(e) => setSortOrder(e.target.value)}
+            className="sort-select"
+          >
+            <option value="desc">Newest First</option>
+            <option value="asc">Oldest First</option>
+          </select>
+        </div>
+      </div>
+
       {/* Storage info */}
       {storageInfo && storageInfo.used !== undefined && (
         <div className="storage-info">
@@ -83,9 +130,9 @@ export default function ScreenplayHistory({
         </div>
       )}
 
-      {/* History list */}
-      <div className="history-list">
-        {history.map((item) => {
+      {/* History grid */}
+      <div className="history-grid">
+        {sortedHistory.map((item) => {
           if (!item || !item.screenplay) return null;
           
           const screenplay = item.screenplay;
@@ -97,16 +144,17 @@ export default function ScreenplayHistory({
           const castCount = screenplay.cast?.length || 0;
           const sceneCount = screenplay.scenes?.length || 0;
           const pitch = params.story_pitch || 'Original Screenplay';
+          const title = screenplay.title || truncateText(pitch, 60);
           
           return (
             <div 
               key={item.id} 
-              className={`history-item ${shouldBeRTL ? 'rtl' : 'ltr'} ${isExpanded ? 'expanded' : ''}`}
+              className={`history-card ${shouldBeRTL ? 'rtl' : 'ltr'} ${isExpanded ? 'expanded' : ''}`}
               style={{ direction: shouldBeRTL ? 'rtl' : 'ltr' }}
             >
-              {/* Clickable header - Book index style */}
+              {/* Card header */}
               <div
-                className="history-item-header"
+                className="history-card-header"
                 onClick={() => setExpandedId(isExpanded ? null : item.id)}
                 role="button"
                 tabIndex={0}
@@ -114,38 +162,38 @@ export default function ScreenplayHistory({
                   if (e.key === 'Enter') setExpandedId(isExpanded ? null : item.id);
                 }}
               >
-                <div className="history-item-info" style={{ direction: shouldBeRTL ? 'rtl' : 'ltr' }}>
-                  {/* Title - prominent display */}
-                  <div className="history-title" style={{ textAlign: shouldBeRTL ? 'right' : 'left', direction: shouldBeRTL ? 'rtl' : 'ltr' }}>
-                    {screenplay.title || truncateText(pitch, 60)}
+                <div className="history-card-info" style={{ direction: shouldBeRTL ? 'rtl' : 'ltr' }}>
+                  {/* Title */}
+                  <div className="history-card-title" style={{ textAlign: shouldBeRTL ? 'right' : 'left', direction: shouldBeRTL ? 'rtl' : 'ltr' }}>
+                    {title}
                   </div>
                   
                   {/* Subtitle - pitch or context */}
                   {screenplay.title && (
-                    <div className="history-subtitle" style={{ textAlign: shouldBeRTL ? 'right' : 'left', direction: shouldBeRTL ? 'rtl' : 'ltr' }}>
+                    <div className="history-card-subtitle" style={{ textAlign: shouldBeRTL ? 'right' : 'left', direction: shouldBeRTL ? 'rtl' : 'ltr' }}>
                       {truncateText(pitch, 80)}
                     </div>
                   )}
                   
                   {/* Date */}
-                  <div className="history-date" style={{ textAlign: shouldBeRTL ? 'right' : 'left' }}>
+                  <div className="history-card-date" style={{ textAlign: shouldBeRTL ? 'right' : 'left' }}>
                     📅 {formatDate(item.timestamp)}
                   </div>
                   
-                  {/* Meta info - compact one-liner */}
-                  <div className="history-meta" style={{ justifyContent: shouldBeRTL ? 'flex-end' : 'flex-start', display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                  {/* Meta info */}
+                  <div className="history-card-meta" style={{ justifyContent: shouldBeRTL ? 'flex-end' : 'flex-start', display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                     {languages && languages.length > 0 && (
-                      <span className="history-lang" style={{ textAlign: shouldBeRTL ? 'right' : 'left' }}>
+                      <span className="history-card-lang" style={{ textAlign: shouldBeRTL ? 'right' : 'left' }}>
                         🗣️ {languages.join(', ')}
                       </span>
                     )}
                     {params.model && (
-                      <span className="history-model" style={{ textAlign: shouldBeRTL ? 'right' : 'left' }}>
+                      <span className="history-card-model" style={{ textAlign: shouldBeRTL ? 'right' : 'left' }}>
                         🤖 {params.model}
                       </span>
                     )}
-                    <span className="stat">👥 {castCount} character{castCount !== 1 ? 's' : ''}</span>
-                    <span className="stat">🎬 {sceneCount} scene{sceneCount !== 1 ? 's' : ''}</span>
+                    <span className="stat">👥 {castCount}</span>
+                    <span className="stat">🎬 {sceneCount}</span>
                   </div>
                 </div>
                 <span className="expand-icon">{isExpanded ? '▼' : '▶'}</span>
@@ -153,8 +201,8 @@ export default function ScreenplayHistory({
 
               {/* Expanded details */}
               {isExpanded && (
-                <div className="history-item-details" style={{ direction: shouldBeRTL ? 'rtl' : 'ltr' }}>
-                  <div className="history-details-content" style={{ textAlign: shouldBeRTL ? 'right' : 'left', direction: shouldBeRTL ? 'rtl' : 'ltr' }}>
+                <div className="history-card-details" style={{ direction: shouldBeRTL ? 'rtl' : 'ltr' }}>
+                  <div className="history-card-details-content" style={{ textAlign: shouldBeRTL ? 'right' : 'left', direction: shouldBeRTL ? 'rtl' : 'ltr' }}>
                     {screenplay.title && (
                       <div className="detail-field">
                         <strong style={{ display: 'block', textAlign: shouldBeRTL ? 'right' : 'left' }}>🎬 Title:</strong>
@@ -192,7 +240,7 @@ export default function ScreenplayHistory({
                   </div>
 
                   {/* Action buttons */}
-                  <div className="history-item-actions" style={{ justifyContent: shouldBeRTL ? 'flex-end' : 'flex-start' }}>
+                  <div className="history-card-actions" style={{ justifyContent: shouldBeRTL ? 'flex-end' : 'flex-start' }}>
                     <button
                       className="load-btn"
                       onClick={() => onSelectScreenplay(item)}

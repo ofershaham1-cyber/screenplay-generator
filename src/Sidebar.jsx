@@ -1,7 +1,7 @@
 import { Link, useLocation } from 'react-router-dom';
 import './Sidebar.css';
 
-const Sidebar = ({ theme, updateTheme }) => {
+const Sidebar = ({ theme, updateTheme, historyCount = 0 }) => {
   const location = useLocation();
 
   const handleThemeChange = (newTheme) => {
@@ -27,7 +27,12 @@ const Sidebar = ({ theme, updateTheme }) => {
           <Link to="/screenplay-result">📄 Result</Link>
         </li>
         <li className={location.pathname === '/history' ? 'active' : ''}>
-          <Link to="/history">History</Link>
+          <Link to="/history">
+            History
+            {historyCount > 0 && (
+              <span className="history-badge">{historyCount}</span>
+            )}
+          </Link>
         </li>
         <li className={location.pathname === '/preferences' ? 'active' : ''}>
           <Link to="/preferences">⚙️ Preferences</Link>

@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { LANGUAGES } from './config/languages';
-import LanguageSpeedControls from './LanguageSpeedControls';
 import './ScreenplayPreferences.css';
 
 export default function ScreenplayPreferences({ theme = 'light', design = 'standard' }) {
@@ -68,27 +67,55 @@ export default function ScreenplayPreferences({ theme = 'light', design = 'stand
         </div>
         
         <div className="form-group">
-          <label>Default Speed (for all languages)</label>
-          <div className="speed-control">
-            <input
-              type="range"
-              min="0.5"
-              max="1"
-              step="0.1"
-              value={defaultSpeed}
-              onChange={(e) => updateDefaultSpeed(e.target.value)}
-              className="speed-slider"
-            />
-            <span className="speed-value">{defaultSpeed.toFixed(1)}x</span>
-          </div>
-          <small className="help-text">Maximum speed: 1.0x (limited for better clarity)</small>
-        </div>
+          <label>Language Speed Controls</label>
+          <div className="speed-controls-container">
+            {/* Default Speed */}
+            <div className="default-speed-section">
+              <label className="subsection-label">Default Speed (for all languages)</label>
+              <div className="speed-control">
+                <input
+                  type="range"
+                  min="0.5"
+                  max="1"
+                  step="0.1"
+                  value={defaultSpeed}
+                  onChange={(e) => updateDefaultSpeed(e.target.value)}
+                  className="speed-slider"
+                />
+                <span className="speed-value">{defaultSpeed.toFixed(1)}x</span>
+              </div>
+            </div>
 
-        <LanguageSpeedControls 
-          languageSpeeds={languageSpeeds}
-          onLanguageSpeedChange={updateLanguageSpeed}
-          defaultSpeed={defaultSpeed}
-        />
+            {/* Language-Specific Speeds */}
+            <div className="language-speeds-section">
+              <label className="subsection-label">Speech Speed by Language</label>
+              <div className="speed-grid">
+                {LANGUAGES.map(lang => (
+                  <div key={lang} className="speed-item">
+                    <label className="speed-label">{lang}</label>
+                    <div className="speed-control">
+                      <input
+                        type="range"
+                        min="0.5"
+                        max="1"
+                        step="0.1"
+                        value={languageSpeeds[lang] || defaultSpeed}
+                        onChange={(e) => updateLanguageSpeed(lang, e.target.value)}
+                        className="speed-slider"
+                      />
+                      <span className="speed-value">
+                        {(languageSpeeds[lang] || defaultSpeed).toFixed(1)}x
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+          <small className="help-text">
+            Default speed applies to all languages unless overridden. Maximum speed: 1.0x (limited for better clarity)
+          </small>
+        </div>
 
         <div className="button-group">
           <button onClick={savePreferences} className="save-btn">

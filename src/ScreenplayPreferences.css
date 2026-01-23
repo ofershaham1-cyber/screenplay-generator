@@ -43,6 +43,34 @@
   color: var(--text-color);
 }
 
+.speed-controls-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.subsection-label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 8px;
+  color: var(--text-color);
+  opacity: 0.9;
+}
+
+.default-speed-section {
+  padding: 12px;
+  background: var(--input-bg);
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+}
+
+.language-speeds-section {
+  padding: 12px;
+  background: var(--input-bg);
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+}
+
 .speed-control {
   display: flex;
   align-items: center;

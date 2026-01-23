@@ -34,7 +34,9 @@
 }
 
 .sidebar-menu li a {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   padding: 12px 20px;
   color: var(--text-color);
   opacity: 0.8;
@@ -52,6 +54,22 @@
   background: var(--button-bg);
   color: white;
   border-right: 3px solid var(--button-hover-bg);
+}
+
+.history-badge {
+  background: #ef4444;
+  color: white;
+  font-size: 11px;
+  font-weight: bold;
+  padding: 2px 8px;
+  border-radius: 10px;
+  min-width: 20px;
+  text-align: center;
+}
+
+.sidebar-menu li.active .history-badge {
+  background: white;
+  color: #ef4444;
 }
 
 .sidebar-footer {

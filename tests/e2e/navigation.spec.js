@@ -277,4 +277,74 @@ test.describe('App Navigation - No JS Errors', () => {
       await expect(meta, 'History item should have meta info').toBeVisible();
     }
   });
+
+  test('Ongoing page shows grid of requests and allows canceling', async ({ page }) => {
+    // Navigate to ongoing page
+    await page.goto('/ongoing', { waitUntil: 'domcontentloaded' });
+    await page.waitForTimeout(500);
+
+    // Check for ongoing page header
+    const header = page.locator('h2').filter({ hasText: 'Ongoing' });
+    await expect(header, 'Ongoing page header should be visible').toBeVisible();
+
+    // Check for model status container
+    const modelStatus = page.locator('.model-status');
+    const statusExists = await modelStatus.count();
+    
+    if (statusExists > 0) {
+      // Model status exists - check for request items
+      const requestItems = page.locator('div[style*="border-left"]');
+      const itemCount = await requestItems.count();
+      
+      if (itemCount > 0) {
+        // Check that request items have proper structure
+        const firstItem = requestItems.first();
+        
+        // Check for model name (first div with font-weight: 500)
+        const modelLabel = firstItem.locator('div').filter({ hasText: /model/ });
+        const modelLabelCount = await modelLabel.count();
+        
+        if (modelLabelCount > 0) {
+          await expect(modelLabel.first(), 'Request item should show model name').toBeVisible();
+        }
+        
+        // Check for status badge
+        const statusBadge = firstItem.locator('span').filter({ hasText: /Generating|Complete|Error|Cancelled|Pending/ });
+        await expect(statusBadge.first(), 'Request item should have status badge').toBeVisible();
+        
+        // Check for cancel button (only if request is active)
+        const cancelBtn = firstItem.locator('button').filter({ hasText: 'Cancel' });
+        const cancelBtnCount = await cancelBtn.count();
+        
+        if (cancelBtnCount > 0) {
+          // Verify cancel button is visible
+          await expect(cancelBtn.first(), 'Cancel button should be visible for active requests').toBeVisible();
+        }
+      }
+    } else {
+      // No model status exists - check for empty state
+      const emptyState = page.locator('p').filter({ hasText: /No generation in progress/ });
+      await expect(emptyState, 'Empty state should be visible when no requests').toBeVisible();
+    }
+  });
+
+  test('Sidebar shows history badge with count', async ({ page }) => {
+    // Navigate to any page
+    await page.goto('/generator', { waitUntil: 'domcontentloaded' });
+    await page.waitForTimeout(500);
+
+    // Check for history badge in sidebar
+    const historyBadge = page.locator('.history-badge');
+    const badgeCount = await historyBadge.count();
+    
+    // Badge should exist (may show 0 or a number)
+    expect(badgeCount, 'History badge should exist in sidebar').toBeGreaterThan(0);
+    
+    // If badge has content, verify it's a number
+    if (badgeCount > 0) {
+      const badgeText = await historyBadge.textContent();
+      const badgeNumber = parseInt(badgeText);
+      expect(badgeNumber, 'Badge should show a number').not.toBeNaN();
+    }
+  });
 });

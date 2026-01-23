@@ -45,8 +45,10 @@ export default function ScreenplayGenerator({
         min_lines_per_dialog: minLinesPerDialog,
         model: selectedModel,
         models: useMultipleModels ? selectedModels : [selectedModel],
+        multiModel: useMultipleModels,
       });
-      onGenerationEnd();
+      // Note: onGenerationEnd() is called from onAllModelsComplete for multi-model
+      // or from the single model generate() callback
     }
   }, [screenplay]);
 
@@ -59,26 +61,18 @@ export default function ScreenplayGenerator({
       // Set selectedModel to the first model for history tracking
       setSelectedModel(selectedModels[0]);
       
-      // Callback when each model completes - saves individual model results to history
-      const onModelComplete = (model, data) => {
-        if (onScreenplayGenerated) {
-          onScreenplayGenerated(data, {
-            title,
-            story_pitch: storypitch,
-            dialog_languages: languagesUsed,
-            default_screenplay_language: defaultScreenplayLanguage,
-            min_lines_per_dialog: minLinesPerDialog,
-            model: model,
-            models: selectedModels,
-            multiModel: true,
-            generatedAt: new Date().toISOString()
-          });
-        }
+      // Callback when all models complete
+      const onAllModelsComplete = (results) => {
+        onGenerationEnd();
+        // Navigate to result page after all models complete
+        window.location.hash = '#/screenplay-result';
       };
       
-      generateForMultipleModels(storypitch, languagesUsed, defaultScreenplayLanguage, minLinesPerDialog, selectedModels, apiKey, onModelComplete);
+      generateForMultipleModels(storypitch, languagesUsed, defaultScreenplayLanguage, minLinesPerDialog, selectedModels, apiKey, null, onAllModelsComplete);
     } else {
+      // Single model generation
       generate(storypitch, languagesUsed, defaultScreenplayLanguage, minLinesPerDialog, selectedModel, apiKey);
+      // onGenerationEnd() will be called from the useEffect when screenplay is set
     }
   };
 

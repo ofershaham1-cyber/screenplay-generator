@@ -30,9 +30,6 @@ function App() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [showSuccessIcon, setShowSuccessIcon] = useState(false);
   
-  // Track which models have been added to history (for per-model results)
-  const [addedModelsToHistory, setAddedModelsToHistory] = useState(new Set());
-  
   // Generator form state - persists across navigation
   const [storypitch, setStorypitch] = useState(DEFAULT_STORY_PITCH);
   const [languagesUsed, setLanguagesUsed] = useState(DEFAULT_DIALOG_LANGUAGES);
@@ -112,40 +109,32 @@ function App() {
   };
 
   const handleScreenplayGenerated = (screenplay, params) => {
-    // Save to history and persist generation state
-    setGeneratingScreenplay(screenplay);
-    setGeneratingParams(params);
-    setIsGenerating(false);
-    
-    // Save to history with support for multi-model results
-    if (params.models && params.models.length > 1) {
-      // Multi-model generation - add each model's result separately
-      params.models.forEach(model => {
-        if (!addedModelsToHistory.has(model)) {
-          addToHistory(screenplay, {
-            ...params,
-            model, // Track which specific model generated this
-            multiModel: true,
-            generatedAt: new Date().toISOString()
-          });
-          setAddedModelsToHistory(prev => new Set([...prev, model]));
-        }
-      });
+    // For multi-model generation, store all responses
+    if (params.multiModel) {
+      // Store the current screenplay (this will be the last one)
+      setGeneratingScreenplay(screenplay);
+      setGeneratingParams(params);
     } else {
-      // Single model generation
-      addToHistory(screenplay, {
-        ...params,
-        generatedAt: new Date().toISOString()
-      });
+      // For single model, store directly
+      setGeneratingScreenplay(screenplay);
+      setGeneratingParams(params);
     }
     
-    // Navigate to result page after generation
-    navigate('/screenplay-result');
+    // Add to history - each response is added as a separate entry
+    addToHistory(screenplay, {
+      ...params,
+      generatedAt: new Date().toISOString()
+    });
+    
+    // For single model generation, navigate to result page
+    if (!params.multiModel) {
+      setIsGenerating(false);
+      navigate('/screenplay-result');
+    }
   };
 
   const handleGenerationStart = () => {
     setIsGenerating(true);
-    setAddedModelsToHistory(new Set()); // Reset for new generation
   };
 
   const handleGenerationEnd = () => {
@@ -170,7 +159,7 @@ function App() {
     <div className="app">
       <AppHeader isGenerating={isGenerating} showSuccessIcon={showSuccessIcon} generationError={generationError} theme={theme} setTheme={setTheme} design={design} setDesign={setDesign} />
       <div className="app-body">
-        <Sidebar theme={theme} updateTheme={updateTheme} design={design} updateDesign={updateDesign} />
+        <Sidebar theme={theme} updateTheme={updateTheme} design={design} updateDesign={updateDesign} historyCount={history.length} />
         <main className="main-content">
           <Routes>
             <Route
