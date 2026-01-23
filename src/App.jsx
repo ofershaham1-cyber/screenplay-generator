@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import { LANGUAGES, DEFAULT_LANGUAGE, DEFAULT_DIALOG_LANGUAGES } from './config/languages';
-import { DEFAULT_STORY_PITCH, DEFAULT_THEME, DEFAULT_DESIGN } from './config/defaults';
+import { DEFAULT_STORY_PITCH, DEFAULT_THEME, DEFAULT_DESIGN, DEFAULT_SCREENPLAY_LANGUAGE } from './config/defaults';
 import ScreenplayGenerator from './ScreenplayGenerator';
 import ScreenplayOngoingRequests from './ScreenplayOngoingRequests';
 import ScreenplayPlayer from './ScreenplayPlayer';
@@ -36,7 +36,8 @@ function App() {
   // Generator form state - persists across navigation
   const [storypitch, setStorypitch] = useState(DEFAULT_STORY_PITCH);
   const [languagesUsed, setLanguagesUsed] = useState(DEFAULT_DIALOG_LANGUAGES);
-  const [defaultScreenplayLanguage, setDefaultScreenplayLanguage] = useState(DEFAULT_LANGUAGE);
+  const [defaultScreenplayLanguage, setDefaultScreenplayLanguage] = useState(DEFAULT_SCREENPLAY_LANGUAGE);
+  const [minLinesPerDialog, setMinLinesPerDialog] = useState(50);
   const [useMultipleModels, setUseMultipleModels] = useState(true);
   const [overrideApiKey, setOverrideApiKey] = useState('');
   const [selectedModels, setSelectedModels] = useState([]);
@@ -50,6 +51,7 @@ function App() {
         if (parsed.storypitch !== undefined) setStorypitch(parsed.storypitch);
         if (parsed.languagesUsed) setLanguagesUsed(parsed.languagesUsed);
         if (parsed.defaultScreenplayLanguage) setDefaultScreenplayLanguage(parsed.defaultScreenplayLanguage);
+        if (parsed.minLinesPerDialog !== undefined) setMinLinesPerDialog(parsed.minLinesPerDialog);
         if (parsed.useMultipleModels !== undefined) setUseMultipleModels(parsed.useMultipleModels);
         if (parsed.overrideApiKey !== undefined) setOverrideApiKey(parsed.overrideApiKey);
         if (parsed.selectedModels) setSelectedModels(parsed.selectedModels);
@@ -66,6 +68,7 @@ function App() {
         storypitch,
         languagesUsed,
         defaultScreenplayLanguage,
+        minLinesPerDialog,
         useMultipleModels,
         overrideApiKey,
         selectedModels
@@ -74,7 +77,7 @@ function App() {
     } catch (err) {
       console.warn('Failed to save generator state to localStorage:', err);
     }
-  }, [storypitch, languagesUsed, defaultScreenplayLanguage, useMultipleModels, overrideApiKey, selectedModels]);
+  }, [storypitch, languagesUsed, defaultScreenplayLanguage, minLinesPerDialog, useMultipleModels, overrideApiKey, selectedModels]);
 
   // Initialize theme from URL on mount
   useEffect(() => {
@@ -184,6 +187,8 @@ function App() {
                   setLanguagesUsed={setLanguagesUsed}
                   defaultScreenplayLanguage={defaultScreenplayLanguage}
                   setDefaultScreenplayLanguage={setDefaultScreenplayLanguage}
+                  minLinesPerDialog={minLinesPerDialog}
+                  setMinLinesPerDialog={setMinLinesPerDialog}
                   useMultipleModels={useMultipleModels}
                   setUseMultipleModels={setUseMultipleModels}
                   overrideApiKey={overrideApiKey}
@@ -207,6 +212,8 @@ function App() {
                   setLanguagesUsed={setLanguagesUsed}
                   defaultScreenplayLanguage={defaultScreenplayLanguage}
                   setDefaultScreenplayLanguage={setDefaultScreenplayLanguage}
+                  minLinesPerDialog={minLinesPerDialog}
+                  setMinLinesPerDialog={setMinLinesPerDialog}
                   useMultipleModels={useMultipleModels}
                   setUseMultipleModels={setUseMultipleModels}
                   overrideApiKey={overrideApiKey}

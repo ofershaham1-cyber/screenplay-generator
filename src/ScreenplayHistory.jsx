@@ -104,7 +104,7 @@ export default function ScreenplayHistory({
               className={`history-item ${shouldBeRTL ? 'rtl' : 'ltr'} ${isExpanded ? 'expanded' : ''}`}
               style={{ direction: shouldBeRTL ? 'rtl' : 'ltr' }}
             >
-              {/* Clickable header */}
+              {/* Clickable header - Book index style */}
               <div
                 className="history-item-header"
                 onClick={() => setExpandedId(isExpanded ? null : item.id)}
@@ -115,12 +115,24 @@ export default function ScreenplayHistory({
                 }}
               >
                 <div className="history-item-info" style={{ direction: shouldBeRTL ? 'rtl' : 'ltr' }}>
+                  {/* Title - prominent display */}
                   <div className="history-title" style={{ textAlign: shouldBeRTL ? 'right' : 'left', direction: shouldBeRTL ? 'rtl' : 'ltr' }}>
-                    {truncateText(pitch, 60)}
+                    {screenplay.title || truncateText(pitch, 60)}
                   </div>
+                  
+                  {/* Subtitle - pitch or context */}
+                  {screenplay.title && (
+                    <div className="history-subtitle" style={{ textAlign: shouldBeRTL ? 'right' : 'left', direction: shouldBeRTL ? 'rtl' : 'ltr' }}>
+                      {truncateText(pitch, 80)}
+                    </div>
+                  )}
+                  
+                  {/* Date */}
                   <div className="history-date" style={{ textAlign: shouldBeRTL ? 'right' : 'left' }}>
                     📅 {formatDate(item.timestamp)}
                   </div>
+                  
+                  {/* Meta info - compact one-liner */}
                   <div className="history-meta" style={{ justifyContent: shouldBeRTL ? 'flex-end' : 'flex-start', display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
                     {languages && languages.length > 0 && (
                       <span className="history-lang" style={{ textAlign: shouldBeRTL ? 'right' : 'left' }}>
@@ -132,8 +144,6 @@ export default function ScreenplayHistory({
                         🤖 {params.model}
                       </span>
                     )}
-                  </div>
-                  <div className="history-stats" style={{ justifyContent: shouldBeRTL ? 'flex-end' : 'flex-start', display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
                     <span className="stat">👥 {castCount} character{castCount !== 1 ? 's' : ''}</span>
                     <span className="stat">🎬 {sceneCount} scene{sceneCount !== 1 ? 's' : ''}</span>
                   </div>
@@ -145,6 +155,14 @@ export default function ScreenplayHistory({
               {isExpanded && (
                 <div className="history-item-details" style={{ direction: shouldBeRTL ? 'rtl' : 'ltr' }}>
                   <div className="history-details-content" style={{ textAlign: shouldBeRTL ? 'right' : 'left', direction: shouldBeRTL ? 'rtl' : 'ltr' }}>
+                    {screenplay.title && (
+                      <div className="detail-field">
+                        <strong style={{ display: 'block', textAlign: shouldBeRTL ? 'right' : 'left' }}>🎬 Title:</strong>
+                        <p style={{ direction: shouldBeRTL ? 'rtl' : 'ltr', textAlign: shouldBeRTL ? 'right' : 'left', marginTop: '8px', fontSize: '1.1rem', fontWeight: 'bold' }}>
+                          {screenplay.title}
+                        </p>
+                      </div>
+                    )}
                     {params.story_pitch && (
                       <div className="detail-field">
                         <strong style={{ display: 'block', textAlign: shouldBeRTL ? 'right' : 'left' }}>📖 Story Pitch:</strong>

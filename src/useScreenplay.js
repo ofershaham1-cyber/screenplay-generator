@@ -109,7 +109,7 @@ export const useScreenplay = () => {
       .catch(err => console.warn('Failed to fetch models list:', err));
   }, []);
 
-  const generate = async (story_pitch, dialog_languages, default_screenplay_language, model, customApiKey) => {
+  const generate = async (story_pitch, dialog_languages, default_screenplay_language, min_lines_per_dialog, model, customApiKey) => {
     setLoading(true);
     setError('');
     try {
@@ -119,6 +119,7 @@ export const useScreenplay = () => {
         story_pitch: story_pitch || '',
         dialog_languages,
         default_screenplay_language,
+        min_lines_per_dialog,
         model: model || selectedModel,
         ...(customApiKey && { customApiKey }),
       };
@@ -156,7 +157,7 @@ export const useScreenplay = () => {
     }
   };
 
-  const generateForMultipleModels = async (story_pitch, dialog_languages, default_screenplay_language, modelsToGenerate, customApiKey, onModelComplete) => {
+  const generateForMultipleModels = async (story_pitch, dialog_languages, default_screenplay_language, min_lines_per_dialog, modelsToGenerate, customApiKey, onModelComplete) => {
     setLoading(true);
     setError('');
     setMultiModelResults({});
@@ -175,6 +176,7 @@ export const useScreenplay = () => {
               story_pitch,
               dialog_languages,
               default_screenplay_language,
+              min_lines_per_dialog,
               model,
               customApiKey,
             }),

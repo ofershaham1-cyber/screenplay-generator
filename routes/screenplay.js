@@ -62,13 +62,14 @@ const loadResponseFormat = async () => {
  *         description: Generated screenplay
  */
 export const generateScreenplay = async (req, res) => {
-  const { story_pitch, dialog_languages, default_screenplay_language, model, customApiKey } = req.body;
+  const { story_pitch, dialog_languages, default_screenplay_language, min_lines_per_dialog, model, customApiKey } = req.body;
 
   try {
     global.logger?.log('📝 Screenplay Generation Request:');
     global.logger?.log('  Story Pitch:', story_pitch);
     global.logger?.log('  Languages Used:', dialog_languages?.join(', '));
     global.logger?.log('  Default Language:', default_screenplay_language);
+    global.logger?.log('  Min Lines Per Dialog:', min_lines_per_dialog);
     global.logger?.log('  Model:', model);
     global.logger?.log('  Custom API Key:', customApiKey ? 'provided' : 'not provided');
     
@@ -85,6 +86,7 @@ export const generateScreenplay = async (req, res) => {
     format.jsonSchema.schema.properties.default_screenplay_language.default = default_screenplay_language;
     format.jsonSchema.schema.properties.dialog_languages.default = dialog_languages;
     format.jsonSchema.schema.properties.story_pitch.default = story_pitch;
+    format.jsonSchema.schema.properties.limitations.properties.min_lines_per_dialog.default = min_lines_per_dialog;
 
     global.logger?.log('📋 Response Format Schema:', JSON.stringify(format, null, 2));
     

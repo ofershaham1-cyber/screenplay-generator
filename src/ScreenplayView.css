@@ -9,6 +9,21 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.screenplay-title {
+  width: 100%;
+  margin: 0 0 8px 0;
+  font-size: 28px;
+  font-weight: bold;
+  color: var(--text-color);
+  text-align: center;
+  padding: 12px;
+  background: var(--section-bg);
+  border-radius: 8px;
+  border: 2px solid var(--border-color);
 }
 
 .screenplay-header h2 {

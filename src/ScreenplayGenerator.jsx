@@ -14,6 +14,8 @@ export default function ScreenplayGenerator({
   setLanguagesUsed,
   defaultScreenplayLanguage,
   setDefaultScreenplayLanguage,
+  minLinesPerDialog,
+  setMinLinesPerDialog,
   useMultipleModels,
   setUseMultipleModels,
   overrideApiKey,
@@ -40,6 +42,7 @@ export default function ScreenplayGenerator({
         story_pitch: storypitch,
         dialog_languages: languagesUsed,
         default_screenplay_language: defaultScreenplayLanguage,
+        min_lines_per_dialog: minLinesPerDialog,
         model: selectedModel,
         models: useMultipleModels ? selectedModels : [selectedModel],
       });
@@ -60,9 +63,11 @@ export default function ScreenplayGenerator({
       const onModelComplete = (model, data) => {
         if (onScreenplayGenerated) {
           onScreenplayGenerated(data, {
+            title,
             story_pitch: storypitch,
             dialog_languages: languagesUsed,
             default_screenplay_language: defaultScreenplayLanguage,
+            min_lines_per_dialog: minLinesPerDialog,
             model: model,
             models: selectedModels,
             multiModel: true,
@@ -71,9 +76,9 @@ export default function ScreenplayGenerator({
         }
       };
       
-      generateForMultipleModels(storypitch, languagesUsed, defaultScreenplayLanguage, selectedModels, apiKey, onModelComplete);
+      generateForMultipleModels(storypitch, languagesUsed, defaultScreenplayLanguage, minLinesPerDialog, selectedModels, apiKey, onModelComplete);
     } else {
-      generate(storypitch, languagesUsed, defaultScreenplayLanguage, selectedModel, apiKey);
+      generate(storypitch, languagesUsed, defaultScreenplayLanguage, minLinesPerDialog, selectedModel, apiKey);
     }
   };
 
@@ -100,12 +105,23 @@ export default function ScreenplayGenerator({
     );
   };
 
+  // Check if required fields are filled
+  const isFormValid = () => {
+    const hasStoryPitch = storypitch && storypitch.trim().length > 0;
+    const hasLanguages = languagesUsed && languagesUsed.length > 0;
+    const hasDefaultLanguage = defaultScreenplayLanguage && defaultScreenplayLanguage.trim().length > 0;
+    const hasMinLines = minLinesPerDialog && minLinesPerDialog > 0;
+    
+    return hasStoryPitch && hasLanguages && hasDefaultLanguage && hasMinLines;
+  };
+
   return (
     <div className="container">
       <div className="section">
         <div className="header">
           <h2>Generate Screenplay</h2>
         </div>
+
         <div className="form-group">
           <label>Story pitch (optional)</label>
           <textarea
@@ -144,6 +160,21 @@ export default function ScreenplayGenerator({
               <option key={lang} value={lang}>{lang}</option>
             ))}
           </select>
+        </div>
+
+        <div className="form-group">
+          <label>Minimum Lines Per Dialog <span style={{ color: 'red' }}>*</span></label>
+          <input
+            type="number"
+            min="1"
+            max="200"
+            placeholder="50"
+            value={minLinesPerDialog}
+            onChange={(e) => setMinLinesPerDialog(parseInt(e.target.value) || 0)}
+            disabled={loading}
+            required
+          />
+          <small style={{ color: '#666', fontSize: '12px' }}>Controls the minimum length of character dialogs</small>
         </div>
 
         <div className="form-group">

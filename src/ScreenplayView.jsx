@@ -328,6 +328,9 @@ export default function ScreenplayView({ screenplay, format, darkMode = false, s
   return (
     <div className="section">
       <div className="screenplay-header">
+        {screenplay.title && (
+          <h1 className="screenplay-title">{screenplay.title}</h1>
+        )}
         <h2>Generated Screenplay</h2>
         <button 
           onClick={() => window.location.href = '#/history'}
@@ -356,6 +359,12 @@ export default function ScreenplayView({ screenplay, format, darkMode = false, s
       <div className="screenplay-preview">
         <h3>Quick Preview</h3>
         <div className="screenplay-info">
+          {screenplay.title && (
+            <div className="info-row">
+              <span className="info-label">Title:</span>
+              <span className="info-value">{screenplay.title}</span>
+            </div>
+          )}
           <div className="info-row">
             <span className="info-label">Story Pitch:</span>
             <span className={`info-value ${isLanguageRTL(screenplay.default_screenplay_language) ? 'rtl-content' : ''}`}>{screenplay.story_pitch}</span>

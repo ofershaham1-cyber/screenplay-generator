@@ -85,19 +85,21 @@
 
 .history-item {
   border: 1px solid var(--border-color);
-  border-radius: 6px;
+  border-radius: 8px;
   overflow: visible;
   background-color: var(--section-bg);
-  transition: box-shadow 0.2s;
+  transition: box-shadow 0.2s, transform 0.1s;
   position: relative;
+  border-left: 4px solid var(--button-bg);
 }
 
 .history-item:hover {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
 }
 
 .history-item-header {
-  padding: 0.75rem;
+  padding: 1rem;
   cursor: pointer;
   display: flex;
   justify-content: space-between;
@@ -111,26 +113,38 @@
 }
 
 .history-title {
-  font-weight: 600;
+  font-weight: 700;
   color: var(--text-color);
-  font-size: 0.95rem;
+  font-size: 1.1rem;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  margin-bottom: 0.25rem;
+}
+
+.history-subtitle {
+  font-size: 0.85rem;
+  color: var(--text-color);
+  opacity: 0.7;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 0.5rem;
 }
 
 .history-date {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   color: var(--text-color);
   opacity: 0.5;
-  margin-top: 0.25rem;
+  margin-bottom: 0.5rem;
 }
 
 .history-meta {
   display: flex;
   gap: 0.5rem;
-  margin-top: 0.35rem;
+  margin-bottom: 0.5rem;
   flex-wrap: wrap;
+  font-size: 0.8rem;
 }
 
 .history-lang,
@@ -143,29 +157,27 @@
   border: 1px solid var(--border-color);
 }
 
-.history-stats {
-  display: flex;
-  gap: 0.75rem;
-  margin-top: 0.35rem;
-  flex-wrap: wrap;
-}
-
 .stat {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   background-color: var(--input-bg);
-  padding: 0.3rem 0.6rem;
+  padding: 0.2rem 0.4rem;
   border-radius: 3px;
   color: var(--text-color);
   border: 1px solid var(--border-color);
-  font-weight: 500;
 }
 
 .expand-icon {
-  margin-left: 0.5rem;
-  flex-shrink: 0;
+  font-size: 0.9rem;
   color: var(--text-color);
   opacity: 0.5;
-  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.history-item-header:hover .expand-icon {
+  background-color: var(--input-bg);
+  opacity: 0.8;
 }
 
 .history-item-details {
