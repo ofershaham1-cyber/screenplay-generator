@@ -91,6 +91,7 @@ export default function ScreenplayGenerator({
     console.log('Clearing all models, current:', selectedModels);
     setSelectedModels([]);
     setHasUserCleared(true);
+    console.log('After clearing, selectedModels should be empty');
   };
 
   const toggleLanguage = (lang) => {

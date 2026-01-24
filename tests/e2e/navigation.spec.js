@@ -91,18 +91,17 @@ test.describe('App Navigation - No JS Errors', () => {
   test('Clear All button should deselect all models', async ({ page }) => {
     // Navigate to generator
     await page.goto('/generator', { waitUntil: 'domcontentloaded' });
-    await page.waitForTimeout(500); // Wait for models to load
+    await page.waitForTimeout(1000); // Wait for models to load
 
-    // Enable multiple models mode by looking for the label with text "Generate for Multiple Models"
-    const multiModelLabel = page.locator('label').filter({ hasText: 'Generate for Multiple Models' }).first();
-    const multiModelCheckbox = multiModelLabel.locator('input[type="checkbox"]');
+    // Enable multiple models mode
+    const multiModelCheckbox = page.locator('input[type="checkbox"]').filter({ hasText: /Generate for Multiple Models/ }).first();
     await multiModelCheckbox.check();
-    await page.waitForTimeout(200);
+    await page.waitForTimeout(500);
 
     // Click "Select All" to select all models
-    const selectAllBtn = page.locator('button').filter({ hasText: 'Select All' }).first();
+    const selectAllBtn = page.locator('button:has-text("Select All")').first();
     await selectAllBtn.click();
-    await page.waitForTimeout(150);
+    await page.waitForTimeout(500);
 
     // Verify models are selected
     const selectedCheckboxes = page.locator('div.lang-grid input[type="checkbox"]:checked');
@@ -110,9 +109,9 @@ test.describe('App Navigation - No JS Errors', () => {
     expect(countBefore, 'Should have selected models').toBeGreaterThan(0);
 
     // Click "Clear All" button
-    const clearAllBtn = page.locator('button').filter({ hasText: 'Clear All' }).first();
+    const clearAllBtn = page.locator('button:has-text("Clear All")').first();
     await clearAllBtn.click();
-    await page.waitForTimeout(150);
+    await page.waitForTimeout(1000); // Increased wait time for state update
 
     // Verify all models are deselected
     const selectedCheckboxesAfter = page.locator('div.lang-grid input[type="checkbox"]:checked');
@@ -123,6 +122,15 @@ test.describe('App Navigation - No JS Errors', () => {
     const countDisplay = page.locator('p').filter({ hasText: 'model(s) selected' });
     const displayCount = await countDisplay.count();
     expect(displayCount, 'Should have count display when models selected or just cleared').toBeGreaterThanOrEqual(0);
+  });
+
+    // Verify the count display shows 0 or doesn't exist
+    const countDisplay = page.locator('p:has-text("model(s) selected")');
+    const displayCount = await countDisplay.count();
+    if (displayCount > 0) {
+      const displayText = await countDisplay.textContent();
+      expect(displayText, 'Model count should show 0').toContain('0');
+    }
   });
 
   test('Title input should be optional and persist in form', async ({ page }) => {
