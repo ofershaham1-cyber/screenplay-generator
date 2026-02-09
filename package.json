@@ -3,19 +3,22 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "start": "nodemon server.js",
-    "start:ts": "nodemon --exec tsx server.ts",
+    "start": "nodemon --exec tsx server.ts",
+    "start:ts": "npm run start",
     "client": "vite",
     "dev": "concurrently \"npm run start\" \"npm run client\"",
-    "dev:ts": "concurrently \"npm run start:ts\" \"npm run client\"",
+    "dev:ts": "npm run dev",
     "build": "vite build",
     "build:server": "tsc",
     "build:all": "npm run build:server && npm run build",
     "preview": "vite preview",
     "type-check": "tsc --noEmit",
     "test": "playwright test",
+    "test:watch": "playwright test --watch",
     "test:ui": "playwright test --ui",
-    "test:debug": "playwright test --debug"
+    "test:debug": "playwright test --debug",
+    "test:log": "tail -f test-results/test.log 2>/dev/null || echo 'Waiting for test log...'",
+    "tdd": "concurrently \"npm run dev\" \"npm run test:watch\" \"npm run test:log\""
   },
   "dependencies": {
     "@openrouter/sdk": "^0.3.11",
@@ -39,6 +42,7 @@
     "@vitejs/plugin-react": "^4.2.0",
     "concurrently": "^9.2.1",
     "nodemon": "^3.1.11",
+    "tsx": "^4.7.0",
     "typescript": "^5.3.3",
     "vite": "^7.3.1"
   }

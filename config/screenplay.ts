@@ -26,4 +26,4 @@ export const SUPPORTED_LANGUAGES = [
   'Polish',
   'Turkish',
   'Hindi'
-];
+] as const;

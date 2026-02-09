@@ -1,6 +1,6 @@
 {
   "watch": [
-    "server.js",
+    "server.ts",
     "routes/",
     "config.json",
     "responseFormat.json"
@@ -13,6 +13,6 @@
     "logs/",
     "*.log"
   ],
-  "ext": "js,json",
+  "ext": "ts,tsx,json",
   "delay": 500
 }

@@ -1,5 +1,5 @@
 {
-  "extends": "./tsconfig.json",
+  "extends": "../tsconfig.json",
   "compilerOptions": {
     "target": "ES2020",
     "useDefineForClassFields": true,
@@ -7,9 +7,13 @@
     "module": "ESNext",
     "skipLibCheck": true,
     "jsx": "react-jsx",
-    "outDir": "./dist",
-    "rootDir": "./src"
+    "outDir": "../dist",
+    "rootDir": "./",
+    "noImplicitAny": false,
+    "strict": false,
+    "declaration": false
   },
-  "include": ["src"],
-  "references": [{ "path": "./tsconfig.node.json" }]
+  "include": ["."],
+  "exclude": ["*.js", "**/*.js", "../backup_js/*", "../backup_jsx/*"],
+  "references": [{ "path": "../tsconfig.node.json" }]
 }

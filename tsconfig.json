@@ -32,8 +32,9 @@
     "noFallthroughCasesInSwitch": true,
     "skipLibCheck": true,
     "resolveJsonModule": true,
+    "typeRoots": ["./node_modules/@types", "./@types"],
     "types": ["node"]
   },
-  "include": ["server.ts", "routes/**/*.ts", "config/**/*.ts"],
-  "exclude": ["node_modules", "dist", "src", "test-results", "playwright-report"]
+  "include": ["server.ts", "index.ts", "routes/**/*.ts", "config/**/*.ts"],
+  "exclude": ["node_modules", "dist", "src", "test-results", "playwright-report", "**/*.js", "config/screenplay.js"]
 }
