@@ -3,7 +3,7 @@ import { Routes, Route, useNavigate } from 'react-router-dom';
 import { LANGUAGES, DEFAULT_LANGUAGE, DEFAULT_DIALOG_LANGUAGES } from './config/languages';
 import { DEFAULT_STORY_PITCH, DEFAULT_THEME, DEFAULT_DESIGN, DEFAULT_SCREENPLAY_LANGUAGE } from './config/defaults';
 import ScreenplayGenerator from './ScreenplayGenerator';
-import ScreenplayOngoingRequests from './ScreenplayOngoingRequests';
+import ScreenplayRequests from './ScreenplayRequests';
 import ScreenplayPlayer from './ScreenplayPlayer';
 import ScreenplayResult from './ScreenplayResult';
 import ScreenplayHistoryView from './ScreenplayHistoryView';
@@ -213,9 +213,9 @@ function App(): JSX.Element {
               }
             />
             <Route
-              path="/ongoing"
+              path="/requests"
               element={
-                <ScreenplayOngoingRequests
+                <ScreenplayRequests
                   selectedModels={selectedModels}
                   requestStates={requestStates}
                   activeModels={activeModels}

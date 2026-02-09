@@ -81,3 +81,13 @@ export const isLanguageRTL = (lang: string): boolean => RTL_LANGUAGES.includes(l
 export const getLanguageColor = (lang: string): string => LANGUAGE_COLORS[lang] || '#6b7280';
 
 export const getLanguageCode = (lang: string): string => LANGUAGE_CODES[lang] || 'en-US';
+
+/**
+ * Validates if a language is in the LANGUAGES array
+ * Returns the language if valid, otherwise returns DEFAULT_LANGUAGE
+ */
+export const validateLanguage = (lang: string | null | undefined): (typeof LANGUAGES)[number] => {
+  if (!lang) return DEFAULT_LANGUAGE;
+  if (LANGUAGES.includes(lang as any)) return lang as (typeof LANGUAGES)[number];
+  return DEFAULT_LANGUAGE;
+};

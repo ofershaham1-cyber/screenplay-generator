@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { playScreenplay, stop, pause, resume, isPaused, isSpeaking, setDynamicLanguageSpeeds } from './tts';
-import { LANGUAGE_COLORS, RTL_LANGUAGES, isLanguageRTL, DEFAULT_LANGUAGE } from './config/languages';
+import { LANGUAGE_COLORS, RTL_LANGUAGES, isLanguageRTL, DEFAULT_LANGUAGE, validateLanguage } from './config/languages';
 import { DEFAULT_TTS_OPTIONS } from './config/defaults';
 import './ScreenplayView.css';
 
@@ -8,7 +8,7 @@ export default function ScreenplayView({ screenplay, format, darkMode = false, s
   const [playing, setPlaying] = useState('stopped'); // 'stopped', 'playing', 'paused'
   const [currentScene, setCurrentScene] = useState(-1);
   const [currentLine, setCurrentLine] = useState(-1);
-  const [currentSpeakingLanguage, setCurrentSpeakingLanguage] = useState(null);
+  const [currentSpeakingLanguage, setCurrentSpeakingLanguage] = useState<string | null>(validateLanguage(screenplay?.default_screenplay_language) || null);
   const [expandedSections, setExpandedSections] = useState({});
   const [currentWord, setCurrentWord] = useState('');
   const [currentContentType, setCurrentContentType] = useState('');
@@ -120,12 +120,12 @@ export default function ScreenplayView({ screenplay, format, darkMode = false, s
         languageSpeeds: { ...languageSpeeds },
         defaultLanguageSpeed: defaultSpeed,
         ttsOptions: { ...ttsOptions },
-        defaultLanguage: screenplay.default_screenplay_language || DEFAULT_LANGUAGE,
+        defaultLanguage: validateLanguage(screenplay.default_screenplay_language),
         startSceneIdx: startSceneIdx,
         startLineIdx: startLineIdx,
         onLanguageChange: (lang) => {
           if (!controller.isCancelled) {
-            setCurrentSpeakingLanguage(lang);
+            setCurrentSpeakingLanguage(validateLanguage(lang));
           }
         },
         onLineStart: (sceneIdx, lineIdx) => {
@@ -367,11 +367,11 @@ export default function ScreenplayView({ screenplay, format, darkMode = false, s
           )}
           <div className="info-row">
             <span className="info-label">Story Pitch:</span>
-            <span className={`info-value ${isLanguageRTL(screenplay.default_screenplay_language) ? 'rtl-content' : ''}`}>{screenplay.story_pitch}</span>
+            <span className={`info-value ${isLanguageRTL(validateLanguage(screenplay.default_screenplay_language)) ? 'rtl-content' : ''}`}>{screenplay.story_pitch}</span>
           </div>
           <div className="info-row">
             <span className="info-label">Exposition:</span>
-            <span className={`info-value ${isLanguageRTL(screenplay.default_screenplay_language) ? 'rtl-content' : ''}`}>{screenplay.exposition}</span>
+            <span className={`info-value ${isLanguageRTL(validateLanguage(screenplay.default_screenplay_language)) ? 'rtl-content' : ''}`}>{screenplay.exposition}</span>
           </div>
           <div className="info-row">
             <span className="info-label">Languages Used:</span>
@@ -379,7 +379,7 @@ export default function ScreenplayView({ screenplay, format, darkMode = false, s
           </div>
           <div className="info-row">
             <span className="info-label">Cast:</span>
-            <span className={`info-value ${isLanguageRTL(screenplay.default_screenplay_language) ? 'rtl-content' : ''}`}>{screenplay.cast?.map(c => c.name).join(', ')}</span>
+            <span className={`info-value ${isLanguageRTL(validateLanguage(screenplay.default_screenplay_language)) ? 'rtl-content' : ''}`}>{screenplay.cast?.map(c => c.name).join(', ')}</span>
           </div>
           <div className="info-row">
             <span className="info-label">Scenes:</span>
@@ -433,7 +433,7 @@ export default function ScreenplayView({ screenplay, format, darkMode = false, s
                 onChange={(e) => setTtsOptions(prev => ({ ...prev, includeTranslation: e.target.checked }))}
                 disabled={playing !== 'stopped'}
               />
-              Translation ({screenplay.default_screenplay_language || DEFAULT_LANGUAGE})
+              Translation ({validateLanguage(screenplay.default_screenplay_language)})
             </label>
             <label>
               <input
@@ -535,8 +535,8 @@ export default function ScreenplayView({ screenplay, format, darkMode = false, s
       {(playing === 'playing' || playing === 'paused') && (
         <div className="playback-status">
           <div className="status-info">
-            <p><strong>Default Language:</strong> <span className="language-badge">{screenplay.default_screenplay_language || DEFAULT_LANGUAGE}</span></p>
-            <p><strong>Currently Speaking:</strong> <span className="language-badge current">{currentSpeakingLanguage || screenplay.default_screenplay_language || DEFAULT_LANGUAGE}</span></p>
+            <p><strong>Default Language:</strong> <span className="language-badge">{validateLanguage(screenplay.default_screenplay_language)}</span></p>
+            <p><strong>Currently Speaking:</strong> <span className="language-badge current">{currentSpeakingLanguage || validateLanguage(screenplay.default_screenplay_language)}</span></p>
           </div>
         </div>
       )}
@@ -613,7 +613,7 @@ export default function ScreenplayView({ screenplay, format, darkMode = false, s
                       <span className="original">{highlightText(line.text, 'text', sceneIdx, lineIdx)}</span>
                     </div>
                     {line.translation && line.text !== line.translation && (
-                      <div className="translation" style={{ direction: isLanguageRTL(screenplay.default_screenplay_language) ? 'rtl' : 'ltr', textAlign: isLanguageRTL(screenplay.default_screenplay_language) ? 'right' : 'left' }}>
+                      <div className="translation" style={{ direction: isLanguageRTL(validateLanguage(screenplay.default_screenplay_language)) ? 'rtl' : 'ltr', textAlign: isLanguageRTL(validateLanguage(screenplay.default_screenplay_language)) ? 'right' : 'left' }}>
                         <em>({highlightText(line.translation, 'translation', sceneIdx, lineIdx)})</em>
                       </div>
                     )}

@@ -264,7 +264,7 @@ export default function ScreenplayGenerator({
             fontSize: '13px',
             color: '#0066cc'
           }}>
-            <strong>💡 Tip:</strong> Visit the <a href="#/ongoing" style={{ color: '#0066cc', fontWeight: '500' }}>Ongoing Requests</a> page to monitor generation progress and cancel individual models.
+            <strong>💡 Tip:</strong> Visit the <a href="#/requests" style={{ color: '#0066cc', fontWeight: '500' }}>Requests</a> page to monitor generation progress and cancel individual models.
           </div>
         )}
         

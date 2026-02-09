@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { RTL_LANGUAGES, isLanguageRTL } from './config/languages';
+import { RTL_LANGUAGES, isLanguageRTL, validateLanguage } from './config/languages';
 import './ScreenplayHistory.css';
 
 export default function ScreenplayHistory({ 
@@ -222,7 +222,7 @@ export default function ScreenplayHistory({
                     {params.default_screenplay_language && (
                       <div className="detail-field">
                         <strong style={{ display: 'block', textAlign: shouldBeRTL ? 'right' : 'left' }}>🌍 Default Language:</strong>
-                        <p style={{ textAlign: shouldBeRTL ? 'right' : 'left', marginTop: '8px' }}>{params.default_screenplay_language}</p>
+                        <p style={{ textAlign: shouldBeRTL ? 'right' : 'left', marginTop: '8px' }}>{validateLanguage(params.default_screenplay_language)}</p>
                       </div>
                     )}
                     {screenplay.exposition && (

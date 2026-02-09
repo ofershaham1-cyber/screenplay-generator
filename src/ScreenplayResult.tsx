@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import ScreenplayView from './ScreenplayView';
 import { useScreenplayHistory } from './useScreenplayHistory';
 import { useScreenplay } from './useScreenplay';
+import { validateLanguage } from './config/languages';
 
 export default function ScreenplayResult() {
   const { history } = useScreenplayHistory();
@@ -54,7 +55,7 @@ export default function ScreenplayResult() {
             {generatingParams.default_screenplay_language && (
               <div>
                 <strong>Default Language:</strong>
-                <p>{generatingParams.default_screenplay_language}</p>
+                <p>{validateLanguage(generatingParams.default_screenplay_language)}</p>
               </div>
             )}
             {generatingParams.model && (

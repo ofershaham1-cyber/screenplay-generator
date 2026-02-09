@@ -17,8 +17,8 @@ const Sidebar = ({ theme, updateTheme, historyCount = 0 }) => {
         <li className={location.pathname === '/' || location.pathname === '/generator' ? 'active' : ''}>
           <Link to="/generator">Generator</Link>
         </li>
-        <li className={location.pathname === '/ongoing' ? 'active' : ''}>
-          <Link to="/ongoing">⏳ Ongoing</Link>
+        <li className={location.pathname === '/requests' ? 'active' : ''}>
+          <Link to="/requests">📋 Requests</Link>
         </li>
         <li className={location.pathname === '/player' ? 'active' : ''}>
           <Link to="/player">Player</Link>
