@@ -128,7 +128,7 @@ export const useScreenplay = () => {
   const generate = async (
     story_pitch: string,
     dialog_languages: string[],
-    default_screenplay_language: string,
+    default_language: string,
     min_lines_per_dialog: number,
     model: string,
     customApiKey?: string,
@@ -146,7 +146,7 @@ export const useScreenplay = () => {
       const payload = {
         story_pitch: story_pitch || '',
         dialog_languages,
-        default_screenplay_language,
+        default_language,
         min_lines_per_dialog,
         model: model || selectedModel,
         generationType,
@@ -197,7 +197,7 @@ export const useScreenplay = () => {
   const generateForMultipleModels = async (
     story_pitch: string,
     dialog_languages: string[],
-    default_screenplay_language: string,
+    default_language: string,
     min_lines_per_dialog: number,
     modelsToGenerate: string[],
     customApiKey?: string,
@@ -222,7 +222,7 @@ export const useScreenplay = () => {
             body: JSON.stringify({
               story_pitch,
               dialog_languages,
-              default_screenplay_language,
+              default_language,
               min_lines_per_dialog,
               model,
               generationType,

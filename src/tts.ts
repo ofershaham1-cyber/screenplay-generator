@@ -144,6 +144,14 @@ export const playScreenplay = async (screenplay: Screenplay, options: PlayScreen
           if (onLineStart && !(controller as any).isCancelled) onLineStart(0, lineIdx);
         });
       }
+      
+      // Speak translation for audiobooks if different from text
+      if (ttsOpts.includeTranslation && line.translation && line.translation !== line.text) {
+        if ((controller as any).isCancelled) break;
+        const translationSpeed = currentLanguageSpeeds[defaultLanguage] || 1;
+        onLanguageChange?.(defaultLanguage);
+        await speakWithHighlight(line.translation, defaultLanguage, translationSpeed, (word) => onWordStart?.(word, 'translation', 0, lineIdx));
+      }
     }
   } else {
     // Handle screenplay playback (scenes with dialog)

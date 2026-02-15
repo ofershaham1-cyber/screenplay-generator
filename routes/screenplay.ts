@@ -1,7 +1,7 @@
 import { OpenRouter } from '@openrouter/sdk';
 import fs from 'fs/promises';
 import { Request, Response } from 'express';
-import { DEFAULT_MODEL, DEFAULT_DIALOG_LANGUAGES, DEFAULT_SCREENPLAY_LANGUAGE } from '../config/screenplay.js';
+import { DEFAULT_MODEL, DEFAULT_DIALOG_LANGUAGES, default_language } from '../config/screenplay.js';
 
 interface Logger {
   log: (...args: unknown[]) => void;
@@ -58,7 +58,7 @@ const loadAllResponseFormats = async () => {
 interface GenerateScreenplayRequest {
   story_pitch?: string;
   dialog_languages?: string[];
-  default_screenplay_language?: string;
+  default_language?: string;
   min_lines_per_dialog?: number;
   model?: string;
   customApiKey?: string;
@@ -83,7 +83,7 @@ interface GenerateScreenplayRequest {
  *                 type: array
  *                 items:
  *                   type: string
- *               default_screenplay_language:
+ *               default_language:
  *                 type: string
  *               model:
  *                 type: string
@@ -94,13 +94,13 @@ interface GenerateScreenplayRequest {
  *         description: Generated screenplay
  */
 export const generateScreenplay = async (req: Request, res: Response): Promise<void> => {
-  const { story_pitch, dialog_languages, default_screenplay_language, min_lines_per_dialog, model, customApiKey, generationType = 'screenplay' } = req.body as GenerateScreenplayRequest;
+  const { story_pitch, dialog_languages, default_language, min_lines_per_dialog, model, customApiKey, generationType = 'screenplay' } = req.body as GenerateScreenplayRequest;
 
   try {
     global.logger?.log(`📝 ${generationType.toUpperCase()} Generation Request:`);
     global.logger?.log('  Story Pitch:', story_pitch);
     global.logger?.log('  Languages Used:', dialog_languages?.join(', '));
-    global.logger?.log('  Default Language:', default_screenplay_language);
+    global.logger?.log('  Default Language:', default_language);
     global.logger?.log('  Min Lines Per Dialog:', min_lines_per_dialog);
     global.logger?.log('  Generation Type:', generationType);
     global.logger?.log('  Model:', model);
@@ -110,7 +110,7 @@ export const generateScreenplay = async (req: Request, res: Response): Promise<v
     const format = await loadResponseFormat(generationType);
     
     const langs = dialog_languages || DEFAULT_DIALOG_LANGUAGES;
-    const defaultLang = default_screenplay_language || DEFAULT_SCREENPLAY_LANGUAGE;
+    const defaultLang = default_language || default_language;
     let promptContent: string;
     if (generationType === 'audiobook') {
       promptContent = story_pitch
@@ -118,14 +118,14 @@ export const generateScreenplay = async (req: Request, res: Response): Promise<v
         : `Create a creative original audiobook script. Use these languages for character dialog: ${langs.join(', ')}.`;
     } else {
       promptContent = story_pitch
-        ? `Create a screenplay based on this pitch: ${story_pitch}. use dialog_languages for the dialogs and default_screenplay_language for all other text. each character should speak in their respective dialog language.`
-        : `Create a creative original screenplay. Use these languages for character dialog: ${langs.join(', ')}. The default screenplay language (for all text except character dialog) should be: ${defaultLang}.`;
+        ? `Create a screenplay based on this pitch: ${story_pitch}. use dialog_languages for the dialogs and default_language for all other text. each character should speak in their respective dialog language.`
+        : `Create a creative original screenplay. Use these languages for character dialog: ${langs.join(', ')}. The default language (for all text except character dialog) should be: ${defaultLang}.`;
     }
  
     // Override using request payload (only for screenplay format)
     const formatObj = format as any;
     if (generationType === 'screenplay') {
-      formatObj.jsonSchema.schema.properties.default_screenplay_language.default = default_screenplay_language;
+      formatObj.jsonSchema.schema.properties.default_language.default = default_language;
       formatObj.jsonSchema.schema.properties.dialog_languages.default = dialog_languages;
       formatObj.jsonSchema.schema.properties.story_pitch.default = story_pitch;
       formatObj.jsonSchema.schema.properties.limitations.properties.min_lines_per_dialog.default = min_lines_per_dialog;

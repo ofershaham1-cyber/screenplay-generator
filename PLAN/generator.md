@@ -8,7 +8,7 @@ The `/api/screenplay/generate` endpoint generates a new screenplay based on user
 - **Input Parameters**:
   - `story_pitch` (string): Optional pitch for the screenplay
   - `dialog_languages` (array): Languages for character dialogs (default: ['English', 'Spanish'])
-  - `default_screenplay_language` (string): Language for screenplay text (default: 'Hebrew')
+  - `default_language` (string): Language for screenplay text (default: 'Hebrew')
   - `model` (string): AI model to use (default: 'allenai/olmo-3.1-32b-think:free')
   - `customApiKey` (string): Optional custom OpenRouter API key
 - **Output**: JSON screenplay object with `generatedAt` timestamp and model used
@@ -39,7 +39,7 @@ The `/api/screenplay/generate` endpoint generates a new screenplay based on user
 - [ ] Default languages applied correctly when not provided
 - [ ] Custom languages override defaults
 - [ ] Multiple languages handled correctly
-- [ ] Screenplay language (default_screenplay_language) applied to description/action text
+- [ ] Screenplay language (default_language) applied to description/action text
 
 ### 2. Integration Tests
 **File**: `test/integration/screenplay-api.test.js`
@@ -117,7 +117,7 @@ The `/api/screenplay/generate` endpoint generates a new screenplay based on user
 {
   "story_pitch": "A detective solves a mystery in a small town",
   "dialog_languages": ["English", "French"],
-  "default_screenplay_language": "English",
+  "default_language": "English",
   "model": "allenai/olmo-3.1-32b-think:free"
 }
 ```
@@ -127,14 +127,14 @@ The `/api/screenplay/generate` endpoint generates a new screenplay based on user
 {
   "story_pitch": "",
   "dialog_languages": [],
-  "default_screenplay_language": "Hebrew"
+  "default_language": "Hebrew"
 }
 ```
 
 ```json
 {
   "dialog_languages": ["English"],
-  "default_screenplay_language": "Spanish"
+  "default_language": "Spanish"
 }
 ```
 

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import { LANGUAGES, DEFAULT_LANGUAGE, DEFAULT_DIALOG_LANGUAGES } from './config/languages';
-import { DEFAULT_STORY_PITCH, DEFAULT_THEME, DEFAULT_DESIGN, DEFAULT_SCREENPLAY_LANGUAGE } from './config/defaults';
+import { DEFAULT_STORY_PITCH, DEFAULT_THEME, DEFAULT_DESIGN, default_language } from './config/defaults';
 import ScreenplayGenerator from './ScreenplayGenerator';
 import ScreenplayRequests from './ScreenplayRequests';
 import ScreenplayPlayer from './ScreenplayPlayer';
@@ -33,7 +33,7 @@ function App(): JSX.Element {
   // Generator form state - persists across navigation
   const [storypitch, setStorypitch] = useState<string>(DEFAULT_STORY_PITCH as string);
   const [languagesUsed, setLanguagesUsed] = useState<string[]>(DEFAULT_DIALOG_LANGUAGES as string[]);
-  const [defaultScreenplayLanguage, setDefaultScreenplayLanguage] = useState<string>(DEFAULT_SCREENPLAY_LANGUAGE as string);
+  const [defaultScreenplayLanguage, setDefaultScreenplayLanguage] = useState<string>(default_language as string);
   const [minLinesPerDialog, setMinLinesPerDialog] = useState<number>(50);
   const [useMultipleModels, setUseMultipleModels] = useState<boolean>(true);
   const [overrideApiKey, setOverrideApiKey] = useState<string>('');

@@ -11,7 +11,7 @@ const validateScreenplayFormat = (data: any): { valid: boolean; errors: string[]
   }
 
   // Check required top-level fields
-  const requiredFields = ['limitations', 'default_screenplay_language', 'story_pitch', 'exposition', 'dialog_languages', 'cast', 'scenes'];
+  const requiredFields = ['limitations', 'default_language', 'story_pitch', 'exposition', 'dialog_languages', 'cast', 'scenes'];
   for (const field of requiredFields) {
     if (!(field in data)) {
       errors.push(`Missing required field: "${field}"`);

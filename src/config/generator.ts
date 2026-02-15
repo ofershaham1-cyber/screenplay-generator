@@ -8,7 +8,7 @@ export const GENERATOR_CONFIG = {
   visibleProperties: [
     'story_pitch',
     'dialog_languages',
-    'default_screenplay_language',
+    'default_language',
     'min_lines_per_dialog',
   ] as const,
 
@@ -16,7 +16,7 @@ export const GENERATOR_CONFIG = {
   requiredProperties: [
     'story_pitch',
     'dialog_languages',
-    'default_screenplay_language',
+    'default_language',
     'min_lines_per_dialog',
   ] as const,
 
@@ -24,7 +24,7 @@ export const GENERATOR_CONFIG = {
   defaults: {
     story_pitch: '',
     dialog_languages: ['English'],
-    default_screenplay_language: 'English',
+    default_language: 'English',
     min_lines_per_dialog: 50,
   },
 
@@ -32,7 +32,7 @@ export const GENERATOR_CONFIG = {
   labels: {
     story_pitch: 'Story Pitch',
     dialog_languages: 'Languages Used (for character dialog)',
-    default_screenplay_language: 'Default Screenplay Language',
+    default_language: 'default language',
     min_lines_per_dialog: 'Minimum Lines Per Dialog',
   },
 
@@ -40,7 +40,7 @@ export const GENERATOR_CONFIG = {
   descriptions: {
     story_pitch: 'Summary of the story\'s unique aspects',
     dialog_languages: 'Languages spoken by characters in the screenplay',
-    default_screenplay_language: 'Default language for all text except character dialogs',
+    default_language: 'Default language for all text except character dialogs',
     min_lines_per_dialog: 'Minimum number of lines per dialog (controls dialog length)',
   },
 
@@ -48,7 +48,7 @@ export const GENERATOR_CONFIG = {
   inputTypes: {
     story_pitch: 'textarea' as const,
     dialog_languages: 'checkbox-group' as const,
-    default_screenplay_language: 'select' as const,
+    default_language: 'select' as const,
     min_lines_per_dialog: 'number' as const,
   },
 

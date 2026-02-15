@@ -10,7 +10,7 @@ export interface ScreenplayHistoryItem {
   params: {
     story_pitch?: string;
     dialog_languages?: string[];
-    default_screenplay_language?: string;
+    default_language?: string;
     model?: string;
     generationType?: string;
   };
@@ -98,7 +98,7 @@ export const useScreenplayHistory = () => {
         params: {
           story_pitch: params.story_pitch || '',
           dialog_languages: params.dialog_languages || [],
-          default_screenplay_language: params.default_screenplay_language || '',
+          default_language: params.default_language || '',
           model: params.model || '',
           generationType: params.generationType || 'screenplay',
         },

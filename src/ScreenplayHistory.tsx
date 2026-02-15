@@ -268,10 +268,10 @@ export default function ScreenplayHistory({
                         </p>
                       </div>
                     )}
-                    {params.default_screenplay_language && (
+                    {params.default_language && (
                       <div className="detail-field">
                         <strong style={{ display: 'block', textAlign: shouldBeRTL ? 'right' : 'left' }}>🌍 Default Language:</strong>
-                        <p style={{ textAlign: shouldBeRTL ? 'right' : 'left', marginTop: '8px' }}>{validateLanguage(params.default_screenplay_language)}</p>
+                        <p style={{ textAlign: shouldBeRTL ? 'right' : 'left', marginTop: '8px' }}>{validateLanguage(params.default_language)}</p>
                       </div>
                     )}
                     {screenplay.exposition && (

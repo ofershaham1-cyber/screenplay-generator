@@ -61,9 +61,9 @@
           ],
           "additionalProperties": false
         },
- "default_screenplay_language": {
+ "default_language": {
           "type": "string",
-          "description": "Default screenplay language for anything excluding the dialogs",
+          "description": "default language for anything excluding the dialogs",
           "default": "English"
         }, 
         "title": {
@@ -179,9 +179,9 @@
                       "type": "string",
                       "description": "current spoken dialog text"
                     },
-      "translation": {
+                    "translation": {
                       "type": "string",
-                      "description": "the current dialog translation based on default_screenplay_language"
+                      "description": "the current dialog translation based on default_language"
                       
                     },
                     "visual": {
@@ -234,7 +234,7 @@
       },
       "required": [
         "limitations",
-        "default_screenplay_language",
+        "default_language",
         "story_pitch",
         "exposition",
         "dialog_languages",

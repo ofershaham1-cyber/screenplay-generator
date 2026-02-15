@@ -1,6 +1,6 @@
-<testsuites id="" name="" tests="6" failures="5" skipped="0" errors="0" time="54.35606099999999">
-<testsuite name="audiobook-generation.spec.ts" timestamp="2026-02-15T04:23:12.418Z" hostname="chromium" tests="4" failures="4" skipped="0" time="18.721" errors="0">
-<testcase name="Audiobook Generation E2E › should generate audiobook and show ongoing request in /requests page" classname="audiobook-generation.spec.ts" time="8.475">
+<testsuites id="" name="" tests="1" failures="1" skipped="0" errors="0" time="15.821041">
+<testsuite name="audiobook-generation.spec.ts" timestamp="2026-02-15T04:52:47.402Z" hostname="chromium" tests="1" failures="1" skipped="0" time="4.464" errors="0">
+<testcase name="Audiobook Generation E2E › should generate audiobook and show ongoing request in /requests page" classname="audiobook-generation.spec.ts" time="4.464">
 <failure message="audiobook-generation.spec.ts:33:3 should generate audiobook and show ongoing request in /requests page" type="FAILURE">
 <![CDATA[  [chromium] › audiobook-generation.spec.ts:33:3 › Audiobook Generation E2E › should generate audiobook and show ongoing request in /requests page 
 
@@ -8,14 +8,14 @@
 
     Received: false
 
-      108 |     // Verify request items are visible by checking for status indicators
-      109 |     const requestItemsVisible = await page.locator('text=/Generating|audiobook|Complete/i').count() > 0;
-    > 110 |     expect(requestItemsVisible).toBeTruthy();
+      115 |     // Verify request items are visible by checking for status indicators
+      116 |     const requestItemsVisible = await page.locator('text=/Generating|audiobook|Complete/i').count() > 0;
+    > 117 |     expect(requestItemsVisible).toBeTruthy();
           |                                 ^
-      111 |
-      112 |     // After generation completes, navigate to history to verify audiobook is accessible
-      113 |     // Wait for generation to complete (up to 60 seconds)
-        at C:\Users\defaultuser0\WORK\open-router1235\tests\e2e\audiobook-generation.spec.ts:110:33
+      118 |
+      119 |     // After generation completes, navigate to history to verify audiobook is accessible
+      120 |     // Wait for generation to complete (up to 60 seconds)
+        at C:\Users\defaultuser0\WORK\open-router1235\tests\e2e\audiobook-generation.spec.ts:117:33
 
     Error Context: ..\..\test-results\audiobook-generation-Audio-4cfaa-ng-request-in-requests-page-chromium\error-context.md
 ]]>
@@ -25,123 +25,6 @@
 [[ATTACHMENT|audiobook-generation-Audio-4cfaa-ng-request-in-requests-page-chromium\error-context.md]]
 ]]>
 </system-out>
-</testcase>
-<testcase name="Audiobook Generation E2E › should handle generation error and show error in requests page" classname="audiobook-generation.spec.ts" time="2.43">
-<failure message="audiobook-generation.spec.ts:137:3 should handle generation error and show error in requests page" type="FAILURE">
-<![CDATA[  [chromium] › audiobook-generation.spec.ts:137:3 › Audiobook Generation E2E › should handle generation error and show error in requests page 
-
-    Error: expect(received).toMatch(expected)
-
-    Expected pattern: /Error|Failed|API limits/
-    Received string:  "
-        Screenplay Generator🐛Screenplay AppGenerator📋 RequestsPlayer📄 ResultHistory⚙️ Preferences📋 Format Schema🔧 View ModelsThemeLightDarkDark BlueRequestsNo requests in progress. Start a generation from the generator page to see progress here.·········
-    "
-
-      181 |     // Verify error is shown
-      182 |     const pageContent = await page.locator('body').textContent();
-    > 183 |     expect(pageContent).toMatch(/Error|Failed|API limits/);
-          |                         ^
-      184 |
-      185 |     // Verify error indicators are visible
-      186 |     const errorIndicators = await page.locator('text=/Error|Failed|✗/i').count() > 0;
-        at C:\Users\defaultuser0\WORK\open-router1235\tests\e2e\audiobook-generation.spec.ts:183:25
-
-    Error Context: ..\..\test-results\audiobook-generation-Audio-23114-show-error-in-requests-page-chromium\error-context.md
-]]>
-</failure>
-<system-out>
-<![CDATA[
-[[ATTACHMENT|audiobook-generation-Audio-23114-show-error-in-requests-page-chromium\error-context.md]]
-]]>
-</system-out>
-</testcase>
-<testcase name="Audiobook Generation E2E › should generate audiobook and make it accessible from result page" classname="audiobook-generation.spec.ts" time="5.471">
-<failure message="audiobook-generation.spec.ts:190:3 should generate audiobook and make it accessible from result page" type="FAILURE">
-<![CDATA[  [chromium] › audiobook-generation.spec.ts:190:3 › Audiobook Generation E2E › should generate audiobook and make it accessible from result page 
-
-    Error: expect(received).toBeTruthy()
-
-    Received: false
-
-      255 |     const hasResultContent = await castSection.count() > 0 || pageContent.includes('Audiobook') || pageContent.includes('No Screenplay Generated');
-      256 |     
-    > 257 |     expect(hasResultContent).toBeTruthy();
-          |                              ^
-      258 |   });
-      259 |
-      260 |   test('should show request with audiobook details', async ({ page }) => {
-        at C:\Users\defaultuser0\WORK\open-router1235\tests\e2e\audiobook-generation.spec.ts:257:30
-
-    Error Context: ..\..\test-results\audiobook-generation-Audio-24c50-accessible-from-result-page-chromium\error-context.md
-]]>
-</failure>
-<system-out>
-<![CDATA[
-[[ATTACHMENT|audiobook-generation-Audio-24c50-accessible-from-result-page-chromium\error-context.md]]
-]]>
-</system-out>
-</testcase>
-<testcase name="Audiobook Generation E2E › should show request with audiobook details" classname="audiobook-generation.spec.ts" time="2.345">
-<failure message="audiobook-generation.spec.ts:260:3 should show request with audiobook details" type="FAILURE">
-<![CDATA[  [chromium] › audiobook-generation.spec.ts:260:3 › Audiobook Generation E2E › should show request with audiobook details 
-
-    Error: expect(received).toBeTruthy()
-
-    Received: false
-
-      323 |     // Verify at least one request is showing
-      324 |     const hasRequestIndicators = await page.locator('text=/⏳ Generating|✓ Complete|Duration:/i').count() > 0;
-    > 325 |     expect(hasRequestIndicators).toBeTruthy();
-          |                                  ^
-      326 |   });
-      327 | });
-      328 |
-        at C:\Users\defaultuser0\WORK\open-router1235\tests\e2e\audiobook-generation.spec.ts:325:34
-
-    Error Context: ..\..\test-results\audiobook-generation-Audio-14aa0-uest-with-audiobook-details-chromium\error-context.md
-]]>
-</failure>
-<system-out>
-<![CDATA[
-[[ATTACHMENT|audiobook-generation-Audio-14aa0-uest-with-audiobook-details-chromium\error-context.md]]
-]]>
-</system-out>
-</testcase>
-</testsuite>
-<testsuite name="navigation.spec.ts" timestamp="2026-02-15T04:23:12.418Z" hostname="chromium" tests="1" failures="1" skipped="0" time="1.035" errors="0">
-<testcase name="App Navigation - No JS Errors › should navigate to all routes without JS errors" classname="navigation.spec.ts" time="1.035">
-<failure message="navigation.spec.ts:15:3 should navigate to all routes without JS errors" type="FAILURE">
-<![CDATA[  [chromium] › navigation.spec.ts:15:3 › App Navigation - No JS Errors › should navigate to all routes without JS errors 
-
-    Error: Console error occurred on route /: Failed to load resource: the server responded with a status of 404 (Not Found)
-
-    expect(received).toHaveLength(expected)
-
-    Expected length: 0
-    Received length: 1
-    Received array:  ["Failed to load resource: the server responded with a status of 404 (Not Found)"]
-
-      42 |         consoleErrors,
-      43 |         `Console error occurred on route ${route}: ${consoleErrors[consoleErrors.length - 1]}`
-    > 44 |       ).toHaveLength(0);
-         |         ^
-      45 |       
-      46 |       expect(
-      47 |         pageErrors,
-        at C:\Users\defaultuser0\WORK\open-router1235\tests\e2e\navigation.spec.ts:44:9
-
-    Error Context: ..\..\test-results\navigation-App-Navigation--8b298-ll-routes-without-JS-errors-chromium\error-context.md
-]]>
-</failure>
-<system-out>
-<![CDATA[
-[[ATTACHMENT|navigation-App-Navigation--8b298-ll-routes-without-JS-errors-chromium\error-context.md]]
-]]>
-</system-out>
-</testcase>
-</testsuite>
-<testsuite name="seed.spec.ts" timestamp="2026-02-15T04:23:12.418Z" hostname="chromium" tests="1" failures="0" skipped="0" time="0.161" errors="0">
-<testcase name="Test group › seed" classname="seed.spec.ts" time="0.161">
 </testcase>
 </testsuite>
 </testsuites>

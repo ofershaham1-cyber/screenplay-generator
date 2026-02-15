@@ -43,7 +43,7 @@ export default function ScreenplayGenerator({
       onScreenplayGenerated(screenplay, {
         story_pitch: storypitch,
         dialog_languages: languagesUsed,
-        default_screenplay_language: defaultScreenplayLanguage,
+        default_language: defaultScreenplayLanguage,
         min_lines_per_dialog: minLinesPerDialog,
         model: selectedModel,
         models: useMultipleModels ? selectedModels : [selectedModel],
@@ -72,7 +72,7 @@ export default function ScreenplayGenerator({
       onScreenplayGenerated(result.data, {
         story_pitch: storypitch,
         dialog_languages: languagesUsed,
-        default_screenplay_language: defaultScreenplayLanguage,
+        default_language: defaultScreenplayLanguage,
         min_lines_per_dialog: minLinesPerDialog,
         model: model,
         models: selectedModels,
@@ -103,8 +103,8 @@ export default function ScreenplayGenerator({
       
       generateForMultipleModels(storypitch, languagesUsed, defaultScreenplayLanguage, minLinesPerDialog, selectedModels, apiKey, generationType, null, onAllModelsComplete);
     } else {
-      // Single model generation - use first selected model
-      const modelToUse = selectedModel || selectedModels[0];
+      // Single model generation - use first available model
+      const modelToUse = selectedModel || selectedModels[0] || models[0];
       if (modelToUse) {
         setSelectedModel(modelToUse);
       }
@@ -210,7 +210,7 @@ export default function ScreenplayGenerator({
         </div>
 
         <div className="form-group">
-          <label>Default Screenplay Language (for all text except the dialogs)</label>
+          <label>default language (for all text except the dialogs)</label>
           <select
             value={defaultScreenplayLanguage}
             onChange={(e) => setDefaultScreenplayLanguage(e.target.value)}

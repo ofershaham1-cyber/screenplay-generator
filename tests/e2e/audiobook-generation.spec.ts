@@ -41,13 +41,20 @@ test.describe('Audiobook Generation E2E', () => {
         contentType: 'application/json',
         body: JSON.stringify({
           title: "Detective Mystery Audiobook",
-          cast: ["Detective John", "Suspect Mary"],
-          scenes: [
-            {
-              scene_heading: "INT. SMALL TOWN POLICE STATION - DAY",
-              dialog: [
-                { character: "Detective John", language: "English", text: "Tell me what happened.", translation: "Tell me what happened." }
-              ]
+          author: "Test Author",
+          synopsis: "A detective investigates a mysterious case in a small town.",
+          cast: [
+            { name: "Detective John", description: "A seasoned detective", voice_style: "Deep and authoritative" },
+            { name: "Suspect Mary", description: "A mysterious suspect", voice_style: "Soft and nervous" }
+          ],
+          dialog: [
+            { 
+              person: "Detective John", 
+              language: "English", 
+              text: "Tell me what happened.", 
+              translation: "Tell me what happened.",
+              emotion: "Serious",
+              pace: "Normal"
             }
           ],
           limitations: "Test limitations",
@@ -197,17 +204,24 @@ test.describe('Audiobook Generation E2E', () => {
         contentType: 'application/json',
         body: JSON.stringify({
           title: "Sci-Fi Exploration Audiobook",
-          cast: ["Captain Alex", "Dr. Sarah"],
-          scenes: [
-            {
-              scene_heading: "EXT. DISTANT PLANET - DAY",
-              dialog: [
-                { character: "Captain Alex", language: "English", text: "This planet is incredible!", translation: "This planet is incredible!" }
-              ]
+          author: "Test Author",
+          synopsis: "Explorers discover a new planet.",
+          cast: [
+            { name: "Captain Alex", description: "A brave space captain", voice_style: "Confident and commanding" },
+            { name: "Dr. Sarah", description: "A brilliant scientist", voice_style: "Intelligent and curious" }
+          ],
+          dialog: [
+            { 
+              person: "Captain Alex", 
+              language: "English", 
+              text: "This planet is incredible!", 
+              translation: "This planet is incredible!",
+              emotion: "Excited",
+              pace: "Fast"
             }
           ],
           limitations: "Test limitations",
-          default_screenplay_language: "English",
+          default_language: "English",
           story_pitch: "A sci-fi audiobook about exploring distant planets.",
           exposition: "Explorers discover a new planet.",
           dialog_languages: ["English"]
@@ -267,17 +281,24 @@ test.describe('Audiobook Generation E2E', () => {
         contentType: 'application/json',
         body: JSON.stringify({
           title: "Fantasy Adventure Audiobook",
-          cast: ["Hero", "Villain"],
-          scenes: [
-            {
-              scene_heading: "INT. CASTLE HALL - NIGHT",
-              dialog: [
-                { character: "Hero", language: "English", text: "I will defeat you!", translation: "I will defeat you!" }
-              ]
+          author: "Test Author",
+          synopsis: "A hero embarks on a quest.",
+          cast: [
+            { name: "Hero", description: "A brave hero", voice_style: "Valiant and determined" },
+            { name: "Villain", description: "A cunning villain", voice_style: "Dark and menacing" }
+          ],
+          dialog: [
+            { 
+              person: "Hero", 
+              language: "English", 
+              text: "I will defeat you!", 
+              translation: "I will defeat you!",
+              emotion: "Determined",
+              pace: "Slow"
             }
           ],
           limitations: "Test limitations",
-          default_screenplay_language: "English",
+          default_language: "English",
           story_pitch: "A fantasy adventure with dragons and magic.",
           exposition: "A hero embarks on a quest.",
           dialog_languages: ["English"]

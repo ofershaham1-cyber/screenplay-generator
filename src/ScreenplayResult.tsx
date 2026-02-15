@@ -52,10 +52,10 @@ export default function ScreenplayResult() {
                 <p>{generatingParams.dialog_languages.join(', ')}</p>
               </div>
             )}
-            {generatingParams.default_screenplay_language && (
+            {generatingParams.default_language && (
               <div>
                 <strong>Default Language:</strong>
-                <p>{validateLanguage(generatingParams.default_screenplay_language)}</p>
+                <p>{validateLanguage(generatingParams.default_language)}</p>
               </div>
             )}
             {generatingParams.model && (

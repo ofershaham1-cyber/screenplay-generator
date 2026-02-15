@@ -51,6 +51,11 @@
                 "type": "string",
                 "description": "Character name or narrator"
               },
+              "translation": {
+                "type": "string",
+                "description": "the current dialog translation based on default_language"
+                
+              },
               "language": {
                 "type": "string",
                 "description": "The language (full name)"

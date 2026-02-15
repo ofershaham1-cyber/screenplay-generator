@@ -27,7 +27,7 @@ export const DEFAULT_SPEED_RANGE = {
 
 // Generator Form Defaults
 export const DEFAULT_STORY_PITCH = 'Create a conversation between an adult and a child playing a guessing game';
-export const DEFAULT_SCREENPLAY_LANGUAGE = 'English';
+export const default_language = 'English';
 
 // UI Defaults
 export const DEFAULT_THEME = 'light';

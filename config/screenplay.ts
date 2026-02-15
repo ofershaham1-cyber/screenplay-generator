@@ -7,7 +7,7 @@ export const DEFAULT_MODEL = 'allenai/olmo-3.1-32b-think:free';
 
 export const DEFAULT_DIALOG_LANGUAGES = ['English', 'Spanish'];
 
-export const DEFAULT_SCREENPLAY_LANGUAGE = 'English';
+export const default_language = 'English';
 
 export const SUPPORTED_LANGUAGES = [
   'English',
