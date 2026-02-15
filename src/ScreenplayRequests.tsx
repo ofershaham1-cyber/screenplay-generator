@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './ScreenplayRequests.css';
 
 // Simple JSON schema validator for screenplay response format
@@ -41,7 +41,7 @@ const validateScreenplayFormat = (data: any): { valid: boolean; errors: string[]
 };
 
 interface RequestState {
-  status: 'pending' | 'completed' | 'error';
+  status: 'pending' | 'completed' | 'failed' | 'cancelled';
   progress?: number;
   error?: string;
 }
@@ -68,9 +68,36 @@ const ScreenplayRequests: React.FC<ScreenplayRequestsProps> = ({
   onClearResults
 }) => {
   const [expandedModels, setExpandedModels] = useState<Record<string, boolean>>({});
+  const [updateTrigger, setUpdateTrigger] = useState(0);
+
+  // Debug log
+  console.log('[ScreenplayRequests] Props:', {
+    isGenerating,
+    requestStatesKeys: Object.keys(requestStates || {}),
+    activeModels,
+    selectedModels
+  });
+
+  // Update every second to refresh elapsed time displays
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setUpdateTrigger(prev => prev + 1);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Also trigger render when requestStates changes to ensure immediate display
+  useEffect(() => {
+    setUpdateTrigger(prev => prev + 1);
+  }, [requestStates, isGenerating, activeModels]);
 
   const hasModels = selectedModels && selectedModels.length > 0;
-  const hasResults = requestStates && Object.keys(requestStates).length > 0;
+  const allRequests = Object.keys(requestStates || {});
+  
+  // Also consider if activeModels indicates generation is happening
+  // This handles the case where isGenerating might not be propagated yet
+  const hasActiveGenerating = activeModels && activeModels.length > 0;
+  const shouldShowGenerating = isGenerating || (hasActiveGenerating && hasModels);
   
   const toggleExpanded = (model: string) => {
     setExpandedModels(prev => ({
@@ -78,8 +105,9 @@ const ScreenplayRequests: React.FC<ScreenplayRequestsProps> = ({
       [model]: !prev[model]
     }));
   };
-
-  if (!hasModels && !hasResults) {
+  
+  // Show empty state only if no requests AND not generating
+  if (allRequests.length === 0 && !shouldShowGenerating) {
     return (
       <div className="container">
         <div className="section">
@@ -94,23 +122,40 @@ const ScreenplayRequests: React.FC<ScreenplayRequestsProps> = ({
     );
   }
 
+  // Show generating spinner when is generating but no tracked requests yet
+  if (allRequests.length === 0 && shouldShowGenerating) {
+    return (
+      <div className="container">
+        <div className="section">
+          <div className="header">
+            <h2>Requests in Progress</h2>
+          </div>
+          <p style={{ color: '#666', textAlign: 'center', padding: '40px' }}>
+            <span style={{ marginRight: '10px' }}>⏳</span>
+            Starting generation... Requests will appear here shortly.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="container">
       <div className="section">
         <div className="header">
-          <h2>{isGenerating ? 'Requests in Progress' : 'Request History'}</h2>
+          <h2>{shouldShowGenerating ? 'Requests in Progress' : 'Request History'}</h2>
         </div>
 
         <div className="model-status" style={{ padding: '15px' }}>
           <h3 style={{ marginTop: 0, marginBottom: '15px', fontSize: '16px' }}>
-            {isGenerating 
-              ? `Generating for ${selectedModels.length} model(s)...`
-              : `${selectedModels.length} request(s)`
+            {shouldShowGenerating 
+              ? `${activeModels.length} of ${allRequests.length} generating...`
+              : `${allRequests.length} total request(s)`
             }
           </h3>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            {selectedModels.map(model => {
+            {allRequests.map(model => {
               const status = requestStates[model];
               const isActive = activeModels.includes(model) || status?.status === 'pending';
               const resultItem = multiModelResults[model];
@@ -390,7 +435,7 @@ const ScreenplayRequests: React.FC<ScreenplayRequestsProps> = ({
         )}
         
         {/* Clear results button - shown when generation is complete */}
-        {!isGenerating && hasResults && onClearResults && (
+        {!shouldShowGenerating && allRequests.length > 0 && onClearResults && (
           <button
             onClick={onClearResults}
             style={{

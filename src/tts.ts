@@ -31,6 +31,7 @@ export const speak = (text: string, lang: string = 'English', rate: number = 1, 
   return new Promise((resolve) => {
     const langCode = convertLangToISO(lang);
     const utterance = new SpeechSynthesisUtterance(text);
+    console.info(`Speaking with language: ${lang} (${langCode}), rate: ${rate}`);
     utterance.lang = langCode;
 
     const voice = getVoiceForLanguage(langCode);
@@ -200,6 +201,7 @@ export const speakWithHighlight = (
   return new Promise((resolve) => {
     const langCode = convertLangToISO(lang);
     const utterance = new SpeechSynthesisUtterance(text);
+    console.info(`Speaking with language: ${lang} (${langCode}), rate: ${rate}`);
     utterance.lang = langCode;
 
     const voice = getVoiceForLanguage(langCode);

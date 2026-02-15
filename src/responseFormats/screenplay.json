@@ -14,6 +14,17 @@
               "description": "Max words for the story pitch",
               "default": 200
             },
+        "min_number_of_total_scenes": {
+              "type": "number",
+              "description": "Minimum number of scenes in the screenplay",
+              "default": 7
+            },
+
+          "min_number_of_dialog_objects_per_scene": {
+              "type": "number",
+              "description": "Min lines per dialog",
+              "default": 10
+            },
             "min_lines_per_dialog": {
               "type": "number",
               "description": "Min lines per dialog",
@@ -72,7 +83,7 @@
           "items": {
             "type": "string"
           },
-          "description": "Languages spoken in the screenplay"
+          "description": "Languages spoken in the screenplay (Full language name)"
         },
         "cast": {
           "type": "array",
@@ -93,7 +104,7 @@
               },
               "language": {
                 "type": "string",
-                "description": "Primary language spoken by the character"
+                "description": "Primary language spoken by the character (full language name)"
               }
             },
             "required": ["name", "description", "role", "language"],
@@ -162,7 +173,7 @@
                     },
                     "language": {
                       "type": "string",
-                      "description": "current dialog language"
+                      "description": "current dialog language (full language name)"
                     },
                     "text": {
                       "type": "string",
