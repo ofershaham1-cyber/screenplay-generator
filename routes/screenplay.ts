@@ -221,10 +221,10 @@ export const generateScreenplay = async (req: Request, res: Response): Promise<v
  *     parameters:
  *       - in: query
  *         name: type
+ *         description: Format type to retrieve (default: all)
  *         schema:
  *           type: string
  *           enum: [screenplay, audiobook, all]
- *         description: Format type to retrieve (default: all)
  *     responses:
  *       200:
  *         description: Format schema(s)

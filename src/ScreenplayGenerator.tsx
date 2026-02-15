@@ -26,6 +26,7 @@ export default function ScreenplayGenerator({
   const [showApiKey, setShowApiKey] = useState(false);
   const [hasUserCleared, setHasUserCleared] = useState(false);
   const [generationType, setGenerationType] = useState<'screenplay' | 'audiobook'>('screenplay');
+  const [savedResultModels, setSavedResultModels] = useState<Set<string>>(new Set());
   
   const { screenplay, loading, error, generate, generateForMultipleModels, models, selectedModel, setSelectedModel, multiModelResults } = useScreenplay();
 
@@ -54,8 +55,38 @@ export default function ScreenplayGenerator({
     }
   }, [screenplay]);
 
+  // Save audiobooks to history when multi-model generation completes
+  useEffect(() => {
+    if (!multiModelResults || !onScreenplayGenerated) return;
+    
+    Object.entries(multiModelResults).forEach(([model, result]) => {
+      // Skip if already saved or if not successful
+      if (savedResultModels.has(model) || !result.success || !result.data) {
+        return;
+      }
+      
+      // Mark as saved
+      setSavedResultModels(prev => new Set(prev).add(model));
+      
+      // Call the callback to save to history
+      onScreenplayGenerated(result.data, {
+        story_pitch: storypitch,
+        dialog_languages: languagesUsed,
+        default_screenplay_language: defaultScreenplayLanguage,
+        min_lines_per_dialog: minLinesPerDialog,
+        model: model,
+        models: selectedModels,
+        multiModel: true,
+        generationType,
+      });
+    });
+  }, [multiModelResults, onScreenplayGenerated, storypitch, languagesUsed, defaultScreenplayLanguage, minLinesPerDialog, selectedModels, generationType, savedResultModels]);
+
   const handleGenerate = () => {
     const apiKey = overrideApiKey || null;
+    
+    // Reset saved results tracker for new generation
+    setSavedResultModels(new Set());
     
     onGenerationStart();
     

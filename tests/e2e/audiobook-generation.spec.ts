@@ -30,54 +30,51 @@ test.describe('Audiobook Generation E2E', () => {
     await page.fill('input[type="number"]', '20');
 
     // Click the Generate button
-    const generateButton = page.locator('button', { hasText: /Generate Screenplay/ });
+    const generateButton = page.locator('button').filter({ hasText: /Generate Screenplay|Generating/ });
     await generateButton.click();
 
     // Wait for the request to be sent (button should become disabled and show "Generating...")
-    await expect(generateButton).toContainText('Generate Screenplay');
+    await page.waitForTimeout(1000); // Give time for button state to change
+    await expect(generateButton).toContainText('Generating...');
     await expect(generateButton).toBeDisabled();
 
     // Navigate to the requests/ongoing page
-    await page.goto('/requests', { waitUntil: 'domcontentloaded' });
+    await page.goto('/requests', { waitUntil: 'networkidle' });
     
-    // Wait for requests to populate
-    await page.waitForTimeout(1000);
+    // Wait for the requests header to appear (indicates page is showing requests)
+    await page.locator('h2:has-text("Requests")').waitFor({ state: 'visible', timeout: 5000 });
 
-    // Verify that at least one request is displayed
-    const requestItems = page.locator('div').filter({ hasText: /Generating|Completed/ });
-    const requestCount = await requestItems.count();
-    
-    expect(requestCount).toBeGreaterThan(0);
+    // Verify we can see ongoing requests
+    const pageContent = await page.locator('body').textContent();
+    expect(pageContent).toMatch(/Generating|Complete|Duration|Requests in Progress/);
 
-    // Verify that the audiobook request is visible
-    const audioGeneratingText = page.locator('text=/audiobook|Audiobook/i');
-    const audioCount = await audioGeneratingText.count();
-    
-    // Should find at least one audiobook reference
-    expect(audioCount).toBeGreaterThanOrEqual(0); // May or may not show type immediately depending on rendering
-
-    // Wait a bit more and verify the page has request content
-    const requestSection = page.locator('h3, h2', { hasText: /Request|Ongoing|Generating/ });
-    const hasRequestSection = await requestSection.count() > 0;
-    
-    expect(hasRequestSection || requestCount > 0).toBeTruthy();
+    // Verify request items are visible by checking for status indicators
+    const requestItemsVisible = await page.locator('text=/Generating|audiobook|Complete/i').count() > 0;
+    expect(requestItemsVisible).toBeTruthy();
 
     // After generation completes, navigate to history to verify audiobook is accessible
     // Wait for generation to complete (up to 60 seconds)
     await page.waitForTimeout(10000); // Give it some time to complete
 
     // Navigate to history page
-    await page.goto('/history', { waitUntil: 'domcontentloaded' });
+    await page.goto('/history', { waitUntil: 'networkidle' });
     
-    // Wait for history to load
-    await page.waitForTimeout(1000);
-
-    // Check if audiobook is listed in history
-    const historyItems = page.locator('div').filter({ hasText: /🎵 Audiobook|Detective/ });
-    const audiobookCount = await historyItems.count();
+    // Wait for history to load and filter to show audiobooks
+    await page.locator('h3:has-text("Screenplay History")').waitFor({ state: 'visible', timeout: 5000 });
     
-    // Should have at least one audiobook in history (may not be complete if generation still running)
-    expect(audiobookCount || (await page.locator('body').textContent()).includes('history')).toBeTruthy();
+    // Filter to show audiobooks only
+    const filterSelect = page.locator('select').first();
+    await filterSelect.selectOption('audiobook');
+    
+    // Wait for filtered results to appear
+    await page.waitForTimeout(500);
+    
+    // Check if audiobook is listed in history with the audiobook badge
+    const audiobookBadge = page.locator('span:has-text("🎵 Audiobook")');
+    const audiobookCount = await audiobookBadge.count();
+    
+    // Should have at least one audiobook in history
+    expect(audiobookCount).toBeGreaterThan(0);
   });
 
   test('should generate audiobook and make it accessible from result page', async ({ page }) => {
@@ -100,10 +97,12 @@ test.describe('Audiobook Generation E2E', () => {
     await page.fill('input[type="number"]', '10');
 
     // Generate audiobook
-    const generateButton = page.locator('button', { hasText: /Generate Screenplay/ });
+    const generateButton = page.locator('button').filter({ hasText: /Generate Screenplay|Generating/ });
     await generateButton.click();
 
     // Wait for button to show generating state
+    await page.waitForTimeout(1000); // Give time for button state to change
+    await expect(generateButton).toContainText('Generating...');
     await expect(generateButton).toBeDisabled();
 
     // Wait briefly, then navigate to result page to see if audiobook appears
@@ -141,26 +140,24 @@ test.describe('Audiobook Generation E2E', () => {
     await page.fill('input[type="number"]', '15');
 
     // Click Generate
-    const generateButton = page.locator('button', { hasText: /Generate Screenplay/ });
+    const generateButton = page.locator('button').filter({ hasText: /Generate Screenplay|Generating/ });
     await generateButton.click();
 
     // Wait for generation to start
-    await expect(generateButton).toContainText('Generate Screenplay');
+    await expect(generateButton).toContainText('Generating...');
 
     // Navigate to requests page
-    await page.goto('/requests', { waitUntil: 'domcontentloaded' });
+    await page.goto('/requests', { waitUntil: 'networkidle' });
 
-    // Wait for the request to appear
-    await page.waitForTimeout(1500);
+    // Wait for the requests header to appear
+    await page.locator('h2:has-text("Requests")').waitFor({ state: 'visible', timeout: 5000 });
 
-    // Verify that something is displayed on the requests page
-    const bodyText = await page.locator('body').textContent();
-    expect(bodyText).toBeTruthy();
+    // Verify request content is visible
+    const pageContent = await page.locator('body').textContent();
+    expect(pageContent).toMatch(/Generating|Complete|Duration/);
     
-    // Check that requests section exists
-    const mainElement = page.locator('main, .requests-container, [role="main"]');
-    const hasMainContent = await mainElement.count() > 0;
-    
-    expect(hasMainContent || bodyText.includes('Generating') || bodyText.includes('Request')).toBeTruthy();
+    // Verify at least one request is showing
+    const hasRequestIndicators = await page.locator('text=/⏳ Generating|✓ Complete|Duration:/i').count() > 0;
+    expect(hasRequestIndicators).toBeTruthy();
   });
 });
