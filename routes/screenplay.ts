@@ -15,7 +15,7 @@ declare global {
 }
 
 let openrouter: OpenRouter | undefined;
-let responseFormat: unknown;
+let responseFormats: Record<string, unknown> = {};
 let defaultApiKey: string | undefined;
 
 const initializeOpenRouter = async (customApiKey: string | null = null) => {
@@ -38,11 +38,21 @@ const initializeOpenRouter = async (customApiKey: string | null = null) => {
   });
 };
 
-const loadResponseFormat = async () => {
-  if (!responseFormat) {
-    responseFormat = JSON.parse(await fs.readFile('./responseFormat.json', 'utf8'));
+const loadResponseFormat = async (type: string = 'screenplay') => {
+  if (!responseFormats[type]) {
+    const path = `./src/responseFormats/${type}.json`;
+    responseFormats[type] = JSON.parse(await fs.readFile(path, 'utf8'));
   }
-  return responseFormat;
+  return responseFormats[type];
+};
+
+const loadAllResponseFormats = async () => {
+  if (Object.keys(responseFormats).length === 0) {
+    const screenplay = await loadResponseFormat('screenplay');
+    const audiobook = await loadResponseFormat('audiobook');
+    responseFormats = { screenplay, audiobook };
+  }
+  return responseFormats;
 };
 
 interface GenerateScreenplayRequest {
@@ -52,6 +62,7 @@ interface GenerateScreenplayRequest {
   min_lines_per_dialog?: number;
   model?: string;
   customApiKey?: string;
+  generationType?: 'screenplay' | 'audiobook';
 }
 
 /**
@@ -83,32 +94,42 @@ interface GenerateScreenplayRequest {
  *         description: Generated screenplay
  */
 export const generateScreenplay = async (req: Request, res: Response): Promise<void> => {
-  const { story_pitch, dialog_languages, default_screenplay_language, min_lines_per_dialog, model, customApiKey } = req.body as GenerateScreenplayRequest;
+  const { story_pitch, dialog_languages, default_screenplay_language, min_lines_per_dialog, model, customApiKey, generationType = 'screenplay' } = req.body as GenerateScreenplayRequest;
 
   try {
-    global.logger?.log('📝 Screenplay Generation Request:');
+    global.logger?.log(`📝 ${generationType.toUpperCase()} Generation Request:`);
     global.logger?.log('  Story Pitch:', story_pitch);
     global.logger?.log('  Languages Used:', dialog_languages?.join(', '));
     global.logger?.log('  Default Language:', default_screenplay_language);
     global.logger?.log('  Min Lines Per Dialog:', min_lines_per_dialog);
+    global.logger?.log('  Generation Type:', generationType);
     global.logger?.log('  Model:', model);
     global.logger?.log('  Custom API Key:', customApiKey ? 'provided' : 'not provided');
     
     const openrouter = await initializeOpenRouter(customApiKey || null);
-    const format = await loadResponseFormat();
+    const format = await loadResponseFormat(generationType);
     
     const langs = dialog_languages || DEFAULT_DIALOG_LANGUAGES;
     const defaultLang = default_screenplay_language || DEFAULT_SCREENPLAY_LANGUAGE;
-    const promptContent = story_pitch
-      ? `Create a screenplay based on this pitch: ${story_pitch}. use dialog_languages for the dialogs and default_screenplay_language for all other text. each character should speak in their respective dialog language.`
-      : `Create a creative original screenplay. Use these languages for character dialog: ${langs.join(', ')}. The default screenplay language (for all text except character dialog) should be: ${defaultLang}.`;
+    let promptContent: string;
+    if (generationType === 'audiobook') {
+      promptContent = story_pitch
+        ? `Create an audiobook script based on this pitch: ${story_pitch}. Use these languages for character dialog: ${langs.join(', ')}.`
+        : `Create a creative original audiobook script. Use these languages for character dialog: ${langs.join(', ')}.`;
+    } else {
+      promptContent = story_pitch
+        ? `Create a screenplay based on this pitch: ${story_pitch}. use dialog_languages for the dialogs and default_screenplay_language for all other text. each character should speak in their respective dialog language.`
+        : `Create a creative original screenplay. Use these languages for character dialog: ${langs.join(', ')}. The default screenplay language (for all text except character dialog) should be: ${defaultLang}.`;
+    }
  
-    // Override using request payload
+    // Override using request payload (only for screenplay format)
     const formatObj = format as any;
-    formatObj.jsonSchema.schema.properties.default_screenplay_language.default = default_screenplay_language;
-    formatObj.jsonSchema.schema.properties.dialog_languages.default = dialog_languages;
-    formatObj.jsonSchema.schema.properties.story_pitch.default = story_pitch;
-    formatObj.jsonSchema.schema.properties.limitations.properties.min_lines_per_dialog.default = min_lines_per_dialog;
+    if (generationType === 'screenplay') {
+      formatObj.jsonSchema.schema.properties.default_screenplay_language.default = default_screenplay_language;
+      formatObj.jsonSchema.schema.properties.dialog_languages.default = dialog_languages;
+      formatObj.jsonSchema.schema.properties.story_pitch.default = story_pitch;
+      formatObj.jsonSchema.schema.properties.limitations.properties.min_lines_per_dialog.default = min_lines_per_dialog;
+    }
 
     global.logger?.log('📋 Response Format Schema:', JSON.stringify(format, null, 2));
     
@@ -196,15 +217,29 @@ export const generateScreenplay = async (req: Request, res: Response): Promise<v
  * @swagger
  * /api/screenplay/format:
  *   get:
- *     summary: Get screenplay format schema
+ *     summary: Get screenplay format schema(s)
+ *     parameters:
+ *       - in: query
+ *         name: type
+ *         schema:
+ *           type: string
+ *           enum: [screenplay, audiobook, all]
+ *         description: Format type to retrieve (default: all)
  *     responses:
  *       200:
- *         description: Format schema
+ *         description: Format schema(s)
  */
 export const getScreenplayFormat = async (req: Request, res: Response) => {
   try {
-    const format = await loadResponseFormat();
-    res.json(format);
+    const type = (req.query.type as string) || 'all';
+    
+    if (type === 'all') {
+      const formats = await loadAllResponseFormats();
+      res.json({ screenplay: formats.screenplay, audiobook: formats.audiobook });
+    } else {
+      const format = await loadResponseFormat(type);
+      res.json(format);
+    }
   } catch (error) {
     res.status(500).json({ error: (error as Error).message });
   }

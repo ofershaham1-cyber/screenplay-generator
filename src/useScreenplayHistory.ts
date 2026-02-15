@@ -12,6 +12,7 @@ export interface ScreenplayHistoryItem {
     dialog_languages?: string[];
     default_screenplay_language?: string;
     model?: string;
+    generationType?: string;
   };
 }
 
@@ -99,6 +100,7 @@ export const useScreenplayHistory = () => {
           dialog_languages: params.dialog_languages || [],
           default_screenplay_language: params.default_screenplay_language || '',
           model: params.model || '',
+          generationType: params.generationType || 'screenplay',
         },
       };
 

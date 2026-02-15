@@ -78,26 +78,35 @@ const ScreenplayRequests: React.FC<ScreenplayRequestsProps> = ({
     selectedModels
   });
 
-  // Update every second to refresh elapsed time displays
+  // Update every second to refresh elapsed time displays for ongoing requests
   useEffect(() => {
-    const interval = setInterval(() => {
-      setUpdateTrigger(prev => prev + 1);
-    }, 1000);
-    return () => clearInterval(interval);
-  }, []);
+    const hasActiveRequests = Object.values(requestStates || {}).some(state => state.status === 'pending');
+    
+    if (hasActiveRequests) {
+      const interval = setInterval(() => {
+        setUpdateTrigger(prev => prev + 1);
+      }, 500); // Faster update interval for active requests
+      
+      return () => clearInterval(interval);
+    }
+  }, [requestStates]);
 
   // Also trigger render when requestStates changes to ensure immediate display
   useEffect(() => {
+    console.log('[ScreenplayRequests] requestStates updated:', Object.keys(requestStates || {}));
     setUpdateTrigger(prev => prev + 1);
   }, [requestStates, isGenerating, activeModels]);
 
-  const hasModels = selectedModels && selectedModels.length > 0;
+  // Force re-render to update elapsed times
+  useEffect(() => {
+    console.log('[ScreenplayRequests] updateTrigger changed:', updateTrigger);
+  }, [updateTrigger]);
+
   const allRequests = Object.keys(requestStates || {});
   
-  // Also consider if activeModels indicates generation is happening
-  // This handles the case where isGenerating might not be propagated yet
+  // Show generating state if any models are actively being processed
   const hasActiveGenerating = activeModels && activeModels.length > 0;
-  const shouldShowGenerating = isGenerating || (hasActiveGenerating && hasModels);
+  const shouldShowGenerating = isGenerating || hasActiveGenerating;
   
   const toggleExpanded = (model: string) => {
     setExpandedModels(prev => ({

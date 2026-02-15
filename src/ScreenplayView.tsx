@@ -16,6 +16,9 @@ export default function ScreenplayView({ screenplay, format, darkMode = false, s
   const [showScreenplay, setShowScreenplay] = useState(false);
   const [ttsOptions, setTtsOptions] = useState(DEFAULT_TTS_OPTIONS);
 
+  // Detect content type (screenplay vs audiobook)
+  const contentType = screenplay?.scenes ? 'screenplay' : screenplay?.dialog ? 'audiobook' : 'unknown';
+
   // Get current language speeds from localStorage preferences
   const getLanguageSpeeds = () => {
     const savedPrefs = localStorage.getItem('screenplay-tts-preferences');
@@ -361,30 +364,56 @@ export default function ScreenplayView({ screenplay, format, darkMode = false, s
         <div className="screenplay-info">
           {screenplay.title && (
             <div className="info-row">
-              <span className="info-label">Title:</span>
+              <span className="info-label">{contentType === 'audiobook' ? 'Title' : 'Title'}:</span>
               <span className="info-value">{screenplay.title}</span>
             </div>
           )}
-          <div className="info-row">
-            <span className="info-label">Story Pitch:</span>
-            <span className={`info-value ${isLanguageRTL(validateLanguage(screenplay.default_screenplay_language)) ? 'rtl-content' : ''}`}>{screenplay.story_pitch}</span>
-          </div>
-          <div className="info-row">
-            <span className="info-label">Exposition:</span>
-            <span className={`info-value ${isLanguageRTL(validateLanguage(screenplay.default_screenplay_language)) ? 'rtl-content' : ''}`}>{screenplay.exposition}</span>
-          </div>
-          <div className="info-row">
-            <span className="info-label">Languages Used:</span>
-            <span className="info-value">{screenplay.dialog_languages?.join(', ')}</span>
-          </div>
+          {contentType === 'audiobook' && screenplay.author && (
+            <div className="info-row">
+              <span className="info-label">Author:</span>
+              <span className="info-value">{screenplay.author}</span>
+            </div>
+          )}
+          {contentType === 'audiobook' && screenplay.synopsis && (
+            <div className="info-row">
+              <span className="info-label">Synopsis:</span>
+              <span className={`info-value ${isLanguageRTL(validateLanguage(screenplay.default_screenplay_language)) ? 'rtl-content' : ''}`}>{screenplay.synopsis}</span>
+            </div>
+          )}
+          {contentType === 'screenplay' && screenplay.story_pitch && (
+            <div className="info-row">
+              <span className="info-label">Story Pitch:</span>
+              <span className={`info-value ${isLanguageRTL(validateLanguage(screenplay.default_screenplay_language)) ? 'rtl-content' : ''}`}>{screenplay.story_pitch}</span>
+            </div>
+          )}
+          {contentType === 'screenplay' && screenplay.exposition && (
+            <div className="info-row">
+              <span className="info-label">Exposition:</span>
+              <span className={`info-value ${isLanguageRTL(validateLanguage(screenplay.default_screenplay_language)) ? 'rtl-content' : ''}`}>{screenplay.exposition}</span>
+            </div>
+          )}
           <div className="info-row">
             <span className="info-label">Cast:</span>
             <span className={`info-value ${isLanguageRTL(validateLanguage(screenplay.default_screenplay_language)) ? 'rtl-content' : ''}`}>{screenplay.cast?.map(c => c.name).join(', ')}</span>
           </div>
-          <div className="info-row">
-            <span className="info-label">Scenes:</span>
-            <span className="info-value">{screenplay.scenes?.length}</span>
-          </div>
+          {contentType === 'screenplay' && screenplay.dialog_languages && (
+            <div className="info-row">
+              <span className="info-label">Languages Used:</span>
+              <span className="info-value">{screenplay.dialog_languages.join(', ')}</span>
+            </div>
+          )}
+          {contentType === 'screenplay' && screenplay.scenes && (
+            <div className="info-row">
+              <span className="info-label">Scenes:</span>
+              <span className="info-value">{screenplay.scenes.length}</span>
+            </div>
+          )}
+          {contentType === 'audiobook' && screenplay.dialog && (
+            <div className="info-row">
+              <span className="info-label">Dialog Lines:</span>
+              <span className="info-value">{screenplay.dialog.length}</span>
+            </div>
+          )}
         </div>
       </div>
 
@@ -486,7 +515,7 @@ export default function ScreenplayView({ screenplay, format, darkMode = false, s
       <div className="form-group">
         <label>Speech Speed by Language {playing && <span className="live-label">📡 Live</span>}</label>
         <div className="speed-grid">
-          {(screenplay?.dialog_languages || []).map(lang => (
+          {contentType === 'screenplay' && (screenplay?.dialog_languages || []).map(lang => (
             <div key={lang} className="speed-control">
               <label>{lang}</label>
               <input
@@ -512,7 +541,7 @@ export default function ScreenplayView({ screenplay, format, darkMode = false, s
             disabled={!screenplay}
             className="play"
           >
-            Play Screenplay
+            {contentType === 'audiobook' ? 'Play Audiobook' : 'Play Screenplay'}
           </button>
         )}
         {playing === 'playing' && (
@@ -535,15 +564,22 @@ export default function ScreenplayView({ screenplay, format, darkMode = false, s
       {(playing === 'playing' || playing === 'paused') && (
         <div className="playback-status">
           <div className="status-info">
-            <p><strong>Default Language:</strong> <span className="language-badge">{validateLanguage(screenplay.default_screenplay_language)}</span></p>
-            <p><strong>Currently Speaking:</strong> <span className="language-badge current">{currentSpeakingLanguage || validateLanguage(screenplay.default_screenplay_language)}</span></p>
+            {contentType === 'screenplay' && screenplay.default_screenplay_language && (
+              <>
+                <p><strong>Default Language:</strong> <span className="language-badge">{validateLanguage(screenplay.default_screenplay_language)}</span></p>
+                <p><strong>Currently Speaking:</strong> <span className="language-badge current">{currentSpeakingLanguage || validateLanguage(screenplay.default_screenplay_language)}</span></p>
+              </>
+            )}
+            {contentType === 'audiobook' && (
+              <p><strong>Currently Speaking:</strong> <span className="language-badge current">{currentSpeakingLanguage || 'English'}</span></p>
+            )}
           </div>
         </div>
       )}
 
       <div className="full-screenplay">
         <h2 onClick={() => setShowScreenplay(!showScreenplay)} style={{ cursor: 'pointer', margin: '0 0 12px 0' }}>
-          {showScreenplay ? '[-]' : '[+]'} Complete Screenplay Structure
+          {showScreenplay ? '[-]' : '[+]'} Complete {contentType === 'audiobook' ? 'Audiobook' : 'Screenplay'} Structure
         </h2>
         {showScreenplay && (
           <div className="expand-buttons">
@@ -562,9 +598,10 @@ export default function ScreenplayView({ screenplay, format, darkMode = false, s
         )}
       </div>
 
-      <div className={`readable-screenplay ${isLanguageRTL(screenplay.dialog_languages?.[0]) ? 'rtl' : 'ltr'}`}>
+      <div className={`readable-screenplay ${contentType === 'screenplay' && isLanguageRTL(screenplay.dialog_languages?.[0]) ? 'rtl' : 'ltr'}`}>
         <h2>Readable Format</h2>
-        {screenplay.scenes?.map((scene, sceneIdx) => {
+        
+        {contentType === 'screenplay' && screenplay.scenes?.map((scene, sceneIdx) => {
           const sceneHasRTL = screenplay.dialog_languages?.some(lang => isLanguageRTL(lang));
           return (
             <div key={sceneIdx} className={`scene ${sceneHasRTL ? 'rtl' : 'ltr'}`}>
@@ -628,6 +665,74 @@ export default function ScreenplayView({ screenplay, format, darkMode = false, s
             </div>
           );
         })}
+
+        {contentType === 'audiobook' && (
+          <div className="audiobook-content">
+            {screenplay.cast && screenplay.cast.length > 0 && (
+              <div className="audiobook-cast">
+                <h3>Cast</h3>
+                <div className="cast-list">
+                  {screenplay.cast.map((character, idx) => (
+                    <div key={idx} className="cast-item">
+                      <div className="character-name">{character.name}</div>
+                      {character.description && (
+                        <div className="character-description">{character.description}</div>
+                      )}
+                      {character.voice_style && (
+                        <div className="voice-style">Voice: {character.voice_style}</div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            <div className="audiobook-dialog">
+              <h3>Narration & Dialog</h3>
+              {screenplay.dialog?.map((line, lineIdx) => {
+                const langColor = LANGUAGE_COLORS[line.languageIsoCode?.toUpperCase()] || '#6b7280';
+                const characterFinder = screenplay.cast?.find(c => c.name === line.person);
+                
+                return (
+                  <div
+                    key={lineIdx}
+                    className="audiobook-dialog-line"
+                    style={{ 
+                      borderLeft: `4px solid ${langColor}`,
+                      marginBottom: '16px',
+                      paddingLeft: '12px'
+                    }}
+                  >
+                    <button 
+                      className="dialog-play-btn"
+                      onClick={() => handlePlayFromDialog(0, lineIdx)}
+                      title={`Play from this line (${line.person})`}
+                      disabled={playing !== 'stopped'}
+                    >
+                      ▶️
+                    </button>
+                    <div className="audiobook-character" style={{ fontWeight: 'bold', marginBottom: '4px' }}>
+                      {line.person}
+                    </div>
+                    <div className="audiobook-text">
+                      {highlightText(line.text, 'text', 0, lineIdx)}
+                    </div>
+                    {line.emotion && (
+                      <div className="emotion-direction" style={{ fontSize: '0.9em', color: '#666', marginTop: '4px', fontStyle: 'italic' }}>
+                        Emotion: {line.emotion}
+                      </div>
+                    )}
+                    {line.pace && (
+                      <div className="pace-direction" style={{ fontSize: '0.9em', color: '#666', marginTop: '2px', fontStyle: 'italic' }}>
+                        Pace: {line.pace}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -25,6 +25,7 @@ export default function ScreenplayGenerator({
 }) {
   const [showApiKey, setShowApiKey] = useState(false);
   const [hasUserCleared, setHasUserCleared] = useState(false);
+  const [generationType, setGenerationType] = useState<'screenplay' | 'audiobook'>('screenplay');
   
   const { screenplay, loading, error, generate, generateForMultipleModels, models, selectedModel, setSelectedModel, multiModelResults } = useScreenplay();
 
@@ -46,6 +47,7 @@ export default function ScreenplayGenerator({
         model: selectedModel,
         models: useMultipleModels ? selectedModels : [selectedModel],
         multiModel: useMultipleModels,
+        generationType,
       });
       // Note: onGenerationEnd() is called from onAllModelsComplete for multi-model
       // or from the single model generate() callback
@@ -68,10 +70,10 @@ export default function ScreenplayGenerator({
         window.location.hash = '#/screenplay-result';
       };
       
-      generateForMultipleModels(storypitch, languagesUsed, defaultScreenplayLanguage, minLinesPerDialog, selectedModels, apiKey, null, onAllModelsComplete);
+      generateForMultipleModels(storypitch, languagesUsed, defaultScreenplayLanguage, minLinesPerDialog, selectedModels, apiKey, generationType, null, onAllModelsComplete);
     } else {
       // Single model generation
-      generate(storypitch, languagesUsed, defaultScreenplayLanguage, minLinesPerDialog, selectedModel, apiKey);
+      generate(storypitch, languagesUsed, defaultScreenplayLanguage, minLinesPerDialog, selectedModel, apiKey, generationType);
       // onGenerationEnd() will be called from the useEffect when screenplay is set
     }
   };
@@ -125,6 +127,34 @@ export default function ScreenplayGenerator({
             onChange={(e) => setStorypitch(e.target.value)}
             disabled={loading}
           />
+        </div>
+
+        <div className="form-group">
+          <label>Generation Type</label>
+          <div style={{ display: 'flex', gap: '15px' }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <input
+                type="radio"
+                name="generationType"
+                value="screenplay"
+                checked={generationType === 'screenplay'}
+                onChange={(e) => setGenerationType(e.target.value as 'screenplay' | 'audiobook')}
+                disabled={loading}
+              />
+              Screenplay
+            </label>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <input
+                type="radio"
+                name="generationType"
+                value="audiobook"
+                checked={generationType === 'audiobook'}
+                onChange={(e) => setGenerationType(e.target.value as 'screenplay' | 'audiobook')}
+                disabled={loading}
+              />
+              Audiobook
+            </label>
+          </div>
         </div>
 
         <div className="form-group">

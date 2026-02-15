@@ -131,7 +131,8 @@ export const useScreenplay = () => {
     default_screenplay_language: string,
     min_lines_per_dialog: number,
     model: string,
-    customApiKey?: string
+    customApiKey?: string,
+    generationType: 'screenplay' | 'audiobook' = 'screenplay'
   ) => {
     setLoading(true);
     setError('');
@@ -144,6 +145,7 @@ export const useScreenplay = () => {
         default_screenplay_language,
         min_lines_per_dialog,
         model: model || selectedModel,
+        generationType,
         ...(customApiKey && { customApiKey }),
       };
 
@@ -187,6 +189,7 @@ export const useScreenplay = () => {
     min_lines_per_dialog: number,
     modelsToGenerate: string[],
     customApiKey?: string,
+    generationType: 'screenplay' | 'audiobook' = 'screenplay',
     onModelComplete?: (model: string, result: MultiModelResults[string]) => void,
     onAllModelsComplete?: (results: MultiModelResults) => void
   ) => {
@@ -210,6 +213,7 @@ export const useScreenplay = () => {
               default_screenplay_language,
               min_lines_per_dialog,
               model,
+              generationType,
               customApiKey,
             }),
             signal, // Pass abort signal for this model

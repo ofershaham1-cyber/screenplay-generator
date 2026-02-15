@@ -3,7 +3,7 @@
     "server.ts",
     "routes/",
     "config.json",
-    "responseFormat.json"
+    "src/responseFormats/"
   ],
   "ignore": [
     "src/",

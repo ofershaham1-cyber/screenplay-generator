@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { RTL_LANGUAGES, isLanguageRTL, validateLanguage } from './config/languages';
 import './ScreenplayHistory.css';
 
@@ -9,11 +9,17 @@ export default function ScreenplayHistory({
   onClearHistory,
   onExportScreenplay,
   onImportScreenplay,
-  storageInfo
+  storageInfo,
+  initialFilterType = 'all'
 }) {
   const [expandedId, setExpandedId] = useState(null);
   const [sortBy, setSortBy] = useState('date'); // 'date' or 'title'
   const [sortOrder, setSortOrder] = useState('desc'); // 'asc' or 'desc'
+  const [filterType, setFilterType] = useState(initialFilterType); // 'all', 'screenplay', 'audiobook'
+
+  useEffect(() => {
+    setFilterType(initialFilterType);
+  }, [initialFilterType]);
 
   const isRTL = (languages) => {
     if (!languages || languages.length === 0) return false;
@@ -46,7 +52,17 @@ export default function ScreenplayHistory({
   const sortedHistory = useMemo(() => {
     if (!history || history.length === 0) return [];
     
-    return [...history].sort((a, b) => {
+    // First, filter by generation type
+    let filtered = history;
+    if (filterType !== 'all') {
+      filtered = history.filter(item => {
+        const generationType = item.params?.generationType || 'screenplay';
+        return generationType === filterType;
+      });
+    }
+    
+    // Then sort by criteria
+    return [...filtered].sort((a, b) => {
       let comparison = 0;
       
       if (sortBy === 'date') {
@@ -59,7 +75,7 @@ export default function ScreenplayHistory({
       
       return sortOrder === 'desc' ? -comparison : comparison;
     });
-  }, [history, sortBy, sortOrder]);
+  }, [history, sortBy, sortOrder, filterType]);
 
   // Show empty state if no history
   if (!history || history.length === 0) {
@@ -77,7 +93,9 @@ export default function ScreenplayHistory({
     <div className="screenplay-history">
       {/* Header with actions */}
       <div className="history-header">
-        <h3>📚 Screenplay History ({history.length})</h3>
+        <h3>
+          📚 Screenplay History ({sortedHistory.length}{filterType !== 'all' ? ` filtered of ${history.length}` : ''})
+        </h3>
         <div className="header-actions">
           <label className="import-btn" title="Import screenplay">
             📥 Import
@@ -96,6 +114,18 @@ export default function ScreenplayHistory({
 
       {/* Sorting controls */}
       <div className="sorting-controls">
+        <div className="sort-group">
+          <label>Filter by Type:</label>
+          <select 
+            value={filterType} 
+            onChange={(e) => setFilterType(e.target.value)}
+            className="sort-select"
+          >
+            <option value="all">All Types</option>
+            <option value="screenplay">Screenplay</option>
+            <option value="audiobook">Audiobook</option>
+          </select>
+        </div>
         <div className="sort-group">
           <label>Sort by:</label>
           <select 
@@ -130,6 +160,14 @@ export default function ScreenplayHistory({
         </div>
       )}
 
+      {/* Empty state for filtered results */}
+      {sortedHistory.length === 0 && filterType !== 'all' && (
+        <div className="empty-state" style={{ marginTop: '20px' }}>
+          <p>🔍 No {filterType === 'audiobook' ? 'audiobook' : 'screenplay'} items found.</p>
+          <p>Try changing your filter to see more results.</p>
+        </div>
+      )}
+
       {/* History grid */}
       <div className="history-grid">
         {sortedHistory.map((item) => {
@@ -140,6 +178,7 @@ export default function ScreenplayHistory({
           const isExpanded = expandedId === item.id;
           const languages = params.dialog_languages || [];
           const shouldBeRTL = isRTL(languages);
+          const generationType = params.generationType || 'screenplay';
           
           const castCount = screenplay.cast?.length || 0;
           const sceneCount = screenplay.scenes?.length || 0;
@@ -182,6 +221,16 @@ export default function ScreenplayHistory({
                   
                   {/* Meta info */}
                   <div className="history-card-meta" style={{ justifyContent: shouldBeRTL ? 'flex-end' : 'flex-start', display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                    <span className={`generation-type-badge ${generationType}`} style={{
+                      padding: '4px 8px',
+                      borderRadius: '3px',
+                      fontSize: '11px',
+                      fontWeight: '500',
+                      backgroundColor: generationType === 'audiobook' ? '#e8f5e9' : '#e3f2fd',
+                      color: generationType === 'audiobook' ? '#2e7d32' : '#1565c0'
+                    }}>
+                      {generationType === 'audiobook' ? '🎵 Audiobook' : '📄 Screenplay'}
+                    </span>
                     {languages && languages.length > 0 && (
                       <span className="history-card-lang" style={{ textAlign: shouldBeRTL ? 'right' : 'left' }}>
                         🗣️ {languages.join(', ')}

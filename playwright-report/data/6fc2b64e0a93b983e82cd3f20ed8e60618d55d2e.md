@@ -1,0 +1,179 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - heading "Screenplay Generator" [level=1] [ref=e5]
+    - generic [ref=e6]:
+      - generic [ref=e9]: Generating screenplay...
+      - button "🐛" [ref=e10] [cursor=pointer]
+  - generic [ref=e11]:
+    - navigation [ref=e12]:
+      - heading "Screenplay App" [level=2] [ref=e14]
+      - list [ref=e15]:
+        - listitem [ref=e16]:
+          - link "Generator" [ref=e17] [cursor=pointer]:
+            - /url: /generator
+        - listitem [ref=e18]:
+          - link "📋 Requests" [ref=e19] [cursor=pointer]:
+            - /url: /requests
+        - listitem [ref=e20]:
+          - link "Player" [ref=e21] [cursor=pointer]:
+            - /url: /player
+        - listitem [ref=e22]:
+          - link "📄 Result" [ref=e23] [cursor=pointer]:
+            - /url: /screenplay-result
+        - listitem [ref=e24]:
+          - link "History 1" [ref=e25] [cursor=pointer]:
+            - /url: /history
+            - text: History
+            - generic [ref=e26]: "1"
+        - listitem [ref=e27]:
+          - link "⚙️ Preferences" [ref=e28] [cursor=pointer]:
+            - /url: /preferences
+        - listitem [ref=e29]:
+          - link "📋 Format Schema" [ref=e30] [cursor=pointer]:
+            - /url: /format-schema
+        - listitem [ref=e31]:
+          - link "🔧 View Models" [ref=e32] [cursor=pointer]:
+            - /url: /view-models
+      - generic [ref=e34]:
+        - generic [ref=e35] [cursor=pointer]: Theme
+        - combobox [ref=e36] [cursor=pointer]:
+          - option "Light" [selected]
+          - option "Dark"
+          - option "Dark Blue"
+    - main [ref=e37]:
+      - generic [ref=e39]:
+        - heading "Generate Screenplay" [level=2] [ref=e41]
+        - generic [ref=e42]:
+          - generic [ref=e43] [cursor=pointer]: Story pitch (optional)
+          - textbox "Enter your story pitch..." [disabled] [ref=e44]: Create an audiobook about a detective solving a mysterious case in a small town.
+        - generic [ref=e45]:
+          - generic [ref=e46] [cursor=pointer]: Generation Type
+          - generic [ref=e47]:
+            - generic [ref=e48] [cursor=pointer]:
+              - radio "Screenplay" [disabled] [ref=e49]
+              - text: Screenplay
+            - generic [ref=e50] [cursor=pointer]:
+              - radio "Audiobook" [checked] [disabled] [ref=e51]
+              - text: Audiobook
+        - generic [ref=e52]:
+          - generic [ref=e53] [cursor=pointer]: Languages Used (for character dialog)
+          - generic [ref=e54]:
+            - generic [ref=e55] [cursor=pointer]:
+              - checkbox "English" [checked] [disabled] [ref=e56]
+              - text: English
+            - generic [ref=e57] [cursor=pointer]:
+              - checkbox "Hebrew" [checked] [disabled] [ref=e58]
+              - text: Hebrew
+            - generic [ref=e59] [cursor=pointer]:
+              - checkbox "Spanish" [disabled] [ref=e60]
+              - text: Spanish
+            - generic [ref=e61] [cursor=pointer]:
+              - checkbox "French" [disabled] [ref=e62]
+              - text: French
+            - generic [ref=e63] [cursor=pointer]:
+              - checkbox "Russian" [disabled] [ref=e64]
+              - text: Russian
+            - generic [ref=e65] [cursor=pointer]:
+              - checkbox "Chinese" [disabled] [ref=e66]
+              - text: Chinese
+            - generic [ref=e67] [cursor=pointer]:
+              - checkbox "Japanese" [disabled] [ref=e68]
+              - text: Japanese
+            - generic [ref=e69] [cursor=pointer]:
+              - checkbox "Arabic" [checked] [disabled] [ref=e70]
+              - text: Arabic
+            - generic [ref=e71] [cursor=pointer]:
+              - checkbox "German" [disabled] [ref=e72]
+              - text: German
+            - generic [ref=e73] [cursor=pointer]:
+              - checkbox "Italian" [disabled] [ref=e74]
+              - text: Italian
+            - generic [ref=e75] [cursor=pointer]:
+              - checkbox "Portuguese" [disabled] [ref=e76]
+              - text: Portuguese
+            - generic [ref=e77] [cursor=pointer]:
+              - checkbox "Korean" [disabled] [ref=e78]
+              - text: Korean
+            - generic [ref=e79] [cursor=pointer]:
+              - checkbox "Dutch" [disabled] [ref=e80]
+              - text: Dutch
+            - generic [ref=e81] [cursor=pointer]:
+              - checkbox "Polish" [disabled] [ref=e82]
+              - text: Polish
+            - generic [ref=e83] [cursor=pointer]:
+              - checkbox "Turkish" [disabled] [ref=e84]
+              - text: Turkish
+            - generic [ref=e85] [cursor=pointer]:
+              - checkbox "Hindi" [disabled] [ref=e86]
+              - text: Hindi
+        - generic [ref=e87]:
+          - generic [ref=e88] [cursor=pointer]: Default Screenplay Language (for all text except the dialogs)
+          - combobox [disabled] [ref=e89]:
+            - option "English" [selected]
+            - option "Hebrew"
+            - option "Spanish"
+            - option "French"
+            - option "Russian"
+            - option "Chinese"
+            - option "Japanese"
+            - option "Arabic"
+            - option "German"
+            - option "Italian"
+            - option "Portuguese"
+            - option "Korean"
+            - option "Dutch"
+            - option "Polish"
+            - option "Turkish"
+            - option "Hindi"
+        - generic [ref=e90]:
+          - generic [ref=e91] [cursor=pointer]: Minimum Lines Per Dialog *
+          - spinbutton [disabled] [ref=e92]: "20"
+          - text: Controls the minimum length of character dialogs
+        - generic [ref=e93]:
+          - generic [ref=e94] [cursor=pointer]:
+            - checkbox "Generate for Multiple Models" [checked] [disabled] [ref=e95]
+            - text: Generate for Multiple Models
+          - generic [ref=e96]:
+            - button "Select All" [disabled] [ref=e97]
+            - button "Clear All" [disabled] [ref=e98]
+          - generic [ref=e99]:
+            - generic [ref=e100] [cursor=pointer]:
+              - checkbox "openrouter/aurora-alpha" [checked] [disabled] [ref=e101]
+              - text: openrouter/aurora-alpha
+            - generic [ref=e102] [cursor=pointer]:
+              - checkbox "arcee-ai/trinity-large-preview:free" [checked] [disabled] [ref=e103]
+              - text: arcee-ai/trinity-large-preview:free
+            - generic [ref=e104] [cursor=pointer]:
+              - checkbox "upstage/solar-pro-3:free" [checked] [disabled] [ref=e105]
+              - text: upstage/solar-pro-3:free
+            - generic [ref=e106] [cursor=pointer]:
+              - checkbox "arcee-ai/trinity-mini:free" [checked] [disabled] [ref=e107]
+              - text: arcee-ai/trinity-mini:free
+            - generic [ref=e108] [cursor=pointer]:
+              - checkbox "qwen/qwen3-next-80b-a3b-instruct:free" [checked] [disabled] [ref=e109]
+              - text: qwen/qwen3-next-80b-a3b-instruct:free
+            - generic [ref=e110] [cursor=pointer]:
+              - checkbox "nvidia/nemotron-nano-9b-v2:free" [checked] [disabled] [ref=e111]
+              - text: nvidia/nemotron-nano-9b-v2:free
+            - generic [ref=e112] [cursor=pointer]:
+              - checkbox "cognitivecomputations/dolphin-mistral-24b-venice-edition:free" [checked] [disabled] [ref=e113]
+              - text: cognitivecomputations/dolphin-mistral-24b-venice-edition:free
+            - generic [ref=e114] [cursor=pointer]:
+              - checkbox "qwen/qwen3-4b:free" [checked] [disabled] [ref=e115]
+              - text: qwen/qwen3-4b:free
+            - generic [ref=e116] [cursor=pointer]:
+              - checkbox "mistralai/mistral-small-3.1-24b-instruct:free" [checked] [disabled] [ref=e117]
+              - text: mistralai/mistral-small-3.1-24b-instruct:free
+          - paragraph [ref=e118]: 9 model(s) selected
+        - generic "Click to toggle API key input" [ref=e120] [cursor=pointer]: ▶ Custom API Key (optional)
+        - button "Generating..." [disabled] [ref=e121]
+        - generic [ref=e122]:
+          - strong [ref=e123]: "💡 Tip:"
+          - text: Visit the
+          - link "Requests" [ref=e124] [cursor=pointer]:
+            - /url: "#/requests"
+          - text: page to monitor generation progress and cancel individual models.
+```

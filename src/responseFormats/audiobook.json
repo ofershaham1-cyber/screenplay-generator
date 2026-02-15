@@ -1,0 +1,80 @@
+{
+  "type": "json_schema",
+  "jsonSchema": {
+    "name": "audiobook",
+    "strict": true,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Title of the audiobook"
+        },
+        "author": {
+          "type": "string",
+          "description": "Author name"
+        },
+        "synopsis": {
+          "type": "string",
+          "description": "Brief synopsis of the story"
+        },
+        "cast": {
+          "type": "array",
+          "description": "List of characters/narrators in the audiobook",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Character name"
+              },
+              "description": {
+                "type": "string",
+                "description": "Character description"
+              },
+              "voice_style": {
+                "type": "string",
+                "description": "Voice characteristics and style"
+              }
+            },
+            "required": ["name", "description"],
+            "additionalProperties": false
+          }
+        },
+        "dialog": {
+          "type": "array",
+          "description": "Dialog lines in sequence",
+          "items": {
+            "type": "object",
+            "properties": {
+              "person": {
+                "type": "string",
+                "description": "Character name or narrator"
+              },
+              "languageIsoCode": {
+                "type": "string",
+                "description": "ISO 639-1 language code (e.g., 'en', 'es', 'fr')"
+              },
+              "text": {
+                "type": "string",
+                "description": "The dialog text to be spoken"
+              },
+              "emotion": {
+                "type": "string",
+                "description": "Emotional tone for delivery"
+              },
+              "pace": {
+                "type": "string",
+                "description": "Speech pace (slow, normal, fast)"
+              }
+            },
+            "required": ["person", "languageIsoCode", "text"],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": ["title", "author", "synopsis", "cast", "dialog"],
+      "additionalProperties": false
+    }
+  }
+}

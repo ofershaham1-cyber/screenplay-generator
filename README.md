@@ -1,10 +1,11 @@
 # Screenplay Generator & Player
 
-A full-stack application that generates multilingual screenplays using AI with structured output and plays them back with text-to-speech.
+A full-stack application that generates multilingual screenplays and audiobooks using AI with structured output and plays them back with text-to-speech.
 
 ## Features
 
-- AI-powered screenplay generation using OpenRouter API with structured JSON output
+- AI-powered screenplay and audiobook generation using OpenRouter API with structured JSON output
+- Multiple generation types: Screenplay and Audiobook formats
 - Multilingual dialog support (16 languages)
 - Configurable screenplay language for scene descriptions and directions
 - Interactive expandable/collapsible JSON viewer for screenplay structure
@@ -20,7 +21,9 @@ npm install
 
 ## Configuration
 
-The application uses `config.json` for API configuration and `responseFormat.json` for the screenplay structure schema.
+The application uses `config.json` for API configuration. Response formats are stored in `src/responseFormats/`:
+- `screenplay.json` - Screenplay generation format with detailed scene, dialog, and direction information
+- `audiobook.json` - Audiobook generation format with cast and simplified dialog structure
 
 ## Running the Application
 
@@ -59,13 +62,18 @@ Content-Type: application/json
 {
   "story_pitch": "A story about...",
   "dialog_languages": ["English", "Spanish", "Hebrew"],
-  "default_screenplay_language": "Hebrew"
+  "default_screenplay_language": "Hebrew",
+  "generationType": "screenplay"  // or "audiobook"
 }
 ```
 
 ### Get Response Format Schema
 ```bash
-GET /screenplay/format
+GET /screenplay/format?type=screenplay
+# or
+GET /screenplay/format?type=audiobook
+# or
+GET /screenplay/format?type=all
 ```
 
 ### Chat API
@@ -89,13 +97,14 @@ Visit http://localhost:3000/api-docs for full API documentation.
 
 ## UI Features
 
-- **Response Format Viewer**: Expandable view of the JSON schema used for screenplay generation
+- **Generation Type Selector**: Choose between screenplay and audiobook formats
+- **Response Format Viewer**: Expandable view of the JSON schema used for generation
 - **Story pitch Input**: Optional text input for custom story concepts
 - **Language Selection**: Multi-select checkboxes for character dialog languages
 - **Default Screenplay Language**: Dropdown for selecting the language used in scene descriptions and directions
 - **Generated Output**: Two views:
   - Complete Structure: Interactive JSON tree viewer with expand/collapse functionality
-  - Readable Format: Traditional screenplay formatting with scene headings, descriptions, and dialog
+  - Readable Format: Traditional screenplay formatting (for screenplay type) or audiobook format (for audiobook type)
 
 ## Technologies
 
