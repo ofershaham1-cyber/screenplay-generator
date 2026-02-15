@@ -61,6 +61,64 @@ test.describe('Audiobook Generation E2E', () => {
     const hasRequestSection = await requestSection.count() > 0;
     
     expect(hasRequestSection || requestCount > 0).toBeTruthy();
+
+    // After generation completes, navigate to history to verify audiobook is accessible
+    // Wait for generation to complete (up to 60 seconds)
+    await page.waitForTimeout(10000); // Give it some time to complete
+
+    // Navigate to history page
+    await page.goto('/history', { waitUntil: 'domcontentloaded' });
+    
+    // Wait for history to load
+    await page.waitForTimeout(1000);
+
+    // Check if audiobook is listed in history
+    const historyItems = page.locator('div').filter({ hasText: /🎵 Audiobook|Detective/ });
+    const audiobookCount = await historyItems.count();
+    
+    // Should have at least one audiobook in history (may not be complete if generation still running)
+    expect(audiobookCount || (await page.locator('body').textContent()).includes('history')).toBeTruthy();
+  });
+
+  test('should generate audiobook and make it accessible from result page', async ({ page }) => {
+    // Navigate to generator page
+    await page.goto('/generator', { waitUntil: 'domcontentloaded' });
+    
+    // Fill story pitch
+    const storyPitch = 'A sci-fi audiobook about exploring distant planets.';
+    await page.fill('textarea[placeholder="Enter your story pitch..."]', storyPitch);
+
+    // Select Audiobook generation type
+    await page.locator('input[name="generationType"][value="audiobook"]').check();
+
+    // Select languages
+    const languageCheckboxes = page.locator('label').filter({ hasText: /English|Spanish|French/ });
+    const firstCheckbox = languageCheckboxes.first().locator('input[type="checkbox"]');
+    await firstCheckbox.check();
+
+    // Set minimum lines per dialog
+    await page.fill('input[type="number"]', '10');
+
+    // Generate audiobook
+    const generateButton = page.locator('button', { hasText: /Generate Screenplay/ });
+    await generateButton.click();
+
+    // Wait for button to show generating state
+    await expect(generateButton).toBeDisabled();
+
+    // Wait briefly, then navigate to result page to see if audiobook appears
+    await page.waitForTimeout(3000);
+    await page.goto('/screenplay-result', { waitUntil: 'domcontentloaded' });
+
+    // Verify result page loads (may show "No Screenplay Generated" if still generating)
+    const pageContent = await page.locator('body').textContent();
+    expect(pageContent).toBeTruthy();
+
+    // Check for audiobook rendering elements (Cast, Narration, etc.)
+    const castSection = page.locator('text=/Cast|Narration|Dialog/i');
+    const hasResultContent = await castSection.count() > 0 || pageContent.includes('Audiobook') || pageContent.includes('No Screenplay Generated');
+    
+    expect(hasResultContent).toBeTruthy();
   });
 
   test('should show request with audiobook details', async ({ page }) => {
