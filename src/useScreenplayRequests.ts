@@ -1,23 +1,28 @@
-import { useState, useCallback } from 'react';
-
-export interface RequestState {
-  status: 'pending' | 'completed' | 'failed' | 'cancelled';
-  startTime?: number;
-  endTime?: number;
-  duration?: number;
-  error?: string | null;
-  cancelled?: boolean;
-}
+import { useState, useCallback, useEffect } from 'react';
+import { store, registerRequest as registerRequestAction, completeRequest as completeRequestAction, cancelRequest as cancelRequestAction, clearRequests as clearRequestsAction, RequestState } from './store/index';
 
 /**
  * Hook to manage screenplay generation requests per model
  * Allows canceling requests individually or all at once
  */
 export const useScreenplayRequests = () => {
-  // Track AbortController for each model
+  // Track AbortController for each model (still local since AbortController can't be serialized)
   const [requestControllers, setRequestControllers] = useState<Record<string, AbortController>>({});
-  // Track request status per model
-  const [requestStates, setRequestStates] = useState<Record<string, RequestState>>({});
+  
+  // Force re-render when store changes
+  const [, forceUpdate] = useState(0);
+  
+  // Subscribe to store changes
+  useEffect(() => {
+    const unsubscribe = store.subscribe(() => {
+      forceUpdate(prev => prev + 1);
+    });
+    
+    return unsubscribe;
+  }, []);
+  
+  // Get request states directly from store (create a new reference to trigger re-renders)
+  const requestStates = { ...store.getState().requests };
 
   /**
    * Register a new request for a model
@@ -32,15 +37,8 @@ export const useScreenplayRequests = () => {
       [model]: controller
     }));
     
-    setRequestStates(prev => ({
-      ...prev,
-      [model]: {
-        status: 'pending',
-        startTime: Date.now(),
-        error: null,
-        cancelled: false
-      }
-    }));
+    // Dispatch to Redux store
+    store.dispatch(registerRequestAction(model));
     
     return controller.signal;
   }, []);
@@ -52,16 +50,8 @@ export const useScreenplayRequests = () => {
    * @param {string} error - Error message if failed
    */
   const completeRequest = useCallback((model: string, success: boolean = true, error: string | null = null) => {
-    setRequestStates(prev => ({
-      ...prev,
-      [model]: {
-        ...(prev[model] || {}),
-        status: success ? 'completed' : 'failed',
-        error,
-        endTime: Date.now(),
-        duration: Date.now() - (prev[model]?.startTime || Date.now())
-      }
-    }));
+    // Dispatch to Redux store
+    store.dispatch(completeRequestAction(model, success, error));
     
     // Clean up the controller
     setRequestControllers(prev => {
@@ -83,16 +73,8 @@ export const useScreenplayRequests = () => {
       console.log(`[useScreenplayRequests] Found controller, aborting...`);
       controller.abort();
       
-      setRequestStates(prev => ({
-        ...prev,
-        [model]: {
-          ...(prev[model] || {}),
-          status: 'cancelled',
-          cancelled: true,
-          endTime: Date.now(),
-          duration: Date.now() - (prev[model]?.startTime || Date.now())
-        }
-      }));
+      // Dispatch to Redux store
+      store.dispatch(cancelRequestAction(model));
       
       setRequestControllers(prev => {
         const updated = { ...prev };
@@ -110,22 +92,8 @@ export const useScreenplayRequests = () => {
   const cancelAllRequests = useCallback(() => {
     Object.entries(requestControllers).forEach(([model, controller]) => {
       controller.abort();
-    });
-    
-    setRequestStates(prev => {
-      const updated = { ...prev };
-      Object.keys(updated).forEach(model => {
-        if (updated[model]?.status === 'pending') {
-          updated[model] = {
-            ...updated[model],
-            status: 'cancelled',
-            cancelled: true,
-            endTime: Date.now(),
-            duration: Date.now() - (updated[model]?.startTime || Date.now())
-          };
-        }
-      });
-      return updated;
+      // Dispatch cancel action for each model
+      store.dispatch(cancelRequestAction(model));
     });
     
     setRequestControllers({});
@@ -151,7 +119,7 @@ export const useScreenplayRequests = () => {
    * Clear request history (doesn't cancel active requests)
    */
   const clearRequestHistory = useCallback(() => {
-    setRequestStates({});
+    store.dispatch(clearRequestsAction());
   }, []);
 
   /**

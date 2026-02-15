@@ -103,8 +103,12 @@ export default function ScreenplayGenerator({
       
       generateForMultipleModels(storypitch, languagesUsed, defaultScreenplayLanguage, minLinesPerDialog, selectedModels, apiKey, generationType, null, onAllModelsComplete);
     } else {
-      // Single model generation
-      generate(storypitch, languagesUsed, defaultScreenplayLanguage, minLinesPerDialog, selectedModel, apiKey, generationType);
+      // Single model generation - use first selected model
+      const modelToUse = selectedModel || selectedModels[0];
+      if (modelToUse) {
+        setSelectedModel(modelToUse);
+      }
+      generate(storypitch, languagesUsed, defaultScreenplayLanguage, minLinesPerDialog, modelToUse, apiKey, generationType);
       // onGenerationEnd() will be called from the useEffect when screenplay is set
     }
   };

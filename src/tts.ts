@@ -137,7 +137,7 @@ export const playScreenplay = async (screenplay: Screenplay, options: PlayScreen
       // Speak text
       if (ttsOpts.includeText && line.text) {
         if ((controller as any).isCancelled) break;
-        const textLang = characterMode && line.languageIsoCode ? validateLanguage(line.languageIsoCode) : defaultLanguage;
+        const textLang = characterMode && line.language ? validateLanguage(line.language) : defaultLanguage;
         const textSpeed = currentLanguageSpeeds[textLang] || 1;
         onLanguageChange?.(textLang);
         await speakWithHighlight(line.text, textLang, textSpeed, (word) => onWordStart?.(word, 'text', 0, lineIdx), () => {

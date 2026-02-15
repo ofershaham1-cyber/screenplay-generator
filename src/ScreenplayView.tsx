@@ -690,7 +690,7 @@ export default function ScreenplayView({ screenplay, format, darkMode = false, s
             <div className="audiobook-dialog">
               <h3>Narration & Dialog</h3>
               {screenplay.dialog?.map((line, lineIdx) => {
-                const langColor = LANGUAGE_COLORS[line.languageIsoCode?.toUpperCase()] || '#6b7280';
+                const langColor = LANGUAGE_COLORS[line.language?.toUpperCase()] || '#6b7280';
                 const characterFinder = screenplay.cast?.find(c => c.name === line.person);
                 
                 return (

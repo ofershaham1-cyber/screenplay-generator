@@ -139,6 +139,10 @@ export const useScreenplay = () => {
     try {
       const isDebug = getIsDebug();
       const url = isDebug ? '/api/screenplay/generate?debug=true' : '/api/screenplay/generate';
+      
+      // Register request for single model generation
+      const signal = registerRequest(model);
+      
       const payload = {
         story_pitch: story_pitch || '',
         dialog_languages,
@@ -153,6 +157,7 @@ export const useScreenplay = () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
+        signal, // Pass abort signal
       });
 
       // If request failed, attempt to include full request + response details when debug is enabled
@@ -175,8 +180,15 @@ export const useScreenplay = () => {
 
       const data = await res.json();
       setScreenplay(data);
+      
+      // Mark request as completed successfully
+      completeRequest(model, true);
     } catch (err) {
-      setError((err as Error).message);
+      const errorMessage = (err as Error).message;
+      setError(errorMessage);
+      
+      // Mark request as failed
+      completeRequest(model, false, errorMessage);
     } finally {
       setLoading(false);
     }

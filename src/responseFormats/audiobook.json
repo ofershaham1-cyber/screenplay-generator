@@ -51,9 +51,9 @@
                 "type": "string",
                 "description": "Character name or narrator"
               },
-              "languageIsoCode": {
+              "language": {
                 "type": "string",
-                "description": "ISO 639-1 language code (e.g., 'en', 'es', 'fr')"
+                "description": "The language (full name)"
               },
               "text": {
                 "type": "string",
@@ -68,7 +68,7 @@
                 "description": "Speech pace (slow, normal, fast)"
               }
             },
-            "required": ["person", "languageIsoCode", "text"],
+            "required": ["person", "language", "text"],
             "additionalProperties": false
           }
         }

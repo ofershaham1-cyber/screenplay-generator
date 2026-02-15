@@ -1,0 +1,46 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - heading "Screenplay Generator" [level=1] [ref=e5]
+    - button "🐛" [ref=e7] [cursor=pointer]
+  - generic [ref=e8]:
+    - navigation [ref=e9]:
+      - heading "Screenplay App" [level=2] [ref=e11]
+      - list [ref=e12]:
+        - listitem [ref=e13]:
+          - link "Generator" [ref=e14] [cursor=pointer]:
+            - /url: /generator
+        - listitem [ref=e15]:
+          - link "📋 Requests" [ref=e16] [cursor=pointer]:
+            - /url: /requests
+        - listitem [ref=e17]:
+          - link "Player" [ref=e18] [cursor=pointer]:
+            - /url: /player
+        - listitem [ref=e19]:
+          - link "📄 Result" [ref=e20] [cursor=pointer]:
+            - /url: /screenplay-result
+        - listitem [ref=e21]:
+          - link "History" [ref=e22] [cursor=pointer]:
+            - /url: /history
+        - listitem [ref=e23]:
+          - link "⚙️ Preferences" [ref=e24] [cursor=pointer]:
+            - /url: /preferences
+        - listitem [ref=e25]:
+          - link "📋 Format Schema" [ref=e26] [cursor=pointer]:
+            - /url: /format-schema
+        - listitem [ref=e27]:
+          - link "🔧 View Models" [ref=e28] [cursor=pointer]:
+            - /url: /view-models
+      - generic [ref=e30]:
+        - generic [ref=e31] [cursor=pointer]: Theme
+        - combobox [ref=e32] [cursor=pointer]:
+          - option "Light" [selected]
+          - option "Dark"
+          - option "Dark Blue"
+    - main [ref=e33]:
+      - generic [ref=e35]:
+        - heading "Requests" [level=2] [ref=e37]
+        - paragraph [ref=e38]: No requests in progress. Start a generation from the generator page to see progress here.
+```
