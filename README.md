@@ -25,7 +25,10 @@ The application uses `config.json` for API configuration. Response formats are s
 - `screenplay.json` - Screenplay generation format with detailed scene, dialog, and direction information
 - `audiobook.json` - Audiobook generation format with cast and simplified dialog structure
 
-## Running the Application
+## setup the Application
+bring your own api-key from open-router and then update config.json:
+cp <project-root>\config.example.json <project-root>\config.json and update config.json
+the api key is obfuscated by a dot as string splitter in order to avoid github token reporting and invalidating observable api-keys in the public domain.
 
 ### Development Mode (Both Server and Client)
 ```bash
